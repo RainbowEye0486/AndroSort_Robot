@@ -4,12 +4,14 @@ import math
 import time
 from threading import Thread
 import json
+import os
 
 #  紀錄參數用
-file_in = open("../param.json", "r")
+path = os.path.join(os.path.dirname(__file__), 'param.json')
+file_in = open(path, "r")
 
 jf = json.load(file_in)
-file_out = open("../param.json", "w")
+file_out = open(path, "w")
 font = cv2.FONT_HERSHEY_SIMPLEX
 #  需要調整參數
 camera_num = 0

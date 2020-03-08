@@ -2,6 +2,7 @@ import time
 from threading import Thread
 from Vision import Image_Identifier as image
 from Strategy import challenge_2
+from comm import nrf_controller as nrf
 
 
 image_buffer = list()
