@@ -1,8 +1,0 @@
-{
-  "name": "Vision",
-  "version": "1.0.0",
-  "dependencies": {
-    "rgb": "[23, 45, 567]",
-    "rgb2": "[34, 45,56]"
-  }
-}

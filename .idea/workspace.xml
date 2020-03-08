@@ -2,8 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8c362c20-180a-4d77-98a5-1d68ab3a6a20" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/param.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/Androsort_Competition.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Androsort_Competition.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Strategy/challenge_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/Strategy/challenge_2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Vision/Image_Identifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/Vision/Image_Identifier.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Vision/main_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/main_controller/main_controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Vision/package.json" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,14 +38,16 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_package_manager_path" value="npm" />
+    <property name="settings.editor.selected.configurable" value="vcs.Git" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/Strategy" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/Vision" />
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/main_controller" />
+      <recent name="$PROJECT_DIR$/Vision" />
       <recent name="$PROJECT_DIR$/vision" />
     </key>
   </component>
@@ -101,7 +109,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Vision/main_controller.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main_controller/main_controller.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -155,7 +163,31 @@
       <workItem from="1583138513397" duration="6729000" />
       <workItem from="1583290209483" duration="12695000" />
       <workItem from="1583379845145" duration="4120000" />
-      <workItem from="1583462654159" duration="887000" />
+      <workItem from="1583462654159" duration="960000" />
+      <workItem from="1583473781416" duration="1304000" />
+      <workItem from="1583476311825" duration="1261000" />
+      <workItem from="1583484099880" duration="1473000" />
+      <workItem from="1583498731074" duration="1768000" />
+      <workItem from="1583500538292" duration="599000" />
+      <workItem from="1583556066183" duration="1765000" />
+      <workItem from="1583557843898" duration="2049000" />
+      <workItem from="1583561941015" duration="1431000" />
+      <workItem from="1583564217726" duration="1863000" />
+      <workItem from="1583567204808" duration="1873000" />
+      <workItem from="1583569110765" duration="1797000" />
+      <workItem from="1583571022794" duration="1027000" />
+      <workItem from="1583572914832" duration="2204000" />
+      <workItem from="1583577952751" duration="1797000" />
+      <workItem from="1583579765448" duration="1534000" />
+      <workItem from="1583582106927" duration="1539000" />
+      <workItem from="1583584263949" duration="1308000" />
+      <workItem from="1583586080434" duration="1199000" />
+      <workItem from="1583637067397" duration="1440000" />
+      <workItem from="1583638991744" duration="1800000" />
+      <workItem from="1583641036037" duration="1789000" />
+      <workItem from="1583646879587" duration="1237000" />
+      <workItem from="1583651463368" duration="1285000" />
+      <workItem from="1583656826049" duration="1472000" />
     </task>
     <servers />
   </component>
@@ -171,22 +203,22 @@
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="776" y="310" width="424" height="484" key="FileChooserDialogImpl/67.27.1853.1053@67.27.1853.1053" timestamp="1583216643149" />
-    <state width="1799" height="275" key="GridCell.Tab.0.bottom" timestamp="1583461384045">
+    <state width="1799" height="248" key="GridCell.Tab.0.bottom" timestamp="1583652166485">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1799" height="275" key="GridCell.Tab.0.bottom/67.27.1853.1053@67.27.1853.1053" timestamp="1583461384045" />
-    <state width="1799" height="275" key="GridCell.Tab.0.center" timestamp="1583461384045">
+    <state width="1799" height="248" key="GridCell.Tab.0.bottom/67.27.1853.1053@67.27.1853.1053" timestamp="1583652166485" />
+    <state width="1799" height="248" key="GridCell.Tab.0.center" timestamp="1583652166484">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1799" height="275" key="GridCell.Tab.0.center/67.27.1853.1053@67.27.1853.1053" timestamp="1583461384045" />
-    <state width="1799" height="275" key="GridCell.Tab.0.left" timestamp="1583461384044">
+    <state width="1799" height="248" key="GridCell.Tab.0.center/67.27.1853.1053@67.27.1853.1053" timestamp="1583652166484" />
+    <state width="1799" height="248" key="GridCell.Tab.0.left" timestamp="1583652166484">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1799" height="275" key="GridCell.Tab.0.left/67.27.1853.1053@67.27.1853.1053" timestamp="1583461384044" />
-    <state width="1799" height="275" key="GridCell.Tab.0.right" timestamp="1583461384045">
+    <state width="1799" height="248" key="GridCell.Tab.0.left/67.27.1853.1053@67.27.1853.1053" timestamp="1583652166484" />
+    <state width="1799" height="248" key="GridCell.Tab.0.right" timestamp="1583652166485">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state width="1799" height="275" key="GridCell.Tab.0.right/67.27.1853.1053@67.27.1853.1053" timestamp="1583461384045" />
+    <state width="1799" height="248" key="GridCell.Tab.0.right/67.27.1853.1053@67.27.1853.1053" timestamp="1583652166485" />
     <state width="1799" height="339" key="GridCell.Tab.1.bottom" timestamp="1583124221111">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
@@ -203,15 +235,35 @@
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state width="1799" height="339" key="GridCell.Tab.1.right/67.27.1853.1053@67.27.1853.1053" timestamp="1583124221110" />
-    <state x="833" y="389" key="com.intellij.ide.util.TipDialog" timestamp="1583389173445">
+    <state x="697" y="265" width="582" height="574" key="MultipleFileMergeDialog" timestamp="1583658336806">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
-    <state x="833" y="389" key="com.intellij.ide.util.TipDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1583389173445" />
+    <state x="697" y="265" width="582" height="574" key="MultipleFileMergeDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1583658336806" />
+    <state x="475" y="187" key="SettingsEditor" timestamp="1583657515836">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="475" y="187" key="SettingsEditor/67.27.1853.1053@67.27.1853.1053" timestamp="1583657515836" />
+    <state x="166" y="125" width="1653" height="855" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1583651872512">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="166" y="125" width="1653" height="855" key="com.intellij.history.integration.ui.views.FileHistoryDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1583651872512" />
+    <state x="833" y="389" key="com.intellij.ide.util.TipDialog" timestamp="1583563370529">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="833" y="389" key="com.intellij.ide.util.TipDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1583563370529" />
+    <state x="743" y="333" width="490" height="439" key="git4idea.merge.GitMergeDialog" timestamp="1583658392524">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="743" y="333" width="490" height="439" key="git4idea.merge.GitMergeDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1583658392524" />
+    <state x="614" y="333" width="749" height="439" key="git4idea.merge.GitPullDialog" timestamp="1583658359061">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="614" y="333" width="749" height="439" key="git4idea.merge.GitPullDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1583658359061" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Androsort_Competition$main_controller.coverage" NAME="main_controller Coverage Results" MODIFIED="1583461384011" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/main_controller" />
+    <SUITE FILE_PATH="coverage/Androsort_Competition$main_controller.coverage" NAME="main_controller Coverage Results" MODIFIED="1583652166468" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/main_controller" />
     <SUITE FILE_PATH="coverage/Androsort_Competition$return_test.coverage" NAME="return_test Coverage Results" MODIFIED="1582709409724" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Vision" />
     <SUITE FILE_PATH="coverage/Androsort_Competition$challenge_2.coverage" NAME="challenge_2 Coverage Results" MODIFIED="1583293032457" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Strategy" />
-    <SUITE FILE_PATH="coverage/Androsort_Competition$Image_Identifier.coverage" NAME="Image_Identifier Coverage Results" MODIFIED="1583460173729" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Vision" />
+    <SUITE FILE_PATH="coverage/Androsort_Competition$Image_Identifier.coverage" NAME="Image_Identifier Coverage Results" MODIFIED="1583647516276" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Vision" />
   </component>
 </project>
