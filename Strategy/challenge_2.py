@@ -127,9 +127,12 @@ def Update_Robo_Info(teamD, teamP, oppoP, ballP):
     """
     # Your code
     global player_d, player_p, player_id, oppo_id, oppo_p, ball_p
-    player_d = teamD[player_id]
-    player_p = teamP[player_id]
-    oppo_p = oppoP[oppo_id - 3]
+    if len(teamD[player_id]) > 0:
+        player_d = teamD[player_id]
+    if len(teamP[player_id]) > 0:
+        player_p = teamP[player_id]
+    if len(oppoP[oppo_id-3]) > 0:
+        oppo_p = oppoP[oppo_id-3]
     ball_p = ballP
 
     pass

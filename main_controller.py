@@ -27,14 +27,18 @@ def Challenge2_thread():
     challenge_2.strategy_update_field(side, image.field_pos, image.middle, image.penalty_pos)
     while True:
         challenge_2.Update_Robo_Info(image.our_dir, image.our_data, image.enemy_data, image.ball_pos_now)
-        print(image.our_dir)
-        print(image.our_data)
-        print(image.enemy_data)
-        print(image.ball_pos_now)
-        challenge_2.strategy()
+        # print(image.our_dir)
+        # print(image.our_data)
+        # print(image.enemy_data)
+        # print(image.ball_pos_now)
+        cmd = challenge_2.strategy()
 
 
 if __name__ == '__main__':
+    nrf.read_config()
+    state, device, baud = nrf.device_chose()
+    if state == 1:
+        nrf.download_cfg(device)
     main_thread = Thread(target=Main_thread, name='Ma_Tr')
     thread1 = Thread(target=Image_thread, name='Im_Tr')
     thread1.start()

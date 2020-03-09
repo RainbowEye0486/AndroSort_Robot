@@ -10,6 +10,7 @@ import time
 import platform
 from datetime import datetime
 import json
+import os
 
 if 'Linux' in platform.system():
     from getch import getch
@@ -81,7 +82,8 @@ def read_config():
         retva1 - config dictionary data structure
     """
     global cfg
-    with open('config.json','r') as f:
+    config = os.path.join(os.path.dirname(__file__), 'config.json')
+    with open(config, 'r') as f:
         cfg = json.load(fp = f)
 
 def load_cfg(config):
