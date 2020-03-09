@@ -1,15 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="8c362c20-180a-4d77-98a5-1d68ab3a6a20" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/param.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Androsort_Competition.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Androsort_Competition.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="8c362c20-180a-4d77-98a5-1d68ab3a6a20" name="Default Changelist" comment="Merge branch 'master' of github.com:RainbowEye0486/AndroSort_Robot&#10;&#10;# Conflicts:&#10;#&#9;Strategy/challenge_2.py">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Strategy/challenge_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/Strategy/challenge_2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vision/Image_Identifier.py" beforeDir="false" afterPath="$PROJECT_DIR$/Vision/Image_Identifier.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vision/main_controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/main_controller/main_controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Vision/package.json" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,7 +31,11 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_package_manager_path" value="npm" />
+<<<<<<< HEAD
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+=======
+    <property name="settings.editor.selected.configurable" value="vcs.Git" />
+>>>>>>> c51ddb93b6d6bda0a1dc7dcecc966c7e94550843
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -51,7 +48,11 @@
       <recent name="$PROJECT_DIR$/vision" />
     </key>
   </component>
+<<<<<<< HEAD
   <component name="RunManager" selected="Python.Image_Identifier">
+=======
+  <component name="RunManager" selected="Python.main_controller">
+>>>>>>> c51ddb93b6d6bda0a1dc7dcecc966c7e94550843
     <configuration name="Image_Identifier" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="Androsort_Competition" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -185,21 +186,53 @@
       <workItem from="1583637067397" duration="1440000" />
       <workItem from="1583638991744" duration="1800000" />
       <workItem from="1583641036037" duration="1789000" />
+<<<<<<< HEAD
     </task>
+=======
+      <workItem from="1583646879587" duration="1237000" />
+      <workItem from="1583651463368" duration="1285000" />
+      <workItem from="1583656826049" duration="1728000" />
+      <workItem from="1583658672695" duration="766000" />
+      <workItem from="1583667230903" duration="599000" />
+    </task>
+    <task id="LOCAL-00001" summary="Merge branch 'master' of github.com:RainbowEye0486/AndroSort_Robot&#10;&#10;# Conflicts:&#10;#&#9;Strategy/challenge_2.py">
+      <created>1583658507044</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1583658507044</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+>>>>>>> c51ddb93b6d6bda0a1dc7dcecc966c7e94550843
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
+<<<<<<< HEAD
+=======
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Merge branch 'master' of github.com:RainbowEye0486/AndroSort_Robot&#10;&#10;# Conflicts:&#10;#&#9;Strategy/challenge_2.py" />
+    <option name="LAST_COMMIT_MESSAGE" value="Merge branch 'master' of github.com:RainbowEye0486/AndroSort_Robot&#10;&#10;# Conflicts:&#10;#&#9;Strategy/challenge_2.py" />
+  </component>
+>>>>>>> c51ddb93b6d6bda0a1dc7dcecc966c7e94550843
   <component name="WindowStateProjectService">
     <state x="451" y="210" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1582708814001">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="451" y="210" key="#com.intellij.execution.impl.EditConfigurationsDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1582708814001" />
+<<<<<<< HEAD
+=======
+    <state x="403" y="84" width="1170" height="937" key="CommitChangelistDialog2" timestamp="1583664226440">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="403" y="84" width="1170" height="937" key="CommitChangelistDialog2/67.27.1853.1053@67.27.1853.1053" timestamp="1583664226440" />
+>>>>>>> c51ddb93b6d6bda0a1dc7dcecc966c7e94550843
     <state x="776" y="310" width="424" height="484" key="FileChooserDialogImpl" timestamp="1583216643149">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="776" y="310" width="424" height="484" key="FileChooserDialogImpl/67.27.1853.1053@67.27.1853.1053" timestamp="1583216643149" />
+<<<<<<< HEAD
     <state width="1799" height="248" key="GridCell.Tab.0.bottom" timestamp="1583642655893">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
@@ -216,6 +249,24 @@
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state width="1799" height="248" key="GridCell.Tab.0.right/67.27.1853.1053@67.27.1853.1053" timestamp="1583642655893" />
+=======
+    <state width="1799" height="248" key="GridCell.Tab.0.bottom" timestamp="1583652166485">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state width="1799" height="248" key="GridCell.Tab.0.bottom/67.27.1853.1053@67.27.1853.1053" timestamp="1583652166485" />
+    <state width="1799" height="248" key="GridCell.Tab.0.center" timestamp="1583652166484">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state width="1799" height="248" key="GridCell.Tab.0.center/67.27.1853.1053@67.27.1853.1053" timestamp="1583652166484" />
+    <state width="1799" height="248" key="GridCell.Tab.0.left" timestamp="1583652166484">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state width="1799" height="248" key="GridCell.Tab.0.left/67.27.1853.1053@67.27.1853.1053" timestamp="1583652166484" />
+    <state width="1799" height="248" key="GridCell.Tab.0.right" timestamp="1583652166485">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state width="1799" height="248" key="GridCell.Tab.0.right/67.27.1853.1053@67.27.1853.1053" timestamp="1583652166485" />
+>>>>>>> c51ddb93b6d6bda0a1dc7dcecc966c7e94550843
     <state width="1799" height="339" key="GridCell.Tab.1.bottom" timestamp="1583124221111">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
@@ -232,6 +283,7 @@
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state width="1799" height="339" key="GridCell.Tab.1.right/67.27.1853.1053@67.27.1853.1053" timestamp="1583124221110" />
+<<<<<<< HEAD
     <state x="475" y="187" key="SettingsEditor" timestamp="1583473819107">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
@@ -240,15 +292,46 @@
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="166" y="125" width="1653" height="855" key="com.intellij.history.integration.ui.views.FileHistoryDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1583641395766" />
+=======
+    <state x="697" y="265" width="582" height="574" key="MultipleFileMergeDialog" timestamp="1583658336806">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="697" y="265" width="582" height="574" key="MultipleFileMergeDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1583658336806" />
+    <state x="475" y="187" key="SettingsEditor" timestamp="1583657515836">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="475" y="187" key="SettingsEditor/67.27.1853.1053@67.27.1853.1053" timestamp="1583657515836" />
+    <state x="166" y="125" width="1653" height="855" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1583651872512">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="166" y="125" width="1653" height="855" key="com.intellij.history.integration.ui.views.FileHistoryDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1583651872512" />
+>>>>>>> c51ddb93b6d6bda0a1dc7dcecc966c7e94550843
     <state x="833" y="389" key="com.intellij.ide.util.TipDialog" timestamp="1583563370529">
       <screen x="67" y="27" width="1853" height="1053" />
     </state>
     <state x="833" y="389" key="com.intellij.ide.util.TipDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1583563370529" />
+<<<<<<< HEAD
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Androsort_Competition$main_controller.coverage" NAME="main_controller Coverage Results" MODIFIED="1583556835775" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/main_controller" />
     <SUITE FILE_PATH="coverage/Androsort_Competition$return_test.coverage" NAME="return_test Coverage Results" MODIFIED="1582709409724" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Vision" />
     <SUITE FILE_PATH="coverage/Androsort_Competition$challenge_2.coverage" NAME="challenge_2 Coverage Results" MODIFIED="1583293032457" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Strategy" />
     <SUITE FILE_PATH="coverage/Androsort_Competition$Image_Identifier.coverage" NAME="Image_Identifier Coverage Results" MODIFIED="1583642655880" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Vision" />
+=======
+    <state x="743" y="333" width="490" height="439" key="git4idea.merge.GitMergeDialog" timestamp="1583725923138">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="743" y="333" width="490" height="439" key="git4idea.merge.GitMergeDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1583725923138" />
+    <state x="614" y="333" width="749" height="439" key="git4idea.merge.GitPullDialog" timestamp="1583725853237">
+      <screen x="67" y="27" width="1853" height="1053" />
+    </state>
+    <state x="614" y="333" width="749" height="439" key="git4idea.merge.GitPullDialog/67.27.1853.1053@67.27.1853.1053" timestamp="1583725853237" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/Androsort_Competition$main_controller.coverage" NAME="main_controller Coverage Results" MODIFIED="1583652166468" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/main_controller" />
+    <SUITE FILE_PATH="coverage/Androsort_Competition$return_test.coverage" NAME="return_test Coverage Results" MODIFIED="1582709409724" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Vision" />
+    <SUITE FILE_PATH="coverage/Androsort_Competition$challenge_2.coverage" NAME="challenge_2 Coverage Results" MODIFIED="1583293032457" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Strategy" />
+    <SUITE FILE_PATH="coverage/Androsort_Competition$Image_Identifier.coverage" NAME="Image_Identifier Coverage Results" MODIFIED="1583647516276" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Vision" />
+>>>>>>> c51ddb93b6d6bda0a1dc7dcecc966c7e94550843
   </component>
 </project>
