@@ -7,12 +7,11 @@ import json
 
 #  紀錄參數用
 file_in = open("../param.json", "r")
-
 jf = json.load(file_in)
-file_out = open("../param.json", "w")
+file_in.close()
 font = cv2.FONT_HERSHEY_SIMPLEX
 #  需要調整參數
-camera_num = 2
+camera_num = 0
 robot_height = 45
 field_height = 268
 color_upper_clipper = 800  # 調整面積的讀取區間
@@ -97,7 +96,9 @@ def pick_error(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDOWN:
         global camera_project
         jf["special_point"]["camera_project"] = [x, y]
+        file_out = open("../param.json", "w")
         file_out.write(json.dumps(jf))
+        file_out.close()
         print("camera projection point", jf["special_point"]["camera_project"])
         global error_open
         error_open = True
@@ -105,12 +106,16 @@ def pick_error(event, x, y, flags, param):
 
 def pick_field(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDOWN:
+        file_out = open("../param.json", "w")
         print('(', x, ',', y, '), ')
-        if len(field_pos) < 12:
-            field_pos.append([x, y])
-            if len(field_pos) == 8:  # 標出中心點
-                middle[0] = int((field_pos[0][0] + field_pos[1][0] + field_pos[6][0] + field_pos[7][0]) / 4)
-                middle[1] = int((field_pos[0][1] + field_pos[1][1] + field_pos[6][1] + field_pos[7][1]) / 4)
+        if len(jf["special_point"]["field_pos"]) < 12:
+            jf["special_point"]["field_pos"].append([x, y])
+            if len(jf["special_point"]["field_pos"]) == 8:  # 標出中心點
+                middle[0] = int((jf["special_point"]["field_pos"][0][0] + jf["special_point"]["field_pos"][1][0]
+                                 + jf["special_point"]["field_pos"][6][0] + jf["special_point"]["field_pos"][7][0]) / 4)
+                middle[1] = int((jf["special_point"]["field_pos"][0][1] + jf["special_point"]["field_pos"][1][1]
+                                 + jf["special_point"]["field_pos"][6][1] + jf["special_point"]["field_pos"][7][1]) / 4)
+                jf["special_point"]["middle"] = middle
                 print(middle)
         else:
             if len(penalty_pos) < 4:
@@ -124,21 +129,24 @@ def pick_field(event, x, y, flags, param):
                     else:
                         if len(PK_pos) < 2:
                             PK_pos.append([x, y])
+        file_out.write(json.dumps(jf))
+        file_out.close()
     elif event == cv2.EVENT_MBUTTONDOWN:
-        if len(field_pos) < 12:
-            field_pos.pop()
-        elif len(field_pos) == 0:
+        file_out = open("../param.json", "w")
+        if len(jf["special_point"]["field_pos"]) < 12:
+            jf["special_point"]["field_pos"].pop()
+        elif len(jf["special_point"]["field_pos"]) == 0:
             print("empty list")
         else:
-            if len(penalty_pos) < 4:
-                if len(penalty_pos) == 0:
-                    field_pos.pop()
+            if len(jf["special_point"]["penalty_pos"]) < 4:
+                if len(jf["special_point"]["penalty_pos"]) == 0:
+                    jf["special_point"]["penalty_pos"].pop()
                 else:
-                    penalty_pos.pop()
+                    jf["special_point"]["penalty_pos"].pop()
             else:
                 if len(FB_pos) < 4:
                     if len(FB_pos) == 0:
-                        penalty_pos.pop()
+                        jf["special_point"]["penalty_pos"].pop()
                     else:
                         FB_pos.pop()
                 else:
@@ -153,6 +161,8 @@ def pick_field(event, x, y, flags, param):
                                 FK_pos.pop()
                             else:
                                 PK_pos.pop()
+        file_out.write(json.dumps(jf))
+        file_out.close()
 
 
 def pick_color_our_main(event, x, y, flags, param):
@@ -169,8 +179,11 @@ def pick_color_our_main(event, x, y, flags, param):
             upper = [int(pixel[0] + threshold), int(pixel[1] + threshold), int(pixel[2] + threshold)]
             lower = [int(pixel[0] - threshold), int(pixel[1] - threshold), int(pixel[2] - threshold)]
             pick_time[0] = 0
+        file_out = open("../param.json", "w")
         jf["color_patch"]["our_upper"] = upper
         jf["color_patch"]["our_lower"] = lower
+        file_out.write(json.dumps(jf))
+        file_out.close()
         our_upper = np.array(upper)
         our_lower = np.array(lower)
         print("now our main", our_lower, our_upper, pick_time[0])
@@ -191,8 +204,11 @@ def pick_color_enemy_main(event, x, y, flags, param):
             upper = [int(pixel[0] + threshold), int(pixel[1] + threshold), int(pixel[2] + threshold)]
             lower = [int(pixel[0] - threshold), int(pixel[1] - threshold), int(pixel[2] - threshold)]
             pick_time[1] = 0
+        file_out = open("../param.json", "w")
         jf["color_patch"]["enemy_upper"] = upper
         jf["color_patch"]["enemy_lower"] = lower
+        file_out.write(json.dumps(jf))
+        file_out.close()
         enemy_upper = np.array(upper)
         enemy_lower = np.array(lower)
         print("now enemy main", enemy_upper, enemy_lower, pick_time[1])
@@ -213,8 +229,11 @@ def pick_color_one(event, x, y, flags, param):
             upper = [int(pixel[0] + threshold), int(pixel[1] + threshold), int(pixel[2] + threshold)]
             lower = [int(pixel[0] - threshold), int(pixel[1] - threshold), int(pixel[2] - threshold)]
             pick_time[1] = 0
+        file_out = open("../param.json", "w")
         jf["color_patch"]["color1_upper"] = upper
         jf["color_patch"]["color1_lower"] = lower
+        file_out.write(json.dumps(jf))
+        file_out.close()
         color1_upper = np.array(upper)
         color1_lower = np.array(lower)
         print("now robot 1", color1_upper, color1_lower, pick_time[2])
@@ -235,8 +254,11 @@ def pick_color_two(event, x, y, flags, param):
             upper = [int(pixel[0] + threshold), int(pixel[1] + threshold), int(pixel[2] + threshold)]
             lower = [int(pixel[0] - threshold), int(pixel[1] - threshold), int(pixel[2] - threshold)]
             pick_time[3] = 0
+        file_out = open("../param.json", "w")
         jf["color_patch"]["color2_upper"] = upper
         jf["color_patch"]["color2_lower"] = lower
+        file_out.write(json.dumps(jf))
+        file_out.close()
         color2_upper = np.array(upper)
         color2_lower = np.array(lower)
         print("now robot 2", color2_upper, color2_lower, pick_time[3])
@@ -257,8 +279,11 @@ def pick_color_three(event, x, y, flags, param):
             upper = [int(pixel[0] + threshold), int(pixel[1] + threshold), int(pixel[2] + threshold)]
             lower = [int(pixel[0] - threshold), int(pixel[1] - threshold), int(pixel[2] - threshold)]
             pick_time[4] = 0
+        file_out = open("../param.json", "w")
         jf["color_patch"]["color3_upper"] = upper
         jf["color_patch"]["color3_lower"] = lower
+        file_out.write(json.dumps(jf))
+        file_out.close()
         color3_upper = np.array(upper)
         color3_lower = np.array(lower)
         print("now robot 3", color3_upper, color3_lower, pick_time[4])
@@ -282,8 +307,11 @@ def pick_color_ball(event, x, y, flags, param):
             upper = [int(pixel[0] + threshold), int(pixel[1] + threshold), int(pixel[2] + threshold)]
             lower = [int(pixel[0] - threshold), int(pixel[1] - threshold), int(pixel[2] - threshold)]
             pick_time[5] = 0
+        file_out = open("../param.json", "w")
         jf["color_patch"]["ball_upper"] = upper
         jf["color_patch"]["ball_lower"] = lower
+        file_out.write(json.dumps(jf))
+        file_out.close()
         ball_upper = np.array(upper)
         ball_lower = np.array(lower)
         print("now ball", ball_upper, ball_lower, pick_time[5])
@@ -492,8 +520,11 @@ def image_func():
         if keyword & 0xff == ord('c'):  # 設定場地的12個角
             point_show = ~point_show
             if ~point_show:
+                file_out = open("../param.json", "w")
                 jf["special_point"]["field_pos"] = field_pos
                 jf["special_point"]["middle"] = middle
+                file_out.write(json.dumps(jf))
+                file_out.close()
             print("set 12 corner")
             cv2.setMouseCallback('camera_RGB', pick_field)
         elif keyword & 0xff == ord('r'):  # 校正相機造成的誤差
@@ -543,9 +574,6 @@ def image_func():
             mask = ~mask
         elif keyword & 0xff == ord('q'):  # 離開
             print("release camera")
-            file_out.write(json.dumps(jf))
-            file_out.close()
-            file_in.close()
             break
 
         thread2.join()

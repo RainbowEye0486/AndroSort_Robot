@@ -11,12 +11,6 @@ side = 0  # attacking side
 challenge_num = 2
 
 
-def Main_thread():
-    while True:
-        #print(image.return_motion())
-        time.sleep(1)
-
-
 def Image_thread():
     image.image_func()
 
@@ -30,15 +24,14 @@ def Challenge2_thread():
         print(image.our_data)
         print(image.enemy_data)
         print(image.ball_pos_now)
-        challenge_2.strategy()
+        time.sleep(1)  # 先不要太快取值
+        #challenge_2.strategy()
 
 
 if __name__ == '__main__':
-    main_thread = Thread(target=Main_thread, name='Ma_Tr')
     thread1 = Thread(target=Image_thread, name='Im_Tr')
     thread1.start()
     time.sleep(0.5)
-    main_thread.start()
     image.return_field()
     if challenge_num == 2:
         thread2 = Thread(target=Challenge2_thread, name='C2_Tr')
