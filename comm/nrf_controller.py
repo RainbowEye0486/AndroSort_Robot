@@ -156,32 +156,32 @@ def download_cfg(device):
         print('txa setting success')
     print(data)
 
-def RF_sendCmd(input_data, device, delay=0, mode=0):
-    """
-    Send command through RF
+# def RF_sendCmd(input_data, device, delay=0, mode=0):
+#     """
+#     Send command through RF
 
-    Parameters
-        param1 - data to send
-        param2 - serial device to use
-        param3 - delay before sending
-        param4 - sending mode
+#     Parameters
+#         param1 - data to send
+#         param2 - serial device to use
+#         param3 - delay before sending
+#         param4 - sending mode
 
-    Description
-        For mode(@param4) 0, program will extend input character into robot command format and then send
-        For mode(@param4) 1, program will directly send what it received
-    """
-    time.sleep(delay)
-    current_time = datetime.now().strftime("%H-%M-%S-%f")
-    if mode == 0:
-        send_data = '#'+input_data+'1'+input_data+'2'+input_data+'9' +'$'
-        print(current_time + " Send=", send_data.encode())
-        device.write(bytes(send_data, encoding='utf8'))
-    else:
-        print(current_time + " Send=", input_data.encode())
-        device.write(bytes(input_data, encoding='utf8'))
+#     Description
+#         For mode(@param4) 0, program will extend input character into robot command format and then send
+#         For mode(@param4) 1, program will directly send what it received
+#     """
+#     time.sleep(delay)
+#     current_time = datetime.now().strftime("%H-%M-%S-%f")
+#     if mode == 0:
+#         send_data = '#'+input_data+'1'+input_data+'2'+input_data+'9' +'$'
+#         print(current_time + " Send=", send_data.encode())
+#         device.write(bytes(send_data, encoding='utf8'))
+#     else:
+#         print(current_time + " Send=", input_data.encode())
+#         device.write(bytes(input_data, encoding='utf8'))
 
 
-def RF_sendCmd_test(input_data, device, robotID, delay=0, mode=0):
+def RF_sendCmd(input_data, device, robotID, delay=0, mode=0):
     """
     Send command through RF
 
@@ -335,6 +335,32 @@ def main_procedure(device):
         while time.time() - tstart < 1/30:
             # Read input
             data,length = device_read(device)
+            if length != 0:
+                current_time = datetime.now().strftime("%H-%M-%S-%f")
+                print(current_time + ' ' + data)
+
+
+def communicate(device, que):
+    mode = 0
+    while True:
+        print('communicate')
+        tstart = time.time()
+        current_time = datetime.now().strftime("%H-%M-%S-%f")
+        if not que.empty():
+            # Get input from queue
+            print('in')
+            input_data = que.get()
+            print(current_time + ' Has new input: ', ord(input_data), input_data)
+            robotID = input_data[1]
+            input_data = input_data[0]
+            print('R:', type(robotID), robotID)
+            print('in:', input_data)
+            RF_sendCmd(input_data, device, robotID, 0.05, mode)
+        else:
+            print('q', que)
+        while time.time() - tstart < 1/30:
+            # Read input
+            data, length = device_read(device)
             if length != 0:
                 current_time = datetime.now().strftime("%H-%M-%S-%f")
                 print(current_time + ' ' + data)
