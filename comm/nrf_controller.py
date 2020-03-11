@@ -198,7 +198,7 @@ def RF_sendCmd(input_data, device, robotID, delay=0, mode=0):
     time.sleep(delay)
     current_time = datetime.now().strftime("%H-%M-%S-%f")
     if mode == 0:
-        send_data = '#' + str(1) + input_data + '1'+'$'
+        send_data = '#' + robotID + input_data + '1'+'$'
         print(current_time + " Send=", send_data.encode())
         device.write(bytes(send_data, encoding='utf8'))
     else:
@@ -343,21 +343,15 @@ def main_procedure(device):
 def communicate(device, que):
     mode = 0
     while True:
-        print('communicate')
         tstart = time.time()
         current_time = datetime.now().strftime("%H-%M-%S-%f")
         if not que.empty():
             # Get input from queue
-            print('in')
             input_data = que.get()
-            print(current_time + ' Has new input: ', ord(input_data), input_data)
             robotID = input_data[1]
             input_data = input_data[0]
-            print('R:', type(robotID), robotID)
-            print('in:', input_data)
+            print(current_time + ' Has new input: ', ord(input_data), input_data)
             RF_sendCmd(input_data, device, robotID, 0.05, mode)
-        else:
-            print('q', que)
         while time.time() - tstart < 1/30:
             # Read input
             data, length = device_read(device)

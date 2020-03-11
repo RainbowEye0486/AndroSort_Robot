@@ -35,19 +35,20 @@ def Challenge2_thread(que):
         cmd = challenge_2.strategy()
         try:
             input_data = cmd[0]
-            print('cmd:', input_data)
+            # print('cmd:', input_data)
             if que.empty():
-                # que.put(input_data)
-                que.put('w')  # test
+                que.put(input_data)
+                # que.put('w1')  # test
                 time.sleep(0.001)
         except OverflowError:
             print('invalid cmd value')
+        time.sleep(0.01)
 
 
 def NRF_thread(device, que):
     while True:
-        print('communicate n')
         nrf.communicate(device, que)
+        time.sleep(0.01)
 
 
 if __name__ == '__main__':
@@ -66,6 +67,6 @@ if __name__ == '__main__':
         thread2 = Thread(target=Challenge2_thread, name='C2_Tr', args=(cmd_in_wait,))
         thread2.start()
         time.sleep(0.5)
-        thread3 = Thread(target=NRF_thread, name="Comm_Tr", args=(device, cmd_in_wait,))
-        thread3.setDaemon(True)
+        thread3 = Thread(target=NRF_thread, name='Comm_Tr', args=(device, cmd_in_wait,))
         thread3.start()
+        time.sleep(0.5)

@@ -257,7 +257,7 @@ def strategy():
                 return [MOVE[move_way]['Norm'], 'N1', 'N1']
         stage += 1
     dist_ball = math.hypot(player_p[0] - ball_p[0], player_p[1] - ball_p[1])
-    print('player, kick ball', player_p, kick_point, dist_ball)
+    # print('player, kick ball', player_p, kick_point, dist_ball)
     if kick_flag and not (kicked):
         print('===kicked===', MOVE[kick_way]['Kick'])
         sleep(1)  # For check
