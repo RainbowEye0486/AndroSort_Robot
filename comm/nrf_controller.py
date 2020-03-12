@@ -14,8 +14,8 @@ import os
 
 if 'Linux' in platform.system():
     from getch import getch
-elif 'Windows' in platform.system():
-    from msvcrt import getwch as getch
+# elif 'Windows' in platform.system():
+# from msvcrt import getwch as getch
 else:
     from getch import getch
 
@@ -50,6 +50,7 @@ cfg = None
 DEF_port = 'COM14'
 DEF_baud = 9600
 
+
 def inputFunc(q):
     """
     Multi processing function, get input
@@ -74,6 +75,7 @@ def inputFunc(q):
         except OverflowError:
             print('enter invalid value')
 
+
 def read_config():
     """
     Read configuration json file
@@ -84,7 +86,8 @@ def read_config():
     global cfg
     config = os.path.join(os.path.dirname(__file__), 'config.json')
     with open(config, 'r') as f:
-        cfg = json.load(fp = f)
+        cfg = json.load(fp=f)
+
 
 def load_cfg(config):
     """
@@ -95,6 +98,7 @@ def load_cfg(config):
     """
     global cfg
     cfg = config
+
 
 def device_read(device, delay=0):
     """
@@ -121,12 +125,13 @@ def device_read(device, delay=0):
             print('Decode error. Maybe data too long or reading time too short')
             return "None", a
         else:
-            return decode_data,a
+            return decode_data, a
     return "None", a
+
 
 def download_cfg(device):
     for i in range(len(cfg["RESET"]) - 3):
-        print(str(i+1) + ' ' + str(cfg["RESET"]["default"+str(i+1)]))
+        print(str(i + 1) + ' ' + str(cfg["RESET"]["default" + str(i + 1)]))
 
     choose_cfg = input("Enter desired address >>> ")
     if choose_cfg.isdigit():
@@ -136,25 +141,26 @@ def download_cfg(device):
     address_select = "default" + choose_cfg
 
     device.write(bytes(cfg["CMD"]["Freq"] + cfg["RESET"]["Freq"], encoding='utf8'))
-    data, __ = device_read(device,0.5)
+    data, __ = device_read(device, 0.5)
     if "成功" in data:
         print('freq setting success')
     print(data)
     device.write(bytes(cfg["CMD"]["Rate"] + cfg["RESET"]["Rate"], encoding='utf8'))
-    data, __ = device_read(device,0.5)
+    data, __ = device_read(device, 0.5)
     if "成功" in data:
         print('rate setting success')
     print(data)
     device.write(bytes(cfg["CMD"]["RXA"] + cfg["RESET"][address_select]["RXA"], encoding='utf8'))
-    data, __ = device_read(device,0.5)
+    data, __ = device_read(device, 0.5)
     if "成功" in data:
         print('rxa setting success')
     print(data)
     device.write(bytes(cfg["CMD"]["TXA"] + cfg["RESET"][address_select]["TXA"], encoding='utf8'))
-    data, __ = device_read(device,0.5)
+    data, __ = device_read(device, 0.5)
     if "成功" in data:
         print('txa setting success')
     print(data)
+
 
 # def RF_sendCmd(input_data, device, delay=0, mode=0):
 #     """
@@ -198,12 +204,13 @@ def RF_sendCmd(input_data, device, robotID, delay=0, mode=0):
     time.sleep(delay)
     current_time = datetime.now().strftime("%H-%M-%S-%f")
     if mode == 0:
-        send_data = '#' + robotID + input_data + '1'+'$'
+        send_data = '#' + robotID + input_data + '1' + '$'
         print(current_time + " Send=", send_data.encode())
         device.write(bytes(send_data, encoding='utf8'))
     else:
         print(current_time + " Send=", input_data.encode())
         device.write(bytes(input_data, encoding='utf8'))
+
 
 def get_device():
     """
@@ -212,6 +219,7 @@ def get_device():
     ports = serial.tools.list_ports.comports()
     port_list = [port.device for port in ports]
     return port_list
+
 
 def open_device(portname):
     """
@@ -226,20 +234,21 @@ def open_device(portname):
         retva3 - opened device baudrate (0 if not opened)
     """
     for baud in cfg['Scan']:
-        print(portname,' Scanning Baudrate: ',baud,end="")
+        print(portname, ' Scanning Baudrate: ', baud, end="")
 
-        device = serial.Serial(portname, timeout = 0.5, baudrate = baud)
-        device.write(bytes(cfg['CMD']['Info'],encoding = 'utf8'))
+        device = serial.Serial(portname, timeout=0.5, baudrate=baud)
+        device.write(bytes(cfg['CMD']['Info'], encoding='utf8'))
         data, __ = device_read(device, 0.5)
         if 'OK' == data[0:2]:
             print('......Success')
-            print("Device %s Baudrate: %s found"%(device.name,baud))
+            print("Device %s Baudrate: %s found" % (device.name, baud))
             return 1, device, baud
         else:
             print('......Failed')
         device.close()
     print('Error --Cannot open serial device')
     return 0, None, 0
+
 
 def device_chose():
     """
@@ -259,11 +268,11 @@ def device_chose():
     else:
         print("Choose device below......")
 
-    for i in range(0,list_len):
-        print('%s %s'%(i+1,port_list[i]))
+    for i in range(0, list_len):
+        print('%s %s' % (i + 1, port_list[i]))
 
     choose_device = None
-    while(True):
+    while (True):
         # Get user input
         input_num = input("Enter device number (or q to quit)>>> ")
 
@@ -281,6 +290,7 @@ def device_chose():
                 return 0, None, 0
     state, device, baud = open_device(port_list[choose_device])
     return state, device, baud
+
 
 def main_procedure(device):
     """
@@ -321,7 +331,7 @@ def main_procedure(device):
                 print(current_time + ' Switch to {} mode'.format('FREE' if mode == 1 else 'ROBOT COMMAND'))
             else:
                 if mode == 0:
-                    print(current_time + ' Has new input: ',ord(input_data), input_data)
+                    print(current_time + ' Has new input: ', ord(input_data), input_data)
                     RF_sendCmd(input_data, device, 0.05, mode)
                 else:
                     if ord(input_data) == 10 or ord(input_data) == 13:
@@ -332,9 +342,9 @@ def main_procedure(device):
                         saved = saved + input_data
                         print(input_data)
 
-        while time.time() - tstart < 1/30:
+        while time.time() - tstart < 1 / 30:
             # Read input
-            data,length = device_read(device)
+            data, length = device_read(device)
             if length != 0:
                 current_time = datetime.now().strftime("%H-%M-%S-%f")
                 print(current_time + ' ' + data)
@@ -352,12 +362,13 @@ def communicate(device, que):
             input_data = input_data[0]
             print(current_time + ' Has new input: ', ord(input_data), input_data)
             RF_sendCmd(input_data, device, robotID, 0.05, mode)
-        while time.time() - tstart < 1/30:
+        while time.time() - tstart < 1 / 30:
             # Read input
             data, length = device_read(device)
             if length != 0:
                 current_time = datetime.now().strftime("%H-%M-%S-%f")
                 print(current_time + ' ' + data)
+
 
 def device_close(device):
     if device is None:
@@ -365,15 +376,10 @@ def device_close(device):
     else:
         device.close()
 
+
 if __name__ == '__main__':
     read_config()
     state, device, baud = device_chose()
     if state == 1:
         download_cfg(device)
         main_procedure(device)
-
-
-
-
-
-

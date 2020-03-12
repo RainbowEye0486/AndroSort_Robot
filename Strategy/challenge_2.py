@@ -82,9 +82,9 @@ def Initialize():
     global stage
     stage = 1
     # output stratgy
-    with open('strategy.txt', 'a') as f:
-        f.write('\n')
-        f.write('New strategy(pos3 3): ')
+    # with open('strategy.txt', 'a') as f:
+    #     f.write('\n')
+    #     f.write('New strategy(pos3 3): ')
     pass
 
 
@@ -134,8 +134,7 @@ def Update_Robo_Info(teamD, teamP, oppoP, ballP):
     if len(oppoP[oppo_id-3]) > 0:
         oppo_p = oppoP[oppo_id-3]
     ball_p = ballP
-
-    pass
+    # print('player', player_p)
 
 
 def strategy():
@@ -148,6 +147,7 @@ def strategy():
     global stage, kick_way, move_way, first_arri, kick_dir, kick_point
     # Your code
     if stage == 1:
+        # print('stage', stage)
         # Find position of goal
         kick_goal[0] = BOUNDARY[2][0]
         allow = [BOUNDARY[2][1], BOUNDARY[5][1]] \
