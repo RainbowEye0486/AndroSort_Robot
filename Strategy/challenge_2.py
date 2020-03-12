@@ -3,18 +3,18 @@ import cv2
 from time import sleep
 
 # Const
-ROB_RANG = 25
-KICKABLE_RANGE = 40
-ROUGH_RANG = 50
-ERROR_DISTANCE = 10
-ROTATE_ANGLE = 0.30
-SAFE_DIST = 43  # RoboRad/2 + ball radius
+ROB_RANG = 25  # 25 in simulator
+KICKABLE_RANGE = 40  # 40 in simulator
+ROUGH_RANG = 50  # 50 in simulator
+ERROR_DISTANCE = 10  # 10 in simulator
+ROTATE_ANGLE = 0.30  # 25 in simulator
+SAFE_DIST = 43  # RoboRad/2 + ball radius  # 25 in simulator
 WAY_ANGLE = {'F': 0, 'L': -math.pi / 2, 'R': math.pi / 2}
 MOVE = {
-    'F': {'Fast': 'W1', 'Norm': 'w1', 'Bound': [18, 10]},
-    'L': {'Fast': 'A1', 'Norm': 'a1', 'Kick': 'h1', 'Bound': [80, 8]},
-    'R': {'Fast': 'D1', 'Norm': 'd1', 'Kick': 'j1', 'Bound': [80, 8]},
-    'B': {'Norm': 's1', 'Bound': [None, 10]}
+    'F': {'Fast': 'W1', 'Norm': 'w1', 'Bound': [18, 10]},  # 18,10 in simulator
+    'L': {'Fast': 'A1', 'Norm': 'a1', 'Kick': 'h1', 'Bound': [80, 8]},  # 80,8 in simulator
+    'R': {'Fast': 'D1', 'Norm': 'd1', 'Kick': 'j1', 'Bound': [80, 8]},  # 80,8 in simulator
+    'B': {'Norm': 's1', 'Bound': [None, 10]}  # none,10 in simulator
 }
 # Condition
 ALLOW_MOVE_WAY = ['L', 'R']
@@ -126,15 +126,27 @@ def Update_Robo_Info(teamD, teamP, oppoP, ballP):
         param4: list[int] -> [x,y] for ball position
     """
     # Your code
+    updated = 0
+    # print('D', teamD[player_id], len(teamD[player_id]) > 0)
+    # print('P', teamP[player_id], len(teamP[player_id]) > 0)
+    print('oppo', oppoP, len(oppoP[oppo_id-3]) > 0)
+    print('')
     global player_d, player_p, player_id, oppo_id, oppo_p, ball_p
     if len(teamD[player_id]) > 0:
         player_d = teamD[player_id]
+        updated += 1
     if len(teamP[player_id]) > 0:
         player_p = teamP[player_id]
+        updated += 1
     if len(oppoP[oppo_id-3]) > 0:
         oppo_p = oppoP[oppo_id-3]
+        updated += 1
     ball_p = ballP
-    # print('player', player_p)
+
+    if updated == 3:
+        return True
+
+    return False
 
 
 def strategy():
@@ -146,6 +158,7 @@ def strategy():
     """
     global stage, kick_way, move_way, first_arri, kick_dir, kick_point
     # Your code
+    print('stage', stage)
     if stage == 1:
         # print('stage', stage)
         # Find position of goal

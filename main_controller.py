@@ -4,7 +4,19 @@ from Vision import Image_Identifier as image
 from Strategy import challenge_2
 from comm import nrf_controller as nrf
 from queue import Queue
+import platform
 
+<<<<<<< Updated upstream
+=======
+
+if 'Linux' in platform.system():
+    from getch import getch
+elif 'Windows' in platform.system():
+    from msvcrt import getwch as getch
+else:
+    from getch import getch
+
+>>>>>>> Stashed changes
 image_buffer = list()
 decision_done = False
 # 需要調整參數
@@ -45,14 +57,17 @@ def Challenge2_thread(que):
             try:
                 input_data = cmd[0]
                 # print('cmd:', input_data)
-                if que.empty() and input_data[0] != 'N':
-                    print('in que', input_data)
+                if que.empty():
                     que.put(input_data)
                     # que.put('w1')  # test
                     time.sleep(0.001)
+                else:
+                    que.get()
+                    que.put(input_data)
+                    time.sleep(0.001)
             except OverflowError:
                 print('invalid cmd value')
-            time.sleep(0.01)
+        time.sleep(0.01)
 
 
 def NRF_thread(device, que):

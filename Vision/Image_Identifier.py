@@ -12,7 +12,11 @@ with open(fpath, 'r') as file_in:
     jf = json.load(file_in)
 font = cv2.FONT_HERSHEY_SIMPLEX
 #  需要調整參數
+<<<<<<< Updated upstream
 camera_num = 2
+=======
+camera_num = 1
+>>>>>>> Stashed changes
 robot_height = 45
 field_height = 268
 color_upper_clipper = 800  # 調整面積的讀取區間
@@ -224,7 +228,7 @@ def pick_color_one(event, x, y, flags, param):
         else:
             upper = [int(pixel[0] + threshold), int(pixel[1] + threshold), int(pixel[2] + threshold)]
             lower = [int(pixel[0] - threshold), int(pixel[1] - threshold), int(pixel[2] - threshold)]
-            pick_time[1] = 0
+            pick_time[2] = 0
         jf["color_patch"]["color1_upper"] = upper
         jf["color_patch"]["color1_lower"] = lower
         with open(fpath, 'w') as file_out:

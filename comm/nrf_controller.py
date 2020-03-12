@@ -204,8 +204,13 @@ def RF_sendCmd(input_data, device, robotID, delay=0, mode=0):
     time.sleep(delay)
     current_time = datetime.now().strftime("%H-%M-%S-%f")
     if mode == 0:
+<<<<<<< Updated upstream
         send_data = '#' + robotID + input_data + '1' + '$'
         print(current_time + " Send=", send_data.encode())
+=======
+        send_data = '#' + robotID + input_data + '1'+'$'
+        # print(current_time + " Send=", send_data.encode())
+>>>>>>> Stashed changes
         device.write(bytes(send_data, encoding='utf8'))
     else:
         print(current_time + " Send=", input_data.encode())
@@ -360,7 +365,7 @@ def communicate(device, que):
             input_data = que.get()
             robotID = input_data[1]
             input_data = input_data[0]
-            print(current_time + ' Has new input: ', ord(input_data), input_data)
+            # print(current_time + ' Has new input: ', ord(input_data), input_data)
             RF_sendCmd(input_data, device, robotID, 0.05, mode)
         while time.time() - tstart < 1 / 30:
             # Read input
