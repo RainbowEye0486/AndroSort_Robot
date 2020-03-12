@@ -126,12 +126,12 @@ def Update_Robo_Info(teamD, teamP, oppoP, ballP):
         param4: list[int] -> [x,y] for ball position
     """
     # Your code
+    global player_d, player_p, player_id, oppo_id, oppo_p, ball_p
     updated = 0
     # print('D', teamD[player_id], len(teamD[player_id]) > 0)
     # print('P', teamP[player_id], len(teamP[player_id]) > 0)
     print('oppo', oppoP, len(oppoP[oppo_id-3]) > 0)
     print('')
-    global player_d, player_p, player_id, oppo_id, oppo_p, ball_p
     if len(teamD[player_id]) > 0:
         player_d = teamD[player_id]
         updated += 1

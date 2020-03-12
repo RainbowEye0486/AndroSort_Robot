@@ -12,7 +12,7 @@ with open(fpath, 'r') as file_in:
     jf = json.load(file_in)
 font = cv2.FONT_HERSHEY_SIMPLEX
 #  需要調整參數
-camera_num = 1
+camera_num = 2
 robot_height = 45
 field_height = 268
 color_upper_clipper = 800  # 調整面積的讀取區間
@@ -612,6 +612,7 @@ def image_func():
 
         thread3.join()
         enemy_code = 0
+        global enemy_data
         enemy_data = [[], [], []]
         for enemy in enemy_pos:
             enemy_code += 1

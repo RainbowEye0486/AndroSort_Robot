@@ -43,11 +43,11 @@ def Challenge2_thread(que):
     challenge_2.Initialize()
     challenge_2.strategy_update_field(side, image.field_pos, image.middle, image.penalty_pos)
     while True:
-        """ print("our direction", image.our_dir)
+        """print("our direction", image.our_dir)
         print("our position", image.our_data)
         print("enemy position", image.enemy_data)
         print("ball position", image.ball_pos_now)"""
-
+        # print("enemy position", image.enemy_data)
         if stop_strategy < 0:
             challenge_2.Update_Robo_Info(image.our_dir, image.our_data, image.enemy_data, image.ball_pos_now)
             cmd = challenge_2.strategy()
