@@ -6,8 +6,6 @@ from comm import nrf_controller as nrf
 from queue import Queue
 import platform
 
-<<<<<<< Updated upstream
-=======
 
 if 'Linux' in platform.system():
     from getch import getch
@@ -16,7 +14,6 @@ elif 'Windows' in platform.system():
 else:
     from getch import getch
 
->>>>>>> Stashed changes
 image_buffer = list()
 decision_done = False
 # 需要調整參數
@@ -56,7 +53,7 @@ def Challenge2_thread(que):
             cmd = challenge_2.strategy()
             try:
                 input_data = cmd[0]
-                # print('cmd:', input_data)
+                print('cmd:', input_data)
                 if que.empty():
                     que.put(input_data)
                     # que.put('w1')  # test
