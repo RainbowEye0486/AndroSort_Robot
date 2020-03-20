@@ -5,6 +5,7 @@ import time
 from threading import Thread
 import json
 import os
+import sys
 
 #  紀錄參數用
 fpath = os.path.join(os.path.dirname(__file__), 'param.json')
@@ -12,20 +13,21 @@ with open(fpath, 'r') as file_in:
     jf = json.load(file_in)
 font = cv2.FONT_HERSHEY_SIMPLEX
 #  需要調整參數
-camera_num = 0
+camera_num = 2
 robot_height = 45
 field_height = 268
 color_upper_clipper = 800  # 調整面積的讀取區間
 color_lower_clipper = 100
 #  遮色片參數
 mask = False
-mask_col = ''  # 決定開什麼顏色的遮色片
+once_open_mask = False
 threshold = 50
 
 # don't care config
 point_show = False  # 場地標點
 error_open = True  # 如果標好相機投影點將會開啟
 frame_counter = 0
+exit_bit = 0
 
 #  紀錄特殊點位置
 ball_pos_last = [0, 0]
@@ -49,6 +51,9 @@ color3_pos = set()
 #  紀錄不同區域的同一種顏色 取範圍
 
 current_window = 'camera'
+mask_frame = None
+mask_color = ''
+
 our_lower = np.array(jf["color_patch"]["our_lower"])
 our_upper = np.array(jf["color_patch"]["our_upper"])
 enemy_lower = np.array(jf["color_patch"]["enemy_lower"])
@@ -91,6 +96,86 @@ def error_correct(i):
     oasis[0] = int(camera_project[0] + (i[0] - camera_project[0]) * (1 - (robot_height / field_height)))
     oasis[1] = int(camera_project[1] + (i[1] - camera_project[1]) * (1 - (robot_height / field_height)))
     return oasis
+
+
+def set_field():
+    global point_show
+    point_show = ~point_show
+    if ~point_show:
+        jf["special_point"]["field_pos"] = field_pos
+        jf["special_point"]["middle"] = middle
+        with open(fpath, 'w') as file_out:
+            file_out.write(json.dumps(jf))
+    print("set 12 corner")
+    cv2.setMouseCallback('camera_RGB', pick_field)
+
+
+def set_mask():
+    global mask
+    if ~mask:
+        print("open mask")
+    else:
+        cv2.destroyWindow(current_window)
+    mask = ~mask
+
+
+def set_correct():
+    print("pick camera projection")
+    cv2.setMouseCallback('camera_RGB', pick_error)
+
+
+def set_our():
+    global current_window, once_open_mask, mask_color
+    print("please click our team color")
+    current_window = 'our_mask'
+    cv2.setMouseCallback('camera_RGB', pick_color_our_main)
+    once_open_mask = True
+    mask_color = 'o'
+
+
+def set_enemy():
+    global current_window, once_open_mask, mask_color
+    print("please click enemy team color")
+    current_window = 'enemy_mask'
+    cv2.setMouseCallback('camera_RGB', pick_color_enemy_main)
+    once_open_mask = True
+    mask_color = 'e'
+
+
+def set_color1():
+    global current_window, once_open_mask, mask_color
+    print("please click robot 1 color")
+    current_window = 'color1_mask'
+    cv2.setMouseCallback('camera_RGB', pick_color_one)
+    once_open_mask = True
+    mask_color = '1'
+
+
+def set_color2():
+    global current_window, once_open_mask, mask_color
+    print("please click robot 2 color")
+    current_window = 'color2_mask'
+    cv2.setMouseCallback('camera_RGB', pick_color_two)
+    once_open_mask = True
+    mask_color = '2'
+
+
+def set_color3():
+    global current_window, once_open_mask, mask_color
+    print("please click robot 3 color")
+    current_window = 'color3_mask'
+    cv2.setMouseCallback('camera_RGB', pick_color_three)
+    once_open_mask = True
+    mask_color = '3'
+
+
+def set_ball():
+    global current_window, once_open_mask, mask_color
+    print("please click ball")
+    current_window = 'ball_mask'
+    cv2.setMouseCallback('camera_RGB', pick_color_ball)
+    once_open_mask = True
+    mask_color = 'b'
 
 
 def pick_error(event, x, y, flags, param):
@@ -184,7 +269,6 @@ def pick_color_our_main(event, x, y, flags, param):
         our_upper = np.array(upper)
         our_lower = np.array(lower)
         print("now our main", our_lower, our_upper, pick_time[0])
-        cv2.destroyWindow(current_window)
 
 
 def pick_color_enemy_main(event, x, y, flags, param):
@@ -208,7 +292,6 @@ def pick_color_enemy_main(event, x, y, flags, param):
         enemy_upper = np.array(upper)
         enemy_lower = np.array(lower)
         print("now enemy main", enemy_upper, enemy_lower, pick_time[1])
-        cv2.destroyWindow(current_window)
 
 
 def pick_color_one(event, x, y, flags, param):
@@ -232,7 +315,6 @@ def pick_color_one(event, x, y, flags, param):
         color1_upper = np.array(upper)
         color1_lower = np.array(lower)
         print("now robot 1", color1_upper, color1_lower, pick_time[2])
-        cv2.destroyWindow(current_window)
 
 
 def pick_color_two(event, x, y, flags, param):
@@ -256,7 +338,7 @@ def pick_color_two(event, x, y, flags, param):
         color2_upper = np.array(upper)
         color2_lower = np.array(lower)
         print("now robot 2", color2_upper, color2_lower, pick_time[3])
-        cv2.destroyWindow(current_window)
+        mask_color = '2'
 
 
 def pick_color_three(event, x, y, flags, param):
@@ -280,10 +362,6 @@ def pick_color_three(event, x, y, flags, param):
         color3_upper = np.array(upper)
         color3_lower = np.array(lower)
         print("now robot 3", color3_upper, color3_lower, pick_time[4])
-        cv2.destroyWindow(current_window)
-        # print(pixel, temp_lower, temp_upper)
-        # image_mask = cv2.inRange(frame, temp_lower, temp_upper)
-        # cv2.imshow("mask", image_mask)
 
 
 def pick_color_ball(event, x, y, flags, param):
@@ -307,11 +385,11 @@ def pick_color_ball(event, x, y, flags, param):
         ball_upper = np.array(upper)
         ball_lower = np.array(lower)
         print("now ball", ball_upper, ball_lower, pick_time[5])
-        cv2.destroyWindow(current_window)
 
 
 def thread_our():
     # #####################--our--######################################################
+    global mask_frame
     our_mask = cv2.inRange(frame, our_lower, our_upper)
     # our_mask = cv2.medianBlur(our_mask, FILTER_KERNEL)  # medium filter
     contours, hierarchy = cv2.findContours(our_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
@@ -328,10 +406,13 @@ def thread_our():
         cv2.circle(show, (x, y), 30, (252, 255, 255), 1)  # patten range
         cv2.drawContours(show, [box], -1, (25, 40, 220), 1)
         cv2.putText(show, "our", (x, y - 5), font, 0.7, (25, 40, 220), 1)
+    if mask_color == 'o':
+        mask_frame = our_mask
 
 
 def thread_enemy():
     # #####################--enemy--######################################################
+    global mask_frame
     enemy_mask = cv2.inRange(frame, enemy_lower, enemy_upper)
     contours, hierarchy = cv2.findContours(enemy_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     for cnt in contours:
@@ -347,12 +428,13 @@ def thread_enemy():
         cv2.circle(show, (x, y), 30, (252, 255, 255), 1)  # patten range
         cv2.drawContours(show, [box], -1, (255, 155, 0), 1)
         cv2.putText(show, "enemy", (x, y - 5), font, 0.7, (255, 155, 0), 1)
-    if mask & (mask_col == 'e'):
-        cv2.imshow("enemy_mask", enemy_mask)
+    if mask_color == 'e':
+        mask_frame = enemy_mask
 
 
 def thread_color1():
     # #####################--color1--#####################################################
+    global mask_frame
     color1_mask = cv2.inRange(frame, color1_lower, color1_upper)
     # color1_mask = cv2.medianBlur(color1_mask, FILTER_KERNEL)  # medium filter
     contours, hierarchy = cv2.findContours(color1_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
@@ -368,12 +450,13 @@ def thread_color1():
         cv2.circle(show, (x, y), 1, (252, 255, 255), 1)
         cv2.drawContours(show, [box], -1, (45, 265, 230), 1)
         cv2.putText(show, "color1", (x, y - 5), font, 0.7, (45, 165, 230), 1)
-    if mask & (mask_col == '1'):
-        cv2.imshow("color1_mask", color1_mask)
+    if mask_color == '1':
+        mask_frame = color1_mask
 
 
 def thread_color2():
     # #####################--color2--#####################################################
+    global mask_frame
     color2_mask = cv2.inRange(frame, color2_lower, color2_upper)
     # color2_mask = cv2.medianBlur(color2_mask, FILTER_KERNEL)  # medium filter
     contours, hierarchy = cv2.findContours(color2_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
@@ -389,12 +472,13 @@ def thread_color2():
         cv2.circle(show, (x, y), 1, (252, 255, 255), 1)
         cv2.drawContours(show, [box], -1, (150, 205, 0), 1)
         cv2.putText(show, "color2", (x, y - 5), font, 0.7, (150, 205, 0), 1)
-    if mask & (mask_col == '2'):
-        cv2.imshow("color2_mask", color2_mask)
+    if mask_color == '2':
+        mask_frame = color2_mask
 
 
 def thread_color3():
     # #####################--color3--#####################################################
+    global mask_frame
     color3_mask = cv2.inRange(frame, color3_lower, color3_upper)
     # color3_mask = cv2.medianBlur(color3_mask, FILTER_KERNEL)  # medium filter
     contours, hierarchy = cv2.findContours(color3_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
@@ -410,13 +494,13 @@ def thread_color3():
         cv2.circle(show, (x, y), 1, (252, 255, 255), 1)
         cv2.drawContours(show, [box], -1, (220, 50, 200), 1)
         cv2.putText(show, "color3", (x, y - 5), font, 0.7, (220, 50, 200), 1)
-    if mask & (mask_col == '3'):
-        cv2.imshow("color3_mask", color3_mask)
+    if mask_color == '3':
+        mask_frame = color3_mask
 
 
 def thread_ball():
     # ######################--BALL--#####################################################
-    global ball_pos_now
+    global ball_pos_now, mask_frame
     ball_mask = cv2.inRange(frame, ball_lower, ball_upper)
     # ball_mask = cv2.medianBlur(ball_mask, FILTER_KERNEL)  # medium filter
     contours, hierarchy = cv2.findContours(ball_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
@@ -435,9 +519,8 @@ def thread_ball():
         ball_pos_now = [x, y]
         cv2.drawContours(show, [box], -1, (150, 245, 245), 1)
         cv2.putText(show, "Ball", (x, y - 5), font, 0.7, (150, 245, 245), 1)
-    if mask & (mask_col == 'b'):
-        cv2.imshow("ball_mask", ball_mask)
-    return
+    if mask_color == 'b':
+        mask_frame = ball_mask
 
 
 class WebcamVideoStream:
@@ -453,17 +536,18 @@ class WebcamVideoStream:
         self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 1600)
         self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 900)
         self.stream.set(cv2.CAP_PROP_BUFFERSIZE, 3)
+        self.stream.set(cv2.CAP_PROP_EXPOSURE, 156)
 
     def start(self):
         # start the thread to read frames from the video stream
-        Thread(target=self.update, args=()).start()
+        Thread(target=self.update, args=(), name='camera_thread').start()
         return self
 
     def update(self):
         # keep looping infinitely until the thread is stopped
         while True:
             # if the thread indicator variable is set, stop the thread
-            if self.stopped:
+            if exit_bit == 1:
                 return
 
             # otherwise, read the next frame from the stream
@@ -479,10 +563,11 @@ class WebcamVideoStream:
 
 
 def image_func():
-    global frame_counter, ball_pos_last, show, frame, ball_speed, point_show, current_window, mask_col, mask
+    global frame_counter, ball_pos_last, show, frame, ball_speed, point_show, current_window, mask
     cap = WebcamVideoStream(src=camera_num).start()
     tStart = 0
     while True:
+
         if frame_counter == 0:
             tStart = time.time()
         frame_counter += 1
@@ -508,64 +593,7 @@ def image_func():
         thread6.start()
         thread7.start()
 
-        keyword = cv2.waitKey(1)
-        if keyword & 0xff == ord('c'):  # 設定場地的12個角
-            point_show = ~point_show
-            if ~point_show:
-                jf["special_point"]["field_pos"] = field_pos
-                jf["special_point"]["middle"] = middle
-                with open(fpath, 'w') as file_out:
-                    file_out.write(json.dumps(jf))
-            print("set 12 corner")
-            cv2.setMouseCallback('camera_RGB', pick_field)
-        elif keyword & 0xff == ord('r'):  # 校正相機造成的誤差
-            print("pick camera projection")
-            cv2.setMouseCallback('camera_RGB', pick_error)
-        elif keyword & 0xff == ord('o'):  # 定義我方主要顏色
-            cv2.destroyWindow(current_window)
-            print("please click our team color")
-            mask_col = 'o'
-            current_window = 'our_mask'
-            cv2.setMouseCallback('camera_RGB', pick_color_our_main)
-        elif keyword & 0xff == ord('e'):  # 定義敵方主要顏色
-            cv2.destroyWindow(current_window)
-            print("please click enemy team color")
-            mask_col = 'e'
-            current_window = 'enemy_mask'
-            cv2.setMouseCallback('camera_RGB', pick_color_enemy_main)
-        elif keyword & 0xff == ord('1'):  # 定義機器人一號的輔助色
-            cv2.destroyWindow(current_window)
-            print("please click robot 1 color")
-            mask_col = '1'
-            current_window = 'color1_mask'
-            cv2.setMouseCallback('camera_RGB', pick_color_one)
-        elif keyword & 0xff == ord('2'):  # 定義機器人二號的輔助色
-            cv2.destroyWindow(current_window)
-            print("please click robot 2 color")
-            mask_col = '2'
-            current_window = 'color2_mask'
-            cv2.setMouseCallback('camera_RGB', pick_color_two)
-        elif keyword & 0xff == ord('3'):  # 定義機器人三號的輔助色
-            cv2.destroyWindow(current_window)
-            print("please click robot 3 color")
-            mask_col = '3'
-            current_window = 'color3_mask'
-            cv2.setMouseCallback('camera_RGB', pick_color_three)
-        elif keyword & 0xff == ord('b'):  # 定義球的顏色
-            cv2.destroyWindow(current_window)
-            print("please click ball")
-            mask_col = 'b'
-            current_window = 'ball_mask'
-            cv2.setMouseCallback('camera_RGB', pick_color_ball)
-        elif keyword & 0xff == ord('m'):  # 打開顏色遮色片
-            if ~mask:
-                print("open mask")
-            else:
-                cv2.destroyWindow(current_window)
-            mask = ~mask
-        elif keyword & 0xff == ord('q'):  # 離開
-            print("release camera")
-            break
+        cv2.waitKey(1)
 
         thread2.join()
         thread4.join()
@@ -576,6 +604,7 @@ def image_func():
                     cv2.putText(show, "ROBOT_1", our, font, 0.6, (255, 255, 255), 1)
                     cv2.circle(show, our, 2, (252, 255, 255), -1)
                     dist = get_distance(our, color1)
+                    print(dist)
                     our_dir[0] = [(color1[0] - our[0]) / dist, (color1[1] - our[1]) / dist]
                     if error_open:
                         q = error_correct(our)
@@ -679,8 +708,15 @@ def image_func():
         #  print("cost %f second" % (tEnd - tStart))  # 紀錄每一幀時間
         thread7.join()
         # 顯示畫面
+        if mask & once_open_mask:
+            cv2.imshow(current_window, mask_frame)
         cv2.imshow("camera_RGB", frame)  # 原本相機
         cv2.imshow("camera", show)  # 有標註顏色過後的
+
+        if exit_bit == 1:
+            cv2.destroyAllWindows()
+            break
+
         if frame_counter >= 10:
             move_distance = get_distance(ball_pos_last, ball_pos_now)
             ball_pos_last = ball_pos_now

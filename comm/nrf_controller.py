@@ -272,7 +272,7 @@ def device_chose():
         print('%s %s' % (i + 1, port_list[i]))
 
     choose_device = None
-    while (True):
+    while True:
         # Get user input
         input_num = input("Enter device number (or q to quit)>>> ")
 
@@ -324,6 +324,7 @@ def main_procedure(device):
             if ord(input_data) in [3]:
                 print(current_time + ' End of program')
                 break
+
             # Switch mode
             elif input_data == ' ':
                 saved = ''
