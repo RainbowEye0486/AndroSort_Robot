@@ -204,8 +204,9 @@ def RF_sendCmd(input_data, device, robotID, delay=0, mode=0):
     time.sleep(delay)
     current_time = datetime.now().strftime("%H-%M-%S-%f")
     if mode == 0:
-        send_data = '#' + robotID + input_data + '1'+'$'
-        # print(current_time + " Send=", send_data.encode())
+        send_data = '#' + input_data + '1' + input_data + '1'+ input_data + '1' +'$'
+        # send_data = '#' + robotID + input_data + '1'+'$'
+        print(current_time + " Send=", send_data.encode())
         device.write(bytes(send_data, encoding='utf8'))
     else:
         print(current_time + " Send=", input_data.encode())
@@ -332,10 +333,10 @@ def main_procedure(device):
             else:
                 if mode == 0:
                     print(current_time + ' Has new input: ', ord(input_data), input_data)
-                    RF_sendCmd(input_data, device, 0.05, mode)
+                    RF_sendCmd(input_data, device, '1', 0.05, mode)
                 else:
                     if ord(input_data) == 10 or ord(input_data) == 13:
-                        RF_sendCmd(saved, device, 0.05, mode)
+                        RF_sendCmd(saved, device, '1', 0.05, mode)
                         saved = ''
                         time.sleep(0.5)
                     else:
@@ -352,22 +353,21 @@ def main_procedure(device):
 
 def communicate(device, que):
     mode = 0
-    while True:
-        tstart = time.time()
-        current_time = datetime.now().strftime("%H-%M-%S-%f")
-        if not que.empty():
-            # Get input from queue
-            input_data = que.get()
-            robotID = input_data[1]
-            input_data = input_data[0]
-            # print(current_time + ' Has new input: ', ord(input_data), input_data)
-            RF_sendCmd(input_data, device, robotID, 0.05, mode)
-        while time.time() - tstart < 1 / 30:
-            # Read input
-            data, length = device_read(device)
-            if length != 0:
-                current_time = datetime.now().strftime("%H-%M-%S-%f")
-                print(current_time + ' ' + data)
+    tstart = time.time()
+    current_time = datetime.now().strftime("%H-%M-%S-%f")
+    if not que.empty():
+        # Get input from queue
+        input_data = que.get()
+        robotID = input_data[1]
+        input_data = input_data[0]
+        # print(current_time + ' Has new input: ', ord(input_data), input_data)
+        RF_sendCmd(input_data, device, robotID, 0.05, mode)
+    while time.time() - tstart < 1 / 30:
+        # Read input
+        data, length = device_read(device)
+        if length != 0:
+            current_time = datetime.now().strftime("%H-%M-%S-%f")
+            print(current_time + ' ' + data)
 
 
 def device_close(device):

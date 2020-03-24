@@ -7,14 +7,14 @@ ROB_RANG = 25  # 25 in simulator
 KICKABLE_RANGE = 40  # 40 in simulator
 ROUGH_RANG = 50  # 50 in simulator
 ERROR_DISTANCE = 10  # 10 in simulator
-ROTATE_ANGLE = 0.30  # 25 in simulator
+ROTATE_ANGLE = 0.157  # 25 in simulator
 SAFE_DIST = 43  # RoboRad/2 + ball radius  # 25 in simulator
 WAY_ANGLE = {'F': 0, 'L': -math.pi / 2, 'R': math.pi / 2}
 MOVE = {
-    'F': {'Fast': 'W1', 'Norm': 'w1', 'Bound': [18, 10]},  # 18,10 in simulator
-    'L': {'Fast': 'A1', 'Norm': 'a1', 'Kick': 'h1', 'Bound': [80, 8]},  # 80,8 in simulator
-    'R': {'Fast': 'D1', 'Norm': 'd1', 'Kick': 'j1', 'Bound': [80, 8]},  # 80,8 in simulator
-    'B': {'Norm': 's1', 'Bound': [None, 10]}  # none,10 in simulator
+    'F': {'Fast': 'W1', 'Norm': 'w1', 'Bound': [18, 8]},  # 18,10 in simulator
+    'L': {'Fast': 'A1', 'Norm': 'a1', 'Kick': 'h1', 'Bound': [71, 3.1]},  # 80,8 in simulator
+    'R': {'Fast': 'D1', 'Norm': 'd1', 'Kick': 'j1', 'Bound': [76, 2.22]},  # 80,8 in simulator
+    'B': {'Norm': 's1', 'Bound': [None, 4]}  # none,10 in simulator
 }
 # Condition
 ALLOW_MOVE_WAY = ['L', 'R']
@@ -77,8 +77,8 @@ def Initialize():
         This function will be called by the simulator before a simulation is started.
     """
     # Your code
-    print("Your Player is Robot", player_id)
-    print("Obstacle is Robot", oppo_id)
+    #print("Your Player is Robot", player_id)
+    #print("Obstacle is Robot", oppo_id)
     global stage
     stage = 1
     # output stratgy
@@ -128,10 +128,10 @@ def Update_Robo_Info(teamD, teamP, oppoP, ballP):
     # Your code
     global player_d, player_p, player_id, oppo_id, oppo_p, ball_p
     updated = 0
-    # print('D', teamD[player_id], len(teamD[player_id]) > 0)
-    # print('P', teamP[player_id], len(teamP[player_id]) > 0)
-    print('oppo', oppoP, len(oppoP[oppo_id-3]) > 0)
-    print('')
+    #print('D', teamD[player_id], len(teamD[player_id]) > 0)
+    #print('P', teamP[player_id], len(teamP[player_id]) > 0)
+    #print('oppo', oppoP, len(oppoP[oppo_id-3]) > 0)
+    #print('')
     if len(teamD[player_id]) > 0:
         player_d = teamD[player_id]
         updated += 1
@@ -140,6 +140,7 @@ def Update_Robo_Info(teamD, teamP, oppoP, ballP):
         updated += 1
     if len(oppoP[oppo_id-3]) > 0:
         oppo_p = oppoP[oppo_id-3]
+        #print(oppo_p)
         updated += 1
     ball_p = ballP
 
@@ -158,9 +159,9 @@ def strategy():
     """
     global stage, kick_way, move_way, first_arri, kick_dir, kick_point
     # Your code
+    #print('stage', stage)
     print('stage', stage)
     if stage == 1:
-        # print('stage', stage)
         # Find position of goal
         kick_goal[0] = BOUNDARY[2][0]
         allow = [BOUNDARY[2][1], BOUNDARY[5][1]] \
@@ -183,10 +184,10 @@ def strategy():
                 if dist is None or dist > abs(ball_p[1] - kick_goal_temp):
                     dist = abs(ball_p[1] - kick_goal_temp)
                     kick_goal[1] = kick_goal_temp
-        print('Goal(x y)', kick_goal[0], kick_goal[1])
+        #print('Goal(x y)', kick_goal[0], kick_goal[1])
         global kick_dir
         kick_dir = _unit_vector(ball_p, kick_goal)
-        print(kick_dir)
+        #print(kick_dir)
         global first_arri, kick_point
         first_arri = [int(ball_p[i] - kick_dir[i] * ROUGH_RANG) for i in range(2)]
         kick_point = [int(ball_p[i] - kick_dir[i] * SAFE_DIST) for i in range(2)]
@@ -195,24 +196,24 @@ def strategy():
         product = -1
         for way in ALLOW_MOVE_WAY:
             temp_product = _dot(move_dir, _rotate(player_d, WAY_ANGLE[way]))
-            print(way, ':', temp_product, move_dir, _rotate(player_d, WAY_ANGLE[way]))
+            #print(way, ':', temp_product, move_dir, _rotate(player_d, WAY_ANGLE[way]))
             if temp_product > product:
                 global move_way
                 product = temp_product
                 move_way = way
-        print('move:', move_way)
+        #print('move:', move_way)
         stage += 1
     elif stage == 2:
         move_dir = _unit_vector(player_p, first_arri)
         dist = math.hypot(player_p[0] - first_arri[0], player_p[1] - first_arri[1])
         dist_ball = math.hypot(player_p[0] - ball_p[0], player_p[1] - ball_p[1])
-        print('arri-player-dist', first_arri, player_p, dist)
+        #print('arri-player-dist', first_arri, player_p, dist)
         if dist >= ERROR_DISTANCE and dist_ball > SAFE_DIST + 8:
             direction = _rotate(player_d, WAY_ANGLE[move_way])
             angle = _angle(move_dir, direction)
-            if angle > 0 and angle > 2 * ROTATE_ANGLE:
+            if angle > 0 and angle > 0.26:
                 return ['Q1', 'N1', 'N1']
-            elif angle < 0 and angle < -2 * ROTATE_ANGLE:
+            elif angle < 0 and angle < -0.26:
                 return ['E1', 'N1', 'N1']
             elif angle > 0 and angle > ROTATE_ANGLE:
                 return ['q1', 'N1', 'N1']
@@ -225,38 +226,38 @@ def strategy():
                 return [MOVE[move_way]['Fast'], 'N1', 'N1']
             elif dist >= MOVE[move_way]['Bound'][1]:
                 return [MOVE[move_way]['Norm'], 'N1', 'N1']
-        print('dist, dist_b:', int(dist), int(dist_ball))
-        print('arri-player-dist', first_arri, player_p)
-        print('========================================')
+        #  print('dist, dist_b:', int(dist), int(dist_ball))
+        #  print('arri-player-dist', first_arri, player_p)
+        #  print('========================================')
         stage += 1
     elif stage == 3:
         # Choose the way of kick
         if kick_way == "":
-            print('S3 arri-player-dist', first_arri, player_p)
+            #print('S3 arri-player-dist', first_arri, player_p)
             product = -1
             for way in ALLOW_MOVE_WAY:
                 temp_product = _dot(kick_dir, _rotate(player_d, WAY_ANGLE[way]))
-                print(way, ':', temp_product, kick_dir, _rotate(player_d, WAY_ANGLE[way]))
+                #print(way, ':', temp_product, kick_dir, _rotate(player_d, WAY_ANGLE[way]))
                 if temp_product > product:
                     product = temp_product
                     kick_way = way
-            print("kick way", kick_way)
+            #print("kick way", kick_way)
         dist_ball = math.hypot(player_p[0] - ball_p[0], player_p[1] - ball_p[1])
         direction = _rotate(player_d, WAY_ANGLE[kick_way])
         angle = _angle(kick_dir, direction)
-        print('dist_b:', dist_ball)
-        print('ang:', angle * 180 / math.pi)
-        if angle > 0 and angle > 2 * ROTATE_ANGLE:
-            print('turn big left')
+        #print('dist_b:', dist_ball)
+        #print('ang:', angle * 180 / math.pi)
+        if angle > 0 and angle > 0.26:
+            #print('turn big left')
             return ['Q1', 'N1', 'N1']
-        elif angle < 0 and angle < -2 * ROTATE_ANGLE:
-            print('turn big  right')
+        elif angle < 0 and angle < -0.26:
+            #print('turn big  right')
             return ['E1', 'N1', 'N1']
         elif angle > 0 and angle > ROTATE_ANGLE:
-            print('turn left')
+            #print('turn left')
             return ['q1', 'N1', 'N1']
         elif angle < 0 and angle < -ROTATE_ANGLE:
-            print('turn right')
+            #print('turn right')
             return ['e1', 'N1', 'N1']
         WAYS = ['F', 'R', 'B', 'L']
         for i in [1, 2, 3, 0]:
@@ -264,17 +265,17 @@ def strategy():
             temp_dir = _rotate(direction, math.pi / 2 * i)
             diff_vec = [k - p for k, p in zip(kick_point, player_p)]
             product = _dot(temp_dir, diff_vec)
-            print(move_way, ':', product)
+            #print(move_way, ':', product)
             if product > MOVE[move_way]['Bound'][1]:
-                print('move:', MOVE[move_way]['Norm'])
+                #print('move:', MOVE[move_way]['Norm'])
                 return [MOVE[move_way]['Norm'], 'N1', 'N1']
         stage += 1
-    dist_ball = math.hypot(player_p[0] - ball_p[0], player_p[1] - ball_p[1])
-    # print('player, kick ball', player_p, kick_point, dist_ball)
-    if kick_flag and not (kicked):
-        print('===kicked===', MOVE[kick_way]['Kick'])
-        sleep(1)  # For check
-        return [MOVE[kick_way]['Kick'], 'N1', 'N1']
+    elif stage == 4:
+        dist_ball = math.hypot(player_p[0] - ball_p[0], player_p[1] - ball_p[1])
+        if(dist_ball < 74):
+            print('===kicked===', MOVE[kick_way]['Kick'])
+            sleep(0.5)  # For check
+            return [MOVE[kick_way]['Kick'], 'N1', 'N1']
     return ['N1', 'N1', 'N1']
 
 
@@ -288,9 +289,9 @@ def get_sent_cmd(sentcmd, update):
     """
     # Your code
     if update:
-        print('sent: ', sentcmd[0][0])
+        #print('sent: ', sentcmd[0][0])
         if sentcmd[0][0] == 'N' and stage == 4:
-            print('===N recieved==')
+            #print('===N recieved==')
             global kick_flag
             kick_flag = True
         if sentcmd[0][0] == 'j' or sentcmd[0][0] == 'h':

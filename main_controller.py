@@ -27,10 +27,10 @@ def Main_thread():
     while True:
         command_main = input()
         if command_main == "s":
-            print(stop_strategy)
+            print('L30', stop_strategy)
             stop_strategy = ~stop_strategy
             time.sleep(0.1)
-            print(stop_strategy)
+            print('L33', stop_strategy)
 
 
 def Image_thread():
@@ -43,6 +43,7 @@ def Challenge2_thread(que):
     challenge_2.Initialize()
     challenge_2.strategy_update_field(side, image.field_pos, image.middle, image.penalty_pos)
     while True:
+        lasttime = time.time()
         """print("our direction", image.our_dir)
         print("our position", image.our_data)
         print("enemy position", image.enemy_data)
@@ -53,24 +54,30 @@ def Challenge2_thread(que):
             cmd = challenge_2.strategy()
             try:
                 input_data = cmd[0]
-                print('cmd:', input_data)
+                # print('cmd:', input_data)
                 if que.empty():
                     que.put(input_data)
                     # que.put('w1')  # test
                     time.sleep(0.001)
                 else:
-                    que.get()
-                    que.put(input_data)
-                    time.sleep(0.001)
+                    if input_data[0] == 'N':
+                        time.sleep(1)
+                    else:
+                        que.get()
+                        que.put(input_data)
+                        time.sleep(0.001)
             except OverflowError:
                 print('invalid cmd value')
+            # print('ch2', (time.time() - lasttime)*1000)
         time.sleep(0.01)
 
 
 def NRF_thread(device, que):
     while True:
+        # lasttime = time.time()
         nrf.communicate(device, que)
         time.sleep(0.01)
+        # print('NRF', (time.time() - lasttime)*1000)
 
 
 if __name__ == '__main__':
