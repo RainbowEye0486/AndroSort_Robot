@@ -7,7 +7,7 @@ ROB_RANG = 25  # 25 in simulator
 KICKABLE_RANGE = 40  # 40 in simulator
 ROUGH_RANG = 50  # 50 in simulator
 ERROR_DISTANCE = 10  # 10 in simulator
-ROTATE_ANGLE = 0.157  # 25 in simulator
+ROTATE_ANGLE = 0.196  # 25 in simulator
 SAFE_DIST = 43  # RoboRad/2 + ball radius  # 25 in simulator
 WAY_ANGLE = {'F': 0, 'L': -math.pi / 2, 'R': math.pi / 2}
 MOVE = {
@@ -211,9 +211,9 @@ def strategy():
         if dist >= ERROR_DISTANCE and dist_ball > SAFE_DIST + 8:
             direction = _rotate(player_d, WAY_ANGLE[move_way])
             angle = _angle(move_dir, direction)
-            if angle > 0 and angle > 0.26:
+            if angle > 0 and angle > 0.357:
                 return ['Q1', 'N1', 'N1']
-            elif angle < 0 and angle < -0.26:
+            elif angle < 0 and angle < -0.357:
                 return ['E1', 'N1', 'N1']
             elif angle > 0 and angle > ROTATE_ANGLE:
                 return ['q1', 'N1', 'N1']
@@ -247,14 +247,14 @@ def strategy():
         angle = _angle(kick_dir, direction)
         #print('dist_b:', dist_ball)
         #print('ang:', angle * 180 / math.pi)
-        if angle > 0 and angle > 0.26:
-            #print('turn big left')
+        if angle > 0 and angle > 0.357:
+            # print('turn big left')
             return ['Q1', 'N1', 'N1']
-        elif angle < 0 and angle < -0.26:
-            #print('turn big  right')
+        elif angle < 0 and angle < -0.357:
+            # print('turn big  right')
             return ['E1', 'N1', 'N1']
         elif angle > 0 and angle > ROTATE_ANGLE:
-            #print('turn left')
+            # print('turn left')
             return ['q1', 'N1', 'N1']
         elif angle < 0 and angle < -ROTATE_ANGLE:
             #print('turn right')

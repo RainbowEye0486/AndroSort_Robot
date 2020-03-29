@@ -120,17 +120,17 @@ def get_sent_cmd(sentcmd, update):
 
 
 def assign_role(robots, id):
-    '''
+    """
     Decide every robot's role and change robot's attribute: role
-    '''
+    """
     robots[0].role = 's'
     robots[1].role = ''
 
 
 def assign_job(robots, id):
-    '''
+    """
     Decide every robot's job and change robot's attribute: job
-    '''
+    """
     if robots[0].job == '':
         robots[0].job = ''
 
@@ -140,9 +140,9 @@ def execute_job(robots, id):
     Base on the robot's job, give an exact command
     """
     robot = robots[id]
-    if robot.job == Job.MOVE:
+    if (robot.job == Job.MOVE):
         pass
-    elif robot.job == Job.PASS:
+    elif (robot.job == Job.PASS):
         pass
 
 
