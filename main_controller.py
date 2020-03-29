@@ -23,16 +23,18 @@ decision_done = False
 # 需要調整參數
 side = 0  # attacking side
 challenge_num = 2
-stop_strategy = True
+go_strategy = False
 
 
 def start_func():
-    global start_bit
+    global start_bit, go_strategy
+    go_strategy = True
     start_bit = 1
 
 
 def pause_func():
-    global start_bit
+    global start_bit, go_strategy
+    go_strategy = False
     start_bit = 0
 
 
@@ -48,7 +50,7 @@ def Image_thread():
 
 def Challenge2_thread(que):
     #  first set field coordinate
-    global stop_strategy
+    global go_strategy
     challenge_2.Initialize()
     challenge_2.strategy_update_field(side, image.field_pos, image.middle, image.penalty_pos)
     while True:
@@ -59,7 +61,7 @@ def Challenge2_thread(que):
         # print("enemy position", image.enemy_data)
         if image.exit_bit != 0:
             sys.exit()
-        if stop_strategy < 0:
+        if go_strategy:
             challenge_2.Update_Robo_Info(image.our_dir, image.our_data, image.enemy_data, image.ball_pos_now)
             cmd = challenge_2.strategy()
             try:

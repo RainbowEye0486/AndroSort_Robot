@@ -604,7 +604,6 @@ def image_func():
                     cv2.putText(show, "ROBOT_1", our, font, 0.6, (255, 255, 255), 1)
                     cv2.circle(show, our, 2, (252, 255, 255), -1)
                     dist = get_distance(our, color1)
-                    print(dist)
                     our_dir[0] = [(our[0] - color1[0]) / dist, (our[1] - color1[1]) / dist]
                     if error_open:
                         q = error_correct(our)

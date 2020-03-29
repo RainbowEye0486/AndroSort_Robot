@@ -1,5 +1,5 @@
 import constant as CONST
-import Enum
+from enum import Enum
 
 # Parameter needed to adjust
 ID_IN_USE = [3, 4]
@@ -13,6 +13,7 @@ PENALTY
 robots = []
 enemies = []
 ball = None
+
 
 def strategy_update_field(side, boundary, center, penalty):
     """
@@ -83,7 +84,7 @@ def Update_Robo_Info(teamD, teamP, oppoP, ballP):
             robots[i].pos = teamP[i]
         if len(teamD[i] > 0):
             robots[i].dir = teamD[i]
-        if len(oppoP) >= i+1:
+        if len(oppoP) >= i + 1:
             enemies[i] = oppoP[i]
     ball.pos = ballP
     # ball.sped = ballS
@@ -135,18 +136,18 @@ def assign_job(robots, id):
 
 
 def execute_job(robots, id):
-    '''
+    """
     Base on the robot's job, give an exact command
-    '''
+    """
     robot = robots[id]
-    if(robot.job == Job.MOVE):
+    if robot.job == Job.MOVE:
         pass
-    elif(robot.job == Job.PASS):
+    elif robot.job == Job.PASS:
         pass
 
 
 class Robot():
-    '''
+    """
     Attributes:
         ID: An int stands for the robot's ID(1-7)
         pos: An list[x,y] stands for the robot's position
@@ -155,7 +156,8 @@ class Robot():
         job: A Job(Enum) -> the move the robots are going to execute
         MOTION: motion contants from constant.py
         BODY: robot size from constant.py
-    '''
+    """
+
     def __init__(self, ID):
         self.ID = ID
         self.pos = [0, 0]
