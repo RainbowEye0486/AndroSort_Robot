@@ -6,6 +6,7 @@ from threading import Thread
 import json
 import os
 import sys
+from Strategy import challenge_3 as ch3
 
 #  紀錄參數用
 fpath = os.path.join(os.path.dirname(__file__), 'param.json')
@@ -13,7 +14,7 @@ with open(fpath, 'r') as file_in:
     jf = json.load(file_in)
 font = cv2.FONT_HERSHEY_SIMPLEX
 #  需要調整參數
-camera_num = 2
+camera_num = 3
 robot_height = 45
 field_height = 268
 color_upper_clipper = 800  # 調整面積的讀取區間
@@ -597,6 +598,7 @@ def image_func():
 
         thread2.join()
         thread4.join()
+
         for our in our_pos:
             for color1 in color1_pos:
                 if get_distance(our, color1) < 30:
@@ -637,6 +639,8 @@ def image_func():
                         q = error_correct(our)
                         cv2.circle(show, (q[0], q[1]), 3, (252, 255, 255), -1)
                         our_data[2] = [q[0], q[1]]
+
+        # print(our_data)
 
         thread3.join()
         enemy_code = 0

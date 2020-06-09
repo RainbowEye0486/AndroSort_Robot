@@ -1,8 +1,8 @@
 import time
-from tkinter import *
 from threading import Thread
 from Vision import Image_Identifier as image
 from Strategy import challenge_2
+from Strategy import challenge_3
 from comm import nrf_controller as nrf
 from queue import Queue
 import platform
@@ -21,7 +21,7 @@ else:
 image_buffer = list()
 decision_done = False
 # 需要調整參數
-side = 0  # attacking side
+side = "tl"  # attacking side , tr for -> , tl for <-
 challenge_num = 2
 go_strategy = False
 

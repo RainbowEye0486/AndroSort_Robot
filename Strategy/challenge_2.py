@@ -11,10 +11,10 @@ ROTATE_ANGLE = 0.196  # 25 in simulator
 SAFE_DIST = 43  # RoboRad/2 + ball radius  # 25 in simulator
 WAY_ANGLE = {'F': 0, 'L': -math.pi / 2, 'R': math.pi / 2}
 MOVE = {
-    'F': {'Fast': 'W1', 'Norm': 'w1', 'Bound': [18, 8]},  # 18,10 in simulator
-    'L': {'Fast': 'A1', 'Norm': 'a1', 'Kick': 'h1', 'Bound': [71, 3.1]},  # 80,8 in simulator
-    'R': {'Fast': 'D1', 'Norm': 'd1', 'Kick': 'j1', 'Bound': [76, 2.22]},  # 80,8 in simulator
-    'B': {'Norm': 's1', 'Bound': [None, 4]}  # none,10 in simulator
+    'F': {'Fast': 'W1', 'Norm': 'w1', 'Bound': [27.01, 7.733]},  # 18,10 in simulator
+    'L': {'Fast': 'A1', 'Norm': 'a1', 'Kick': 'h1', 'Bound': [72.15, 4.9]},  # 80,8 in simulator
+    'R': {'Fast': 'D1', 'Norm': 'd1', 'Kick': 'j1', 'Bound': [72.15, 4.7]},  # 80,8 in simulator
+    'B': {'Norm': 's1', 'Bound': [None, 7.4]}  # none,10 in simulator
 }
 # Condition
 ALLOW_MOVE_WAY = ['L', 'R']
