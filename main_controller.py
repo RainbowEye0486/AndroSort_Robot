@@ -2,7 +2,7 @@ import time
 from tkinter import *
 from threading import Thread
 from Vision import Image_Identifier as image
-from Strategy import challenge_2
+from Strategy import challenge_1 as strategy
 from comm import nrf_controller as nrf
 from queue import Queue
 import platform
@@ -48,11 +48,11 @@ def Image_thread():
     image.image_func()
 
 
-def Challenge2_thread(que):
+def Strategy_thread(que):
     #  first set field coordinate
     global go_strategy
-    challenge_2.Initialize()
-    challenge_2.strategy_update_field(side, image.field_pos, image.middle, image.penalty_pos)
+    strategy.Initialize()
+    strategy.strategy_update_field(side, image.field_pos, image.middle)
     while True:
         """print("our direction", image.our_dir)
         print("our position", image.our_data)
@@ -62,8 +62,8 @@ def Challenge2_thread(que):
         if image.exit_bit != 0:
             sys.exit()
         if go_strategy:
-            challenge_2.Update_Robo_Info(image.our_dir, image.our_data, image.enemy_data, image.ball_pos_now)
-            cmd = challenge_2.strategy()
+            strategy.Update_Robo_Info(image.our_dir, image.our_data, image.enemy_data, image.ball_pos_now)
+            cmd = strategy.strategy()
             try:
                 input_data = cmd[0]
                 print('cmd:', input_data)
@@ -99,7 +99,7 @@ if __name__ == '__main__':
         time.sleep(0.5)
         image.return_field()
         if challenge_num == 2:
-            thread2 = Thread(target=Challenge2_thread, name='C2_Tr', args=(cmd_in_wait,))
+            thread2 = Thread(target=Strategy_thread, name='C2_Tr', args=(cmd_in_wait,))
             thread2.start()
             time.sleep(0.5)
             thread3 = Thread(target=NRF_thread, name='Comm_Tr', args=(device, cmd_in_wait,))

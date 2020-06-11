@@ -22,7 +22,7 @@ ROB_RANG = 40  # 12cm = 40pixel
 WAY_ANGLE = {'FORE': 0, 'LEFT': -math.pi/2, 'RIGHT': math.pi/2, 'BACK': math.pi}
 
 
-def strategy_update_field(side, boundary, center, pk_x, fb_x, fb_y, penalty_y, ga_x, ga_y):
+def strategy_update_field(side, boundary, center):
     """
     Description:
         Pass field information into strategy system.
@@ -35,13 +35,12 @@ def strategy_update_field(side, boundary, center, pk_x, fb_x, fb_y, penalty_y, g
         param5: int -> x coordinate of free ball point w.r.t center
     """
     # Your code
-    global BOUNDARY, CENTER, PENALTY, SIDE, FB_X, GOAL
+    global SIDE, BOUNDARY, CENTER, #PENALTY, FB_X, GOAL
     BOUNDARY = boundary
     CENTER = center
-    PENALTY = penalty_y
     # for simulator
     SIDE = -1 * side
-    FB_X = fb_x
+    # FB_X = fb_x # need to change
     # x = 3 if a==2 else 0
     GOAL = [BOUNDARY[11], BOUNDARY[8]] if SIDE == 1 else [BOUNDARY[2], BOUNDARY[5]]
     print('GOAL:', GOAL)
@@ -173,9 +172,9 @@ def assign_job(robots):
                 robo.job = Job.LEAVE
         elif robo.role == Role.MAIN:
             if (ball.pos[0] - (CENTER[0]-shoot_zone*SIDE))*SIDE < 0 :
-                robo.job = Job.SHOOT # to goal
+                robo.job = Job.SHOOT  # to goal
             else:
-                robo.job = Job.PASS # to three point line
+                robo.job = Job.PASS  # to three point line
 
 
 def execute_job(id):
