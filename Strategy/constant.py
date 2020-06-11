@@ -17,8 +17,8 @@ MOTION = {
         },
 
         'TURN': {
-            'LEFT': {'CMD': ['Q', 'q'], 'BOUND': [18, 8]},
-            'RIGHT': {'CMD': ['E', 'e'], 'BOUND': [18, 8]}
+            'LEFT': {'CMD': ['Q', 'q'], 'BOUND': [0.6, 0.3]},
+            'RIGHT': {'CMD': ['E', 'e'], 'BOUND': [0.6, 0.3]}
         },
 
         'KICK': {
