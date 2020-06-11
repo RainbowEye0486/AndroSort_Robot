@@ -150,8 +150,6 @@ def draw_on_simulator(frame):
                         (255, 255, 0), 1)
             cv2.line(frame, simulator_adjust(ball.pos, True), simulator_adjust(robots[i].target, True), (255, 255, 0),
                      1)
-            print("this target")
-            print(simulator_adjust(robots[i].target, True))
     return frame
 
 
@@ -318,10 +316,10 @@ def execute_job(id):
     Base on the robot's job, give an exact command
     """
     global robots
-    print('Center:', CENTER)
-    print('execute job')
+    # print('Center:', CENTER)
+    # print('execute job')
     robo = robots[id]
-    print(robo.role, robo.job)
+    # print(robo.role, robo.job)
     rough_dist = 10 * CM_TO_PIX  # the distance between ball and the robot should be
     if robo.job == Job.MOVE:
         move_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
@@ -356,6 +354,7 @@ def execute_job(id):
             return rt_cmd
         return
     elif robo.job == Job.SHOOT:
+        print(robo.target[0])
         if robo.target[0] == -1:
             robo.target, size = find_aim_point(ball.pos[0], ball.pos[1], our_gate)
         if robo.target[0] != -1:
@@ -720,7 +719,8 @@ def find_aim_point(x, y, goal):
         temp = goal[0]
         goal[0] = goal[1]
         goal[1] = temp
-
+    print("goal")
+    print(goal[0], goal[1])
     aim_point = [goal[0][0], -1]
     enemies_pos = [enemy.pos for enemy in enemies]
     enemies_pos.sort(key=takeY)  # ??
@@ -752,6 +752,9 @@ def find_aim_point(x, y, goal):
     # Map non-blocked areas, and find the biggest area
     ava_range = []
     size = 0
+    if len(head_tails) == 0:
+        size = goal[1][1] - goal[0][1]
+        aim_point[1] = int((goal[1][1] + goal[0][1]) / 2)
     if len(head_tails) > 0 and head_tails[0][0] - goal[0][1] > size:
         size = head_tails[0][0] - goal[0][1]
         aim_point[1] = int((head_tails[0][0] + goal[0][1]) / 2)
@@ -920,6 +923,7 @@ class Robot:
             self.move_and_kick(carry, gate_center)
             self.job = Job.SHOOT  # 可能需要被 override 掉
             self.target, size = find_aim_point(ball.pos[0], ball.pos[1], [enemy_gate[0], enemy_gate[1]])
+            print(self.target, size, ball.pos[0], ball.pos[1], [enemy_gate[0], enemy_gate[1]])
         elif ball.in_zone == Zone.FAR_LEFT_OFFEND:
             if (ball.pos[1] - BOUNDARY[0][1]) > carrier_range:  # range is enough to pass to partner
                 self.move_and_kick([enemy_gate[0][0], (enemy_gate[0][1] + enemy_gate[1][1]) / 2], robots[other].pos)
