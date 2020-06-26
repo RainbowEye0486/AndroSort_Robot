@@ -61,7 +61,7 @@ def simulator_adjust(pos, reverse):
     return x, y
 
 
-def strategy_update_field(side, boundary, center, penalty, FB_x, FB_y, Penalty_y, GA_x, GA_y):
+def strategy_update_field(side, boundary, center):
     """
     Description:
         Pass field information into strategy system.

@@ -1,8 +1,8 @@
 import time
+from tkinter import *
 from threading import Thread
 from Vision import Image_Identifier as image
-from Strategy import challenge_2
-from Strategy import challenge_3
+from Strategy import challenge_3 as strategy  # change this
 from comm import nrf_controller as nrf
 from queue import Queue
 import platform
@@ -21,7 +21,7 @@ else:
 image_buffer = list()
 decision_done = False
 # 需要調整參數
-side = "tl"  # attacking side , tr for -> , tl for <-
+side = 1  # attacking side 1:left is ours; 2: right is ours
 challenge_num = 2
 go_strategy = False
 
@@ -48,11 +48,11 @@ def Image_thread():
     image.image_func()
 
 
-def Challenge2_thread(que):
+def Strategy_thread(que):
     #  first set field coordinate
     global go_strategy
-    challenge_2.Initialize()
-    challenge_2.strategy_update_field(side, image.field_pos, image.middle, image.penalty_pos)
+    strategy.Initialize()
+    strategy.strategy_update_field(side, image.field_pos, image.middle)
     while True:
         """print("our direction", image.our_dir)
         print("our position", image.our_data)
@@ -62,14 +62,13 @@ def Challenge2_thread(que):
         if image.exit_bit != 0:
             sys.exit()
         if go_strategy:
-            challenge_2.Update_Robo_Info(image.our_dir, image.our_data, image.enemy_data, image.ball_pos_now)
-            cmd = challenge_2.strategy()
+            strategy.Update_Robo_Info(image.our_dir, image.our_data, image.enemy_data, image.ball_pos_now, image.ball_speed, image.ball_dir)
+            cmd = strategy.strategy()
             try:
-                input_data = cmd[0]
+                input_data = cmd
                 print('cmd:', input_data)
                 if que.empty():
                     que.put(input_data)
-                    # que.put('w1')  # test
                     time.sleep(0.001)
                 else:
                     que.get()
@@ -99,7 +98,7 @@ if __name__ == '__main__':
         time.sleep(0.5)
         image.return_field()
         if challenge_num == 2:
-            thread2 = Thread(target=Challenge2_thread, name='C2_Tr', args=(cmd_in_wait,))
+            thread2 = Thread(target=Strategy_thread, name='C2_Tr', args=(cmd_in_wait,))
             thread2.start()
             time.sleep(0.5)
             thread3 = Thread(target=NRF_thread, name='Comm_Tr', args=(device, cmd_in_wait,))
