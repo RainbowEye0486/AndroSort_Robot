@@ -723,8 +723,8 @@ def image_func():
 
         if frame_counter >= 10:
             move_distance = get_distance(ball_pos_last, ball_pos_now)
-            x = ball_pos_now[0] - ball_pos_last[0]
-            y = ball_pos_now[1] - ball_pos_last[1]
+            x = (ball_pos_now[0] - ball_pos_last[0]) / move_distance
+            y = (ball_pos_now[1] - ball_pos_last[1]) / move_distance
             ball_dir = [x, y]
             ball_pos_last = ball_pos_now
             tEnd = time.time()
