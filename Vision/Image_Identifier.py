@@ -34,6 +34,7 @@ exit_bit = 0
 ball_pos_last = [0, 0]
 ball_pos_now = [0, 0]
 ball_speed = 0
+ball_dir = [0, 0]
 
 middle = jf["special_point"]["middle"]
 camera_project = jf["special_point"]["camera_project"]
@@ -564,7 +565,7 @@ class WebcamVideoStream:
 
 
 def image_func():
-    global frame_counter, ball_pos_last, show, frame, ball_speed, point_show, current_window, mask
+    global frame_counter, ball_pos_last, show, frame, ball_speed, point_show, current_window, mask, ball_dir
     cap = WebcamVideoStream(src=camera_num).start()
     tStart = 0
     while True:
@@ -722,6 +723,9 @@ def image_func():
 
         if frame_counter >= 10:
             move_distance = get_distance(ball_pos_last, ball_pos_now)
+            x = ball_pos_now[0] - ball_pos_last[0]
+            y = ball_pos_now[1] - ball_pos_last[1]
+            ball_dir = [x, y]
             ball_pos_last = ball_pos_now
             tEnd = time.time()
             time_interval = tEnd - tStart

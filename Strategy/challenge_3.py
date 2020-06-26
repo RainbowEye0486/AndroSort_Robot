@@ -2,7 +2,6 @@
 In this vision , robot can only do things below
 1.robot won't easily change ist position (upper side or downward side)
 2.
-
 """
 
 # import constant
