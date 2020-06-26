@@ -320,18 +320,30 @@ def execute_job(id):
     Base on the robot's job, give an exact command
     """
     global robots
-    print('execute job')
+    # print('Center:', CENTER)
+    # print('execute job')
     robo = robots[id]
-    rough_dist = 10*CM_TO_PIX  # the distance between ball and the robot should be
+    # print(robo.role, robo.job)
+    rough_dist = 10 * CM_TO_PIX  # the distance between ball and the robot should be
     if robo.job == Job.MOVE:
-        pass
+        move_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
+        moveable, rt_cmd = move(robo, robo.next, move_ways)
+        if moveable:
+            return rt_cmd
+    elif robo.job == Job.STAND:
+        # face ball
+        arrival = robo.pos
+        ideal_dir = [b - r for b, r in zip(ball.pos, robo.pos)]
+        change, rt_cmd = move_with_dir(robo, arrival, robo.dir, ideal_dir, fit_way='FORE', ways=[])
+        if change:
+            return rt_cmd
     elif robo.job == Job.PASS:
         print('job == pass')
         if robo.target[0] == -1:
             print('no aim')
             # x_pos = CENTER[0] - (FB_X)*SIDE
             # segm = 4
-            # robo.aim_pos, no_use, no_use = find_shooting_point(x_pos, segm, our_gate)
+            # robo.target, no_use, no_use = find_shooting_point(x_pos, segm, our_gate)
         # kick ball
         print(robo.target)
         kickable_dist = 5*CM_TO_PIX  # the distance between ball and the robot should be
@@ -371,14 +383,20 @@ def execute_job(id):
             movable, rt_cmd = move_with_dir(robo, arrival, _rotate(robo.dir, WAY_ANGLE[kick_way]), kick_dir, kick_way, move_ways)
             if movable:
                 return rt_cmd
-    elif robo.job == Job.DRIBBLE:
-        pass
-    elif robo.job == Job.LEAVE:
-        pass
+    elif robo.job == Job.DIVE:
+        danger_spd = 10
+        if ball.speed > danger_spd:
+            x_dist = our_gate[0] - ball.pos[0]
+            if x_dist * ball.dir[0] > 0:
+                y_des = ball.pos[0] + x_dist / ball.dir[0] * ball.dir[1]
+                block_dir = [our_gate[0] - robo.pos[0], y_des - robo.pos[1]]
+                for orient in ['RIGHT', 'LEFT']:
+                    temp_dir = _rotate(robo.dir, WAY_ANGLE[orient])
+                    if _dot(temp_dir, block_dir) >= 0:
+                        return robo.MOTION['DEFENSE'][orient]['CMD']
     elif robo.job == Job.REST:
         return robo.MOTION['REST']['CMD']
     return 'N1'
-
 
 
 #  function for calculation position
