@@ -32,6 +32,11 @@ MOTION = {
             'SSHOOT': {'CMD': ['h', 'j'], 'BOUND': []},
             'BSHOOT': {'CMD': ['b', 'n'], 'BOUND': []}
         },
+        'DEFENCE': {
+            'FORE':{'CMD': 'Y'},
+            'LEFT':{'CMD': 'f'},
+            'RIGHT':{'CMD': 'g'}
+        },
         'REST': {'CMD': ['r']}
     }
 }
