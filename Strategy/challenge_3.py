@@ -16,6 +16,8 @@ import cv2
 import enum
 from Strategy import constant as CONST
 
+Print = False
+
 # Parameter needed to adjust
 ID_IN_USE = [3, 3, 3]
 CM_TO_PIX = 3.7
@@ -89,15 +91,16 @@ def strategy_update_field(side, boundary, center, penalty, FB_x, FB_y, Penalty_y
     #  define zone of soccer field
     x_length = (BOUNDARY[1][0] - BOUNDARY[0][0] + BOUNDARY[6][0] - BOUNDARY[7][0]) / 4
     y_length = (BOUNDARY[7][1] - BOUNDARY[0][1] + BOUNDARY[6][1] - BOUNDARY[1][1]) / 4
-
-    # print(SIDE)
-    # print(BOUNDARY)
-    # print(CENTER)
-    # print(PENALTY)
-    # print(FB_x)
-    # print(FB_y)
-    # print(GA_x)
-    # print(GA_y)
+    if Print:
+        pass
+        # print(SIDE)
+        # print(BOUNDARY)
+        # print(CENTER)
+        # print(PENALTY)
+        # print(FB_x)
+        # print(FB_y)
+        # print(GA_x)
+        # print(GA_y)
 
 
 def Initialize():
@@ -201,12 +204,13 @@ def Update_Robo_Info(teamD, teamP, oppoP, ballP, ballS, ballD):
     ball.speed = ballS
     ball.dir = ballD
     ball.in_zone = in_zone(ball.pos)
-    print(ball.in_zone)
-    # print(teamD, teamP, oppoP, ball.pos, ball.speed, ball.dir)
-    """print("ball_inzone")
-    print(ball.pos)
-    print(ball.in_zone)"""
-    # return False
+    if Print:
+        print(ball.in_zone)
+        # print(teamD, teamP, oppoP, ball.pos, ball.speed, ball.dir)
+        """print("ball_inzone")
+        print(ball.pos)
+        print(ball.in_zone)"""
+        # return False
 
 
 def strategy():
@@ -222,30 +226,32 @@ def strategy():
     # as a defender or an attacker
 
     assign_role(mode)
-    for i in range(3):
-        print("[ID{id}][dist{dist}][carry{carry}]".format(id=i, dist=enemies[i].distance, carry=enemies[i].carrier))
+    if Print:
+        for i in range(3):
+            print("[ID{id}][dist{dist}][carry{carry}]".format(id=i, dist=enemies[i].distance, carry=enemies[i].carrier))
 
-        print(
-            "[ID{id}][pos{pos}][dir{dir}][role {role}][half {half}][job {job}]".format(id=robots[i].ID,
-                                                                                       pos=robots[i].pos,
-                                                                                       dir=robots[i].dir,
-                                                                                       role=robots[i].role,
-                                                                                       half=robots[i].half,
-                                                                                       job=robots[i].job))
-        print(
-            "[dis{dis}][next{next}][tar{tar}][zon {zon}][close{clo}][face {fac}]".format(
-                dis=robots[i].distance,
-                next=robots[i].next,
-                tar=robots[i].target,
-                zon=robots[i].in_zone,
-                clo=robots[i].howclose,
-                fac=robots[i].face_ball))
-        print("\n")
+            print(
+                "[ID{id}][pos{pos}][dir{dir}][role {role}][half {half}][job {job}]".format(id=robots[i].ID,
+                                                                                           pos=robots[i].pos,
+                                                                                           dir=robots[i].dir,
+                                                                                           role=robots[i].role,
+                                                                                           half=robots[i].half,
+                                                                                           job=robots[i].job))
+            print(
+                "[dis{dis}][next{next}][tar{tar}][zon {zon}][close{clo}][face {fac}]".format(
+                    dis=robots[i].distance,
+                    next=robots[i].next,
+                    tar=robots[i].target,
+                    zon=robots[i].in_zone,
+                    clo=robots[i].howclose,
+                    fac=robots[i].face_ball))
+            print("\n")
     cmd = ['N', 'N', 'N']
     for i in range(len(robots)):
         cmd[i] = execute_job(i)
-    print(cmd)
-    print()
+    if Print:
+        print(cmd)
+        print()
     return cmd
 
 
@@ -338,26 +344,30 @@ def execute_job(id):
         if change:
             return rt_cmd
     elif robo.job == Job.PASS:
-        print('job == pass')
+        if Print:
+            print('job == pass')
         if robo.target[0] == -1:
-            print('no aim')
+            if Print:
+                print('no aim')
             # x_pos = CENTER[0] - (FB_X)*SIDE
             # segm = 4
             # robo.target, no_use, no_use = find_shooting_point(x_pos, segm, our_gate)
         # kick ball
-        print(robo.target)
-        kickable_dist = 5*CM_TO_PIX  # the distance between ball and the robot should be
-        kickable_ang = 15/180*math.pi  # acceptable angle error when kicking
+        if Print:
+            print(robo.target)
+        kickable_dist = 5 * CM_TO_PIX  # the distance between ball and the robot should be
+        kickable_ang = 15 / 180 * math.pi  # acceptable angle error when kicking
         kick_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
         move_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
         kick_dir = _unit_vector(ball.pos, robo.target)
         force = 'small'
         kickable, kick_way, rt_cmd, arrival = is_kickable(robo, kickable_dist, kickable_ang, kick_dir, kick_ways, force)
-        robo.arr = arrival  # 
-        print('kickable', )
+        robo.arr = arrival  #
+        if Print:
+            print('kickable')
         if kickable:
             robo.job = Job.NONE
-            robo.role == Role.NONE
+            robo.role = Role.ROAMER
             robo.target = [-1, -1]
             return rt_cmd
         movable, rt_cmd = move_with_dir(robo, arrival, _rotate(robo.dir, WAY_ANGLE[kick_way]), kick_dir, kick_way)
@@ -395,7 +405,7 @@ def execute_job(id):
                     if _dot(temp_dir, block_dir) >= 0:
                         return robo.MOTION['DEFENSE'][orient]['CMD']
     elif robo.job == Job.REST:
-        return robo.MOTION['REST']['CMD']
+        return robo.MOTION['REST']['CMD'][0]
     return 'N1'
 
 
@@ -427,7 +437,8 @@ def in_line(start, end, pos, projection):  # projection :if ask in line or retur
 def line_fraction(start, end, fraction):  # 用來找出線段中間的某個位置設定為到達點
     x = int(start[0] + (end[0] - start[0]) * fraction)
     y = int(start[1] + (end[1] - start[1]) * fraction)
-    print(x, y)
+    if Print:
+        print(x, y)
     return [x, y]
 
 
@@ -544,26 +555,32 @@ def takeY(e):
 
 def is_kickable(robo, tol_dist, tol_angle, kick_dir, ways, force):
     # Find kick way(R,L,F,B)
+    global ball
     kick_way = find_way(robo, kick_dir, ways)
-    print('kick way', kick_way)
-    arrival = [b - un_dir*ball.RADIUS*CM_TO_PIX for b, un_dir in zip(ball.pos, kick_dir)]
-    ver_offst = [direct * -robo.MOTION['MOVE'][kick_way]['OFFSET'][0]*CM_TO_PIX for direct in kick_dir]
+    if Print:
+        print('kick way', kick_way)
+    arrival = [b - un_dir * ball.radius * CM_TO_PIX for b, un_dir in zip(ball.pos, kick_dir)]
+    ver_offst = [direct * -robo.MOTION['MOVE'][kick_way]['OFFSET'][0] * CM_TO_PIX for direct in kick_dir]
     hor_offst = [0, 0]
     if kick_way == 'FORE' or kick_way == 'BACK':
-        angle = _angle(robo.dir, [ball-pos for ball, pos in zip(ball.pos, robo.pos)])
+        angle = _angle(robo.dir, [ball - pos for ball, pos in zip(ball.pos, robo.pos)])
         foot = 'RIGHT' if angle > 0 else 'LEFT'
         direction = _rotate(kick_dir, WAY_ANGLE[foot])
-        offst = -robo.MOTION['MOVE'][kick_way]['OFFSET'][1]*CM_TO_PIX if kick_way=='FORE' else  robo.MOTION['MOVE'][kick_way]['OFFSET'][1]*CM_TO_PIX
+        offst = -robo.MOTION['MOVE'][kick_way]['OFFSET'][1] * CM_TO_PIX if kick_way == 'FORE' else \
+        robo.MOTION['MOVE'][kick_way]['OFFSET'][1] * CM_TO_PIX
         hor_offst = [direct * offst for direct in direction]
-        print('foot:', foot)
+        if Print:
+            print('foot:', foot)
     arrival = [arr + hor + ver for arr, hor, ver in zip(arrival, hor_offst, ver_offst)]
-    print('arr in change:', arrival)
+    if Print:
+        print('arr in change:', arrival)
     if _dist(arrival, robo.pos) < tol_dist:  # can reach the ball
         direction = _rotate(robo.dir, WAY_ANGLE[kick_way])
         angle = _angle(kick_dir, direction)
         if abs(angle) < tol_angle:  # with right angle
-            print('ang:', angle)
-            time.sleep(3)
+            if Print:
+                print('ang:', angle)
+            # time.sleep(3)
             # assign the right CMD according to the strength
             if kick_way == 'FORE':
                 if force == 'big':
@@ -585,37 +602,40 @@ def is_kickable(robo, tol_dist, tol_angle, kick_dir, ways, force):
                     rt_cmd = robo.MOTION['KICK']['BSHOOT']['CMD'][0]
                 else:
                     rt_cmd = robo.MOTION['KICK']['BSHOOT']['CMD'][1]
-            print('itself', robo.pos)
-            print('kicked', rt_cmd, arrival)
+            if Print:
+                print('itself', robo.pos)
+                print('kicked', rt_cmd, arrival)
             return True, kick_way, rt_cmd, arrival
     return False, kick_way, 'N', arrival
 
 
 def move_with_dir(robo, arrival, curr_dir, ideal_dir, fit_way='FORE', ways=['FORE', 'LEFT', 'BACK', 'RIGHT']):
-    tol_dist = 10*CM_TO_PIX  # start fitting the right direction
-    safe_ball = 15*CM_TO_PIX
+    tol_dist = 10 * CM_TO_PIX  # start fitting the right direction
+    safe_ball = 15 * CM_TO_PIX
     dist = _dist(robo.pos, arrival)
     dist_ball = _dist(robo.pos, ball.pos)
-    print('dist:', dist)
+    if Print:
+        print('dist:', dist)
     if dist > tol_dist and dist_ball > safe_ball:
         check, rt_cmd = move(robo, arrival, ways)
         if check:
             return True, rt_cmd
     '''fix angle'''
     angle = _angle(ideal_dir, curr_dir)
-    print('move/angle:', angle)
+    if Print:
+        print('move/angle:', angle)
     if angle > 0:  # should turn left
-        if angle >= robo.MOTION['TURN']['LEFT']['BOUND'][0]*CM_TO_PIX:
+        if angle >= robo.MOTION['TURN']['LEFT']['BOUND'][0]:
             rt_cmd = robo.MOTION['TURN']['LEFT']['CMD'][0]
             return True, rt_cmd
-        elif angle >= robo.MOTION['TURN']['LEFT']['BOUND'][1]*CM_TO_PIX:
+        elif angle >= robo.MOTION['TURN']['LEFT']['BOUND'][1]:
             rt_cmd = robo.MOTION['TURN']['LEFT']['CMD'][1]
             return True, rt_cmd
     else:
-        if abs(angle) >= robo.MOTION['TURN']['RIGHT']['BOUND'][0]*CM_TO_PIX:
+        if abs(angle) >= robo.MOTION['TURN']['RIGHT']['BOUND'][0]:
             rt_cmd = robo.MOTION['TURN']['RIGHT']['CMD'][0]
             return True, rt_cmd
-        elif abs(angle) >= robo.MOTION['TURN']['RIGHT']['BOUND'][1]*CM_TO_PIX:
+        elif abs(angle) >= robo.MOTION['TURN']['RIGHT']['BOUND'][1]:
             rt_cmd = robo.MOTION['TURN']['RIGHT']['CMD'][1]
             return True, rt_cmd
     '''move slightly'''
@@ -636,14 +656,17 @@ def move_with_dir(robo, arrival, curr_dir, ideal_dir, fit_way='FORE', ways=['FOR
 
 
 def move(robo, arrival, ways=['', '', '', '']):
-    '''
+    """
        To move to assigned point and facing whatever direction
-    '''
-    print('---->move w/o dir arr:', arrival)
+    """
+    if Print:
+        print('---->move w/o dir arr:', arrival)
     move_dir = _unit_vector(robo.pos, arrival)
-    print('dir:', move_dir)
+    if Print:
+        print('dir:', move_dir)
     move_way = find_way(robo, move_dir, ways)
-    print('move way', move_way)
+    if Print:
+        print('move way', move_way)
     dist = _dist(robo.pos, arrival)
     # if the robot will pass the ball while moving
     dist_ball = _dist(robo.pos, ball.pos)
@@ -651,23 +674,24 @@ def move(robo, arrival, ways=['', '', '', '']):
         ball_dir = _unit_vector(robo.pos, ball.pos)
         angle = abs(_angle(move_dir, ball_dir))
         if move_way == 'FORE' or move_way == 'BACK':
-            avoid_dist = robo.BODY['width']/2*CM_TO_PIX
+            avoid_dist = robo.BODY['width'] / 2 * CM_TO_PIX
         else:
-            avoid_dist = robo.BODY['length']/2*CM_TO_PIX
+            avoid_dist = robo.BODY['length'] / 2 * CM_TO_PIX
         safe_angle = math.atan(avoid_dist/dist_ball)
         if angle < safe_angle:
             # change arrival
-            print('change arrival')
+            if Print:
+                print('change arrival')
             product = -1
             re_dir = [0, 0]
             for sign in [-1, 1]:
-                temp_dir = _rotate(ball_dir, sign*safe_angle)
+                temp_dir = _rotate(ball_dir, sign * safe_angle)
                 temp_product = _dot(move_dir, temp_dir)
                 if temp_product > product:
                     product = temp_product
-                    mag = math.sqrt(dist_ball**2 + avoid_dist**2)
+                    mag = math.sqrt(dist_ball ** 2 + avoid_dist ** 2)
                     for i in [0, 1]:
-                        re_dir[i] = temp_dir[i]*mag
+                        re_dir[i] = temp_dir[i] * mag
                         arrival[i] = robo.pos[i] + re_dir[i]
             move_dir = _unit_vector(robo.pos, arrival)
             move_way = find_way(robo, move_dir, ways)
@@ -675,28 +699,29 @@ def move(robo, arrival, ways=['', '', '', '']):
     # fix angle
     direction = _rotate(robo.dir, WAY_ANGLE[move_way])
     angle = _angle(move_dir, direction)
-    print('ang diff:', angle*180/math.pi)
+    if Print:
+        print('ang diff:', angle * 180 / math.pi)
     if angle > 0:  # should turn left
-        if angle > robo.MOTION['TURN']['LEFT']['BOUND'][0]*CM_TO_PIX:
+        if angle > robo.MOTION['TURN']['LEFT']['BOUND'][0]:
             rt_cmd = robo.MOTION['TURN']['LEFT']['CMD'][0]
             return True, rt_cmd
-        elif angle > robo.MOTION['TURN']['LEFT']['BOUND'][1]*CM_TO_PIX:
+        elif angle > robo.MOTION['TURN']['LEFT']['BOUND'][1]:
             rt_cmd = robo.MOTION['TURN']['LEFT']['CMD'][1]
             return True, rt_cmd
     else:
-        if abs(angle) > robo.MOTION['TURN']['RIGHT']['BOUND'][0]*CM_TO_PIX:
+        if abs(angle) > robo.MOTION['TURN']['RIGHT']['BOUND'][0]:
             rt_cmd = robo.MOTION['TURN']['RIGHT']['CMD'][0]
             return True, rt_cmd
-        elif abs(angle) > robo.MOTION['TURN']['RIGHT']['BOUND'][1]*CM_TO_PIX:
+        elif abs(angle) > robo.MOTION['TURN']['RIGHT']['BOUND'][1]:
             rt_cmd = robo.MOTION['TURN']['RIGHT']['CMD'][1]
             return True, rt_cmd
     '''MOVE'''
     # if the robot is supporter,
     # should give the way of main robot
-    if robo.role == Role.SUP:
+    if (robo.role == Role.INTERFERER) | (robo.role == Role.ASSISTER):
         chief = None
         for rob in robots:
-            if rob.role == Role.MAIN:
+            if (robo.role == Role.COUNTER) | (robo.role == Role.STRICKER):
                 chief = rob
                 break
         # if main robot in the neiborhood of support and in the way of the next step
@@ -742,16 +767,17 @@ def find_aim_point(x, y, goal):
         retval: the tolerant size
     """
     aim_point = [goal[0][0], -1]
-    enemies.sort(key=takeY)  # ??
+    enemies_pos = [enemy.pos for enemy in enemies]
+    enemies_pos.sort(key=takeY)  # ??
     head_tails = []  # store the areas that are blocked
-    for enemy in enemies:
+    for enemy in enemies_pos:
         if x < enemy[0] <= goal[0][0] or x > enemy[0] >= goal[0][0]:
             pair = []
             dir_x = enemy[0] - x
             dir_y = (enemy[1] - ROB_RANG) - y
-            pair.append(y + (goal[0][0]-x)/dir_x*dir_y)
+            pair.append(y + (goal[0][0] - x) / dir_x * dir_y)
             dir_y = (enemy[1] + ROB_RANG) - y
-            pair.append(y + (goal[0][0]-x)/dir_x*dir_y)
+            pair.append(y + (goal[0][0] - x) / dir_x * dir_y)
             head_tails.append(pair)
     # if the blocked areas are consectutive, merge them;
     # if the whole area is beyond border then delete it
@@ -778,23 +804,25 @@ def find_aim_point(x, y, goal):
         size = head_tails[0][0] - goal[0][1]
         aim_point[1] = (head_tails[0][0] + goal[0][1])/2
         ava_range.append([goal[0][1], head_tails[0][0]])
-    for i in range(len(head_tails)-1):
-        if head_tails[i+1][0] - head_tails[i][0] > size:
-            size = head_tails[i+1][0] - head_tails[i][0]
-            aim_point[1] = (head_tails[i+1][0] + head_tails[i][0])/2
-            ava_range.append([head_tails[i][1], head_tails[i+1][0]])
-    if len(head_tails) > 0 and goal[1][1] - head_tails[len(head_tails)-1][1] > size:
-        size = goal[1][1] - head_tails[len(head_tails)-1][1]
-        aim_point[1] = (goal[1][1] + head_tails[len(head_tails)-1][1])/2
-        ava_range.append([head_tails[len(head_tails)-1][1], goal[1][1]])
+    for i in range(len(head_tails) - 1):
+        if head_tails[i + 1][0] - head_tails[i][0] > size:
+            size = head_tails[i + 1][0] - head_tails[i][0]
+            aim_point[1] = (head_tails[i + 1][0] + head_tails[i][0]) / 2
+            ava_range.append([head_tails[i][1], head_tails[i + 1][0]])
+    if len(head_tails) > 0 and goal[1][1] - head_tails[len(head_tails) - 1][1] > size:
+        size = goal[1][1] - head_tails[len(head_tails) - 1][1]
+        aim_point[1] = (goal[1][1] + head_tails[len(head_tails) - 1][1]) / 2
+        ava_range.append([head_tails[len(head_tails) - 1][1], goal[1][1]])
     for pair in ava_range:
-        print('ava:', pair[0], pair[1])
-    print('(', x, ',', y, '):', size)
+        if Print:
+            print('ava:', pair[0], pair[1])
+    if Print:
+        print('(', x, ',', y, '):', size)
     return aim_point, size
 
 
 def find_shooting_point(x_pos, segm, goal):
-    '''
+    """
        Divide line x='x' into 'segm' segments, and find which one is the best shooting position
        Parameter:
         param1: assign the lin x = 'x' to be examined
@@ -804,7 +832,7 @@ def find_shooting_point(x_pos, segm, goal):
         retval1: the best shooting position(next moving point)
         retval2: the best point to aim
         retval3: the tolerant size
-    '''
+    """
     biggest_size = 0
     shooting_pt = []
     aim_pos = []
@@ -863,7 +891,8 @@ class Robot:
 
     def move_and_do(self, Next, job):
         dist = get_distance(Next, self.pos)
-        print("move do ", dist)
+        if Print:
+            print("move do ", dist)
         if dist > self.howclose:
             self.next = Next  # 直接等於球的位置->向球走過去
             self.job = Job.MOVE  # go go go
@@ -887,18 +916,22 @@ class Robot:
 
         if mode == Mode.OFFENSE:
             self.job = Job.REST
-            print("offence")
+            if Print:
+                print("offence")
         else:
-            print("defend")
+            if Print:
+                print("defend")
             if not carry:
                 self.move_and_do(self.next, Job.REST)
             else:
                 if ball.speed > 15:
                     self.job = Job.DIVE
                     # code about dive direction 撲球方向
-                    print("dive")
+                    if Print:
+                        print("dive")
                 else:
-                    print("speed up")
+                    if Print:
+                        print("speed up")
                     job = Job.REST
                     if carry:
                         job = Job.STAND
@@ -906,8 +939,9 @@ class Robot:
                         self.move_and_do(gate_center, job)
                     elif ball.in_zone == Zone.LEFT_DEFEND:
                         self.move_and_do(line_fraction(gate_center, our_gate[0], 0.4), job)
-                        print("dark")
-                        print(self.next)
+                        if Print:
+                            print("dark")
+                            print(self.next)
                     elif ball.in_zone == Zone.FAR_LEFT_DEFEND:
                         self.move_and_do(line_fraction(gate_center, our_gate[0], 0.8), job)
                     elif ball.in_zone == Zone.RIGHT_DEFEND:
@@ -917,7 +951,8 @@ class Robot:
                     else:
                         pass
         self.next[0] += 25 * SIDE
-        print("keeper next", self.next)
+        if Print:
+            print("keeper next", self.next)
 
     def stricker_assign(self, other):
         # 戰略：1如果是在中間（非對方進攻位置）直接站到球的後面往前踢，如果空間不夠->射門？？？
@@ -931,38 +966,37 @@ class Robot:
         self.next = [ball.pos[0] - SIDE * ball.radius, ball.pos[1]]
         tar, size = find_aim_point(ball.pos[0], ball.pos[1], [enemy_gate[0], enemy_gate[1]])
         percent = 0.0
-        print(ball.in_zone)
-        print(tar, size)
+        if Print:
+            print(ball.in_zone)
+            print(tar, size)
 
         for i in range(3):
             if enemies[i].carrier:
                 carry = i
         if (ball.in_zone == Zone.CENTER_AREA) | ((self.pos[0] - CENTER[0]) * SIDE < 0):
-            print("center")
             self.move_and_kick(carry, gate_center)  # not dealing
             # with situation encounter enemy blocking yet
         elif ball.in_zone == Zone.MIDDLE_OFFENCE:
-            print("middle")
             self.move_and_kick(carry, tar)
             if self.job == Job.PASS:
                 self.job = Job.SHOOT  # 可能需要被 override 掉
             # print(ball.pos[0], ball.pos[1], [enemy_gate[0], enemy_gate[1]])
             # print(self.target, size)
         elif ball.in_zone == Zone.LEFT_OFFEND:
-            print("left")
+            # print("left")
             self.move_and_kick(carry, tar)
             if self.job == Job.PASS:
                 self.job = Job.SHOOT  # 可能需要被 override 掉
         elif ball.in_zone == Zone.RIGHT_OFFEND:
-            print("right")
+            #print("right")
             self.move_and_kick(carry, tar)
             if self.job == Job.PASS:
                 self.job = Job.SHOOT  # 可能需要被 override 掉
             # print(self.target, size, ball.pos[0], ball.pos[1], [enemy_gate[0], enemy_gate[1]])
         elif ball.in_zone == Zone.FAR_LEFT_OFFEND:
-            print("far_l")
+            #print("far_l")
             percent = size / abs((enemy_gate[1][1] - enemy_gate[0][1]) * SIDE)
-            print("percent", percent)
+            #print("percent", percent)
             if percent < 0.3:
                 self.move_and_kick(carry, robots[other].next)
             else:
@@ -970,9 +1004,9 @@ class Robot:
                 if self.job == Job.PASS:
                     self.job = Job.SHOOT  # 可能需要被 override 掉
         elif ball.in_zone == Zone.FAR_RIGHT_OFFEND:
-            print("fa_r")
+            #print("fa_r")
             percent = size / abs((enemy_gate[1][1] - enemy_gate[0][1]) * SIDE)
-            print("percent", percent)
+            #print("percent", percent)
             if percent < 0.3:
                 self.move_and_kick(carry, robots[other].next)
             else:
@@ -980,7 +1014,7 @@ class Robot:
                 if self.job == Job.PASS:
                     self.job = Job.SHOOT  # 可能需要被 override 掉p
         else:
-            print("other")
+            # print("other")
             # don't know how to deal with it , whatever
             self.move_and_kick(carry, tar)
             if self.job == Job.PASS:
@@ -1056,32 +1090,38 @@ class Robot:
             if in_line(ball.pos, [our_gate[0][0], (our_gate[0][1] + our_gate[1][1]) / 2], self.pos, False):
                 # on defend line , defend line is middle
                 self.move_and_kick(carry, kick_forward)
-                print("inline\n")
+                if Print:
+                    print("inline\n")
             else:  # move to defend line
                 self.next = line_fraction(ball.pos, gate_center, 0.35)
                 self.job = Job.MOVE
-                print("outline\n")
+                if Print:
+                    print("outline\n")
         elif ball.in_zone == Zone.LEFT_DEFEND:
             if in_line(ball.pos, our_gate[0], self.pos, False):  # on defend line , defend line is left
                 self.move_and_kick(carry, kick_forward)
                 self.face_ball = True
-                print("inline\n")
+                if Print:
+                    print("inline\n")
             else:  # move to defend line
                 self.next = line_fraction(ball.pos, our_gate[0], 0.3)  # gate_left
                 self.job = Job.MOVE
-                print("outline\n")
+                if Print:
+                    print("outline\n")
         elif ball.in_zone == Zone.FAR_LEFT_DEFEND:
             if in_line(ball.pos, our_gate[0], self.pos, False):  # on defend line , defend line is left
                 self.move_and_kick(carry, kick_forward)
                 self.face_ball = True
-                print("inline\n")
+                if Print:
+                    print("inline\n")
             else:  # move to defend line
                 self.next = line_fraction(ball.pos, our_gate[0], 0.3)  # gate_left
                 self.job = Job.MOVE
         elif ball.in_zone == Zone.FAR_RIGHT_DEFEND:
             if in_line(ball.pos, our_gate[1], self.pos, False):  # on defend line , defend line is right
                 self.move_and_kick(carry, kick_forward)
-                print("inline\n")
+                if Print:
+                    print("inline\n")
             else:  # move to defend line
                 self.next = line_fraction(ball.pos, our_gate[1], 0.3)  # gate_right
                 self.job = Job.MOVE
@@ -1089,7 +1129,8 @@ class Robot:
         elif ball.in_zone == Zone.RIGHT_DEFEND:
             if in_line(ball.pos, our_gate[1], self.pos, False):  # on defend line , defend line is right
                 self.move_and_kick(carry, kick_forward)
-                print("inline\n")
+                if Print:
+                    print("inline\n")
             else:  # move to defend line
                 self.next = line_fraction(ball.pos, our_gate[1], 0.3)  # gate_right
                 self.job = Job.MOVE
@@ -1098,7 +1139,8 @@ class Robot:
             if in_line(ball.pos, [our_gate[0][0], (our_gate[0][1] + our_gate[1][1]) / 2],
                        self.pos, False):  # on defend line , defend line is middle
                 self.move_and_kick(carry, kick_forward)
-                print("inline\n")
+                if Print:
+                    print("inline\n")
             else:  # move to defend line
                 self.next = [ball.pos[0] - ball.radius * SIDE, ball.pos[1]]  # block shortest line to gaol
                 self.job = Job.MOVE
@@ -1214,6 +1256,7 @@ class Job(Enum):
     # BLOCK = 7  # 阻止進球
     DIVE = 8  # 撲球
     REST = 9  # 蹲下
+    NONE = 10
 
 
 class Mode(Enum):
@@ -1240,13 +1283,4 @@ class Zone(Enum):
 
 
 if __name__ == '__main__':
-    """print(Zone.OUR_PENALTY)
-    while 1:
-        x = input()
-        y = input()
-        x = int(x)
-        y = int(y)
-        print(x)
-        print(y)
-        print(in_zone([x, y]))"""
     Initialize()
