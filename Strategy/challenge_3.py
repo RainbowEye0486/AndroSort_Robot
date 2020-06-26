@@ -183,14 +183,16 @@ def Update_Robo_Info(teamD, teamP, oppoP, ballP, ballS, ballD):
     close_ball = [-1, 1000]  # first element is enemy index , second is distance to the ball
     for i in range(3):
         if len(teamP[i]) > 0:
-            robots[i].pos = [simulator_adjust(teamP[i], False)[0], simulator_adjust(teamP[i], False)[1]]
+            # robots[i].pos = [simulator_adjust(teamP[i], False)[0], simulator_adjust(teamP[i], False)[1]]
+            robots[i].pos = teamP[i]
             robots[i].dir = teamD[i]
             robots[i].distance = get_distance(robots[i].pos, ball.pos)
             robots[i].in_zone = in_zone(robots[i].pos)
         robots[i].target = [0, 0]
         if len(oppoP) >= i + 1:
             enemies[i].carrier = False
-            enemies[i].pos = [simulator_adjust(oppoP[i], False)[0], simulator_adjust(oppoP[i], False)[1]]
+            # enemies[i].pos = [simulator_adjust(oppoP[i], False)[0], simulator_adjust(oppoP[i], False)[1]]
+            enemies[i].pos = oppoP[i]
             enemies[i].distance = get_distance(enemies[i].pos, simulator_adjust(ballP, False))
             if (enemies[i].distance < close_ball[1]) & (enemies[i].distance < carrier_range):
                 close_ball = [i, enemies[i].distance]  # who is most likely carrier ball
@@ -199,7 +201,8 @@ def Update_Robo_Info(teamD, teamP, oppoP, ballP, ballS, ballD):
     if close_ball[0] != -1:
         enemies[close_ball[0]].carrier = True
 
-    ball.pos = simulator_adjust(ballP, False)
+    # ball.pos = simulator_adjust(ballP, False)
+    ball.pos = ballP
     ball.speed = ballS
     ball.dir = ballD
     ball.in_zone = in_zone(ball.pos)
