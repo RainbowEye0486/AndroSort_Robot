@@ -6,6 +6,7 @@ from threading import Thread
 import json
 import os
 import sys
+from Strategy import challenge_3 as ch3
 
 #  紀錄參數用
 fpath = os.path.join(os.path.dirname(__file__), 'param.json')
@@ -13,7 +14,7 @@ with open(fpath, 'r') as file_in:
     jf = json.load(file_in)
 font = cv2.FONT_HERSHEY_SIMPLEX
 #  需要調整參數
-camera_num = 2
+camera_num = 3
 robot_height = 45
 field_height = 268
 color_upper_clipper = 800  # 調整面積的讀取區間
@@ -33,6 +34,7 @@ exit_bit = 0
 ball_pos_last = [0, 0]
 ball_pos_now = [0, 0]
 ball_speed = 0
+ball_dir = [0, 0]
 
 middle = jf["special_point"]["middle"]
 camera_project = jf["special_point"]["camera_project"]
@@ -563,7 +565,7 @@ class WebcamVideoStream:
 
 
 def image_func():
-    global frame_counter, ball_pos_last, show, frame, ball_speed, point_show, current_window, mask
+    global frame_counter, ball_pos_last, show, frame, ball_speed, point_show, current_window, mask, ball_dir
     cap = WebcamVideoStream(src=camera_num).start()
     tStart = 0
     while True:
@@ -597,6 +599,7 @@ def image_func():
 
         thread2.join()
         thread4.join()
+
         for our in our_pos:
             for color1 in color1_pos:
                 if get_distance(our, color1) < 30:
@@ -637,6 +640,8 @@ def image_func():
                         q = error_correct(our)
                         cv2.circle(show, (q[0], q[1]), 3, (252, 255, 255), -1)
                         our_data[2] = [q[0], q[1]]
+
+        # print(our_data)
 
         thread3.join()
         enemy_code = 0
@@ -718,6 +723,9 @@ def image_func():
 
         if frame_counter >= 10:
             move_distance = get_distance(ball_pos_last, ball_pos_now)
+            x = (ball_pos_now[0] - ball_pos_last[0]) / move_distance
+            y = (ball_pos_now[1] - ball_pos_last[1]) / move_distance
+            ball_dir = [x, y]
             ball_pos_last = ball_pos_now
             tEnd = time.time()
             time_interval = tEnd - tStart

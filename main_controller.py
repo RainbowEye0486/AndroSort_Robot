@@ -2,7 +2,7 @@ import time
 from tkinter import *
 from threading import Thread
 from Vision import Image_Identifier as image
-from Strategy import challenge_1 as strategy
+from Strategy import challenge_1 as strategy  # change this
 from comm import nrf_controller as nrf
 from queue import Queue
 import platform
@@ -21,7 +21,7 @@ else:
 image_buffer = list()
 decision_done = False
 # 需要調整參數
-side = 0  # attacking side
+side = 1  # attacking side 1:left is ours; 2: right is ours
 challenge_num = 2
 go_strategy = False
 
@@ -62,14 +62,13 @@ def Strategy_thread(que):
         if image.exit_bit != 0:
             sys.exit()
         if go_strategy:
-            strategy.Update_Robo_Info(image.our_dir, image.our_data, image.enemy_data, image.ball_pos_now)
+            strategy.Update_Robo_Info(image.our_dir, image.our_data, image.enemy_data, image.ball_pos_now, image.ball_speed, image.ball_dir)
             cmd = strategy.strategy()
             try:
-                input_data = cmd[0]
+                input_data = cmd
                 print('cmd:', input_data)
                 if que.empty():
                     que.put(input_data)
-                    # que.put('w1')  # test
                     time.sleep(0.001)
                 else:
                     que.get()
