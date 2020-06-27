@@ -14,7 +14,7 @@ with open(fpath, 'r') as file_in:
     jf = json.load(file_in)
 font = cv2.FONT_HERSHEY_SIMPLEX
 #  需要調整參數
-camera_num = 3
+camera_num = 2
 robot_height = 45
 field_height = 268
 color_upper_clipper = 800  # 調整面積的讀取區間
@@ -607,7 +607,10 @@ def image_func():
                     cv2.putText(show, "ROBOT_1", our, font, 0.6, (255, 255, 255), 1)
                     cv2.circle(show, our, 2, (252, 255, 255), -1)
                     dist = get_distance(our, color1)
-                    our_dir[0] = [(our[0] - color1[0]) / dist, (our[1] - color1[1]) / dist]
+                    try:
+                        our_dir[0] = [(our[0] - color1[0]) / dist, (our[1] - color1[1]) / dist]
+                    except ZeroDivisionError:
+                        our_dir[0] = [0, 0]
                     if error_open:
                         q = error_correct(our)
                         cv2.circle(show, (q[0], q[1]), 3, (252, 255, 255), -1)
@@ -621,7 +624,10 @@ def image_func():
                     cv2.putText(show, "ROBOT_2", our, font, 0.6, (255, 255, 255), 1)
                     cv2.circle(show, our, 2, (252, 255, 255), -1)
                     dist = get_distance(our, color2)
-                    our_dir[1] = [our[0] - (color2[0]) / dist, (our[1] - color2[1]) / dist]
+                    try:
+                        our_dir[1] = [our[0] - (color2[0]) / dist, (our[1] - color2[1]) / dist]
+                    except ZeroDivisionError:
+                        our_dir[1] = [0, 0]
                     if error_open:
                         q = error_correct(our)
                         cv2.circle(show, (q[0], q[1]), 3, (252, 255, 255), -1)
@@ -635,7 +641,10 @@ def image_func():
                     cv2.putText(show, "ROBOT_3", our, font, 0.6, (255, 255, 255), 1)
                     cv2.circle(show, our, 2, (252, 255, 255), -1)
                     dist = get_distance(our, color3)
-                    our_dir[2] = [our[0] - (color3[0]) / dist, (our[1] - color3[1]) / dist]
+                    try:
+                        our_dir[2] = [our[0] - (color3[0]) / dist, (our[1] - color3[1]) / dist]
+                    except ZeroDivisionError:
+                        our_dir[0] = [0, 0]
                     if error_open:
                         q = error_correct(our)
                         cv2.circle(show, (q[0], q[1]), 3, (252, 255, 255), -1)
@@ -722,9 +731,14 @@ def image_func():
             break
 
         if frame_counter >= 10:
+
             move_distance = get_distance(ball_pos_last, ball_pos_now)
-            x = (ball_pos_now[0] - ball_pos_last[0]) / move_distance
-            y = (ball_pos_now[1] - ball_pos_last[1]) / move_distance
+            try:
+                x = (ball_pos_now[0] - ball_pos_last[0]) / move_distance
+                y = (ball_pos_now[1] - ball_pos_last[1]) / move_distance
+            except ZeroDivisionError:
+                x = 0
+                y = 0
             ball_dir = [x, y]
             ball_pos_last = ball_pos_now
             tEnd = time.time()
