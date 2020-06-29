@@ -2,7 +2,7 @@ import time
 from tkinter import *
 from threading import Thread
 from Vision import Image_Identifier as image
-from Strategy import challenge_1 as strategy  # change this
+from Strategy import challenge_2 as strategy  # change this
 from comm import nrf_controller as nrf
 from queue import Queue
 import platform

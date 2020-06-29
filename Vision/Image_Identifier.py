@@ -572,6 +572,7 @@ def image_func():
     global frame_counter, ball_pos_last, show, frame, ball_speed, point_show, current_window, mask, ball_dir
     cap = WebcamVideoStream(src=camera_num).start()
     tStart = 0
+    print(cv2.CAP_PROP_EXPOSURE)
     while True:
 
         if frame_counter == 0:
@@ -763,7 +764,6 @@ def image_func():
             break
 
         if frame_counter >= 10:
-
             move_distance = get_distance(ball_pos_last, ball_pos_now)
             if move_distance == 0:
                 x = 0
