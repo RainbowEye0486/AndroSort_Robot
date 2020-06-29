@@ -15,7 +15,7 @@ import cv2
 import enum
 from Strategy import constant as CONST
 
-Print = True
+Print = False
 
 # Parameter needed to adjust
 ID_IN_USE = [3, 3, 3]
