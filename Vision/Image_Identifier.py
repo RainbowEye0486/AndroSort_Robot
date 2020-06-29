@@ -622,7 +622,6 @@ def image_func():
                         cv2.circle(show, (q[0], q[1]), 3, (252, 255, 255), -1)
                         our_data[0] = [q[0], q[1]]
 
-
         thread5.join()
         for our in our_pos:
             for color2 in color2_pos:
@@ -639,7 +638,6 @@ def image_func():
                         q = error_correct(our)
                         cv2.circle(show, (q[0], q[1]), 3, (252, 255, 255), -1)
                         our_data[1] = [q[0], q[1]]
-
 
         thread6.join()
         for our in our_pos:
@@ -727,7 +725,7 @@ def image_func():
         #  command order
 
         #  from strategy show
-        if (challenge_bit == 3) & (Main.start_bit == 1):
+        if (challenge_bit == 3) & (len(ch3.robots) == 3):
             for i in range(3):
                 if ch3.robots[i].job == ch3.Job.SHOOT:
                     cv2.putText(show, "SHOOT", (our_data[i][0], our_data[i][1] - 20), font, 1, (84, 83, 268), 3)

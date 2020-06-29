@@ -31,6 +31,7 @@ def start_func():
     global start_bit, go_strategy
     go_strategy = True
     start_bit = 1
+    print("starttttt\n\n\n\n\n\n\n\n")
 
 
 def pause_func():
