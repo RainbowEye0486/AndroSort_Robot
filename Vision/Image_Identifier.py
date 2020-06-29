@@ -7,6 +7,7 @@ import json
 import os
 import sys
 from Strategy import challenge_3 as ch3
+import main_controller as Main
 
 #  紀錄參數用
 fpath = os.path.join(os.path.dirname(__file__), 'param.json')
@@ -15,7 +16,7 @@ with open(fpath, 'r') as file_in:
 font = cv2.FONT_HERSHEY_SIMPLEX
 #  需要調整參數
 challenge_bit = 3
-camera_num = 0
+camera_num = 1
 robot_height = 45
 field_height = 268
 color_upper_clipper = 850  # 調整面積的讀取區間
@@ -726,7 +727,7 @@ def image_func():
         #  command order
 
         #  from strategy show
-        if challenge_bit == 3:
+        if (challenge_bit == 3) & (Main.start_bit == 1):
             for i in range(3):
                 if ch3.robots[i].job == ch3.Job.SHOOT:
                     cv2.putText(show, "SHOOT", (our_data[i][0], our_data[i][1] - 20), font, 1, (84, 83, 268), 3)

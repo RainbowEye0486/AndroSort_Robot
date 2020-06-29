@@ -368,6 +368,13 @@ def communicate(device, que):
             print(current_time + ' ' + data)
 
 
+def rest_robots(device):
+    '''before system close, rest the robots'''
+    input_data = 'r'
+    mode = 0
+    RF_sendCmd(input_data, device, '1', 0.05, mode)
+
+
 def device_close(device):
     if device is None:
         return
