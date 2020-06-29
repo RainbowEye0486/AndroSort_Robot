@@ -2,7 +2,7 @@ import time
 from tkinter import *
 from threading import Thread
 from Vision import Image_Identifier as image
-from Strategy import challenge_1 as strategy  # change this
+from Strategy import challenge_2 as strategy  # change this
 from comm import nrf_controller as nrf
 from queue import Queue
 import platform
@@ -10,6 +10,7 @@ import tkinter as tk
 import sys
 
 start_bit = 0
+PRINT = False
 
 if 'Linux' in platform.system():
     from getch import getch
@@ -66,7 +67,8 @@ def Strategy_thread(que):
             cmd = strategy.strategy()
             try:
                 input_data = cmd
-                print('cmd:', input_data)
+                if PRINT:
+                    print('cmd:', input_data)
                 if que.empty():
                     que.put(input_data)
                     time.sleep(0.001)

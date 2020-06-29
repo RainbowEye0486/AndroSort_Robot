@@ -14,7 +14,7 @@ with open(fpath, 'r') as file_in:
     jf = json.load(file_in)
 font = cv2.FONT_HERSHEY_SIMPLEX
 #  需要調整參數
-camera_num = 2
+camera_num = 0
 robot_height = 45
 field_height = 268
 color_upper_clipper = 800  # 調整面積的讀取區間

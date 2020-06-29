@@ -4,7 +4,7 @@ from enum import Enum
 import cv2
 
 # Parameter needed to adjust
-PRINT = True
+PRINT = False
 ID_IN_USE = [3, 3]
 
 # Field Parameter
@@ -263,6 +263,7 @@ def _angle(a, b):
     '''
     for vec in [a, b]:
         length = math.hypot(vec[0], vec[1])
+
         vec[0] = vec[0]/length
         vec[1] = vec[1]/length
     cross = a[0]*b[1] - a[1]*b[0]
@@ -496,17 +497,19 @@ def find_aim_point(x, y, goal):
         retval: the tolerant size
     """
     aim_point = [goal[0][0], -1]
-    enemies.sort(key=takeY)  # ??
+    if enemies:
+        enemies.sort(key=takeY)  # ??
     head_tails = []  # store the areas that are blocked
     for enemy in enemies:
-        if x < enemy[0] <= goal[0][0] or x > enemy[0] >= goal[0][0]:
-            pair = []
-            dir_x = enemy[0] - x
-            dir_y = (enemy[1] - ROB_RANG) - y
-            pair.append(y + (goal[0][0]-x)/dir_x*dir_y)
-            dir_y = (enemy[1] + ROB_RANG) - y
-            pair.append(y + (goal[0][0]-x)/dir_x*dir_y)
-            head_tails.append(pair)
+        if enemy:
+            if x < enemy[0] <= goal[0][0] or x > enemy[0] >= goal[0][0]:
+                pair = []
+                dir_x = enemy[0] - x
+                dir_y = (enemy[1] - ROB_RANG) - y
+                pair.append(y + (goal[0][0] - x) / dir_x * dir_y)
+                dir_y = (enemy[1] + ROB_RANG) - y
+                pair.append(y + (goal[0][0] - x) / dir_x * dir_y)
+                head_tails.append(pair)
     # if the blocked areas are consectutive, merge them;
     # if the whole area is beyond border then delete it
     j = 0
