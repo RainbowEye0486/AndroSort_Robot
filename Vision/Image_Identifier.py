@@ -538,7 +538,7 @@ class WebcamVideoStream:
         self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 1600)
         self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 900)
         self.stream.set(cv2.CAP_PROP_BUFFERSIZE, 3)
-        self.stream.set(cv2.CAP_PROP_EXPOSURE, 156)
+        self.stream.set(cv2.CAP_PROP_EXPOSURE, 77)
 
     def start(self):
         # start the thread to read frames from the video stream
