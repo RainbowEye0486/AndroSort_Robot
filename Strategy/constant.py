@@ -11,19 +11,19 @@ BODY = {
 MOTION = {
     3: {
         'MOVE': {# offset[verticle(, horizon)]
-            'FORE': {'CMD': ['W', 'w'], 'BOUND':  [30/cm_px, 15/cm_px], 'OFFSET': [5.5, 3]},
+            'FORE': {'CMD': ['W', 'w'], 'BOUND':  [7.3, 2.09], 'OFFSET': [13.5, 6]},
             # BOUND': [30, 15] for simulator [18, 8]
-            'BACK': {'CMD': ['s'], 'BOUND': [15/cm_px], 'OFFSET': [5.5, 3]},
+            'BACK': {'CMD': ['s'], 'BOUND': [2], 'OFFSET': [16, 6]},
             # BOUND': [15] ;[4]
-            'LEFT': {'CMD': ['A', 'a'], 'BOUND': [75/cm_px, 15/cm_px], 'OFFSET': [9.5]},
+            'LEFT': {'CMD': ['A', 'a'], 'BOUND': [19.5, 1.33], 'OFFSET': [15.5]},
             # BOUND': [75,15] ;[71, 3.1]
-            'RIGHT': {'CMD': ['D', 'd'], 'BOUND': [75/cm_px, 15/cm_px], 'OFFSET': [9.5]}
+            'RIGHT': {'CMD': ['D', 'd'], 'BOUND': [19.5, 1.275], 'OFFSET': [15.5]}
             #  [76, 2.22]
         },
 
         'TURN': {
-            'LEFT': {'CMD': ['Q', 'q'], 'BOUND': [0.9, 0.45]},
-            'RIGHT': {'CMD': ['E', 'e'], 'BOUND': [0.9, 0.45]}
+            'LEFT': {'CMD': ['Q', 'q'], 'BOUND': [0.358, 0.196]},
+            'RIGHT': {'CMD': ['E', 'e'], 'BOUND': [0.358, 0.196]}
         },
 
         'KICK': {

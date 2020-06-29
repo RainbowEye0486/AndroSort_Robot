@@ -4,6 +4,7 @@ from enum import Enum
 
 # Parameter needed to adjust
 ID_IN_USE = [3, 3]
+PRINT = True
 
 # Field Parameter
 CM_TO_PIX = 3.7
@@ -43,7 +44,8 @@ def strategy_update_field(side, boundary, center):
     # FB_X = fb_x # need to change
     # x = 3 if a==2 else 0
     GOAL = [BOUNDARY[11], BOUNDARY[8]] if SIDE == 1 else [BOUNDARY[2], BOUNDARY[5]]
-    print('GOAL:', GOAL)
+    if PRINT:
+        print('GOAL:', GOAL)
 
 
 def Initialize():
@@ -52,7 +54,8 @@ def Initialize():
         Initialise the strategy.
         This function will be called by the simulator before a simulation is started.
     """
-    print('initialize')
+    if PRINT:
+        print('initialize')
     global robots, enemies, ball
     for i in range(2):
         robots.append(Robot(ID_IN_USE[i]))
@@ -103,7 +106,8 @@ def Update_Robo_Info(teamD, teamP, oppoP, ballP, ballS=0, ballD=[0, 0]):
         if len(oppoP) >= i + 1:
             enemies[i] = oppoP[i]
     ball.pos = ballP
-    print('enemy', enemies)
+    if PRINT:
+        print('enemy', enemies)
     # ball.sped = ballS
     # return False
 
@@ -118,13 +122,13 @@ def strategy():
     # Your code
     global robots
     # choose_mode() # as a defender or an atacker
-    print('stratege')
     assign_role(robots)
     assign_job(robots)
     cmd = ['N', 'N', 'N']
     for i in range(len(robots)):
         cmd[i] = execute_job(i)
-    print(cmd)
+    if PRINT:
+        print(cmd)
     # cmd = execute_job(robots, 0)
     return cmd
 
@@ -145,23 +149,26 @@ def assign_role(robots):
     '''
     Decide every robot's role and change robot's attribute: role
     '''
-    print('assign role')
+    if PRINT:
+        print('assign role')
     if robots[0].role == '':
-        print('become sup')
+        if PRINT:
+            print('become sup')
         robots[0].role = Role.SUP
         robots[1].role = Role.NONE
     elif robots[0].role == Role.NONE:
         robots[1].role = Role.MAIN
     else:
-        print('else')
-    print(robots[0].role, robots[1].role)
+        if PRINT:
+            print('else')
+    if PRINT:
+        print(robots[0].role, robots[1].role)
 
 
 def assign_job(robots):
     '''
     Decide every robot's job and change robot's attribute: job
     '''
-    print('assign job')
     shoot_zone = 45*CM_TO_PIX
     for robo in robots:
         if robo.role == Role.SUP:
@@ -183,20 +190,22 @@ def execute_job(id):
     Base on the robot's job, give an exact command
     """
     global robots
-    print('execute job')
     robo = robots[id]
     rough_dist = 10*CM_TO_PIX  # the distance between ball and the robot should be
     if robo.job == Job.MOVE:
         pass
     elif robo.job == Job.PASS:
-        print('job == pass')
+        if PRINT:
+            print('job == pass')
         if robo.aim_pos[0] == -1:
-            print('no aim')
+            if PRINT:
+                print('no aim')
             x_pos = CENTER[0] - (FB_X)*SIDE
             segm = 4
             robo.aim_pos, no_use, no_use = find_shooting_point(x_pos, segm, GOAL)
         # kick ball
-        print(robo.aim_pos)
+        if PRINT:
+            print(robo.aim_pos)
         kickable_dist = 5*CM_TO_PIX  # the distance between ball and the robot should be
         kickable_ang = 15/180*math.pi  # acceptable angle error when kicking
         kick_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
@@ -205,7 +214,6 @@ def execute_job(id):
         force = 'small'
         kickable, kick_way, rt_cmd, arrival = is_kickable(robo, kickable_dist, kickable_ang, kick_dir, kick_ways, force)
         robo.arr = arrival  # 
-        print('kickable', )
         if kickable:
             robo.job = Job.NONE
             robo.role == Role.NONE
@@ -298,7 +306,8 @@ def _rotate(vector, angle):
 def is_kickable(robo, tol_dist, tol_angle, kick_dir, ways, force):
     # Find kick way(R,L,F,B)
     kick_way = find_way(robo, kick_dir, ways)
-    print('kick way', kick_way)
+    if PRINT:
+        print('kick way', kick_way)
     arrival = [b - un_dir*ball.RADIUS*CM_TO_PIX for b, un_dir in zip(ball.pos, kick_dir)]
     ver_offst = [direct * -robo.MOTION['MOVE'][kick_way]['OFFSET'][0]*CM_TO_PIX for direct in kick_dir]
     hor_offst = [0, 0]
@@ -308,14 +317,17 @@ def is_kickable(robo, tol_dist, tol_angle, kick_dir, ways, force):
         direction = _rotate(kick_dir, WAY_ANGLE[foot])
         offst = -robo.MOTION['MOVE'][kick_way]['OFFSET'][1]*CM_TO_PIX if kick_way=='FORE' else  robo.MOTION['MOVE'][kick_way]['OFFSET'][1]*CM_TO_PIX
         hor_offst = [direct * offst for direct in direction]
-        print('foot:', foot)
+        if PRINT:
+            print('foot:', foot)
     arrival = [arr + hor + ver for arr, hor, ver in zip(arrival, hor_offst, ver_offst)]
-    print('arr in change:', arrival)
+    if PRINT:
+        print('arr in change:', arrival)
     if _dist(arrival, robo.pos) < tol_dist:  # can reach the ball
         direction = _rotate(robo.dir, WAY_ANGLE[kick_way])
         angle = _angle(kick_dir, direction)
         if abs(angle) < tol_angle:  # with right angle
-            print('ang:', angle)
+            if PRINT:
+                print('ang:', angle)
             # time.sleep(3)
             # assign the right CMD according to the strength
             if kick_way == 'FORE':
@@ -338,8 +350,9 @@ def is_kickable(robo, tol_dist, tol_angle, kick_dir, ways, force):
                     rt_cmd = robo.MOTION['KICK']['BSHOOT']['CMD'][0]
                 else:
                     rt_cmd = robo.MOTION['KICK']['BSHOOT']['CMD'][1]
-            print('itself', robo.pos)
-            print('kicked', rt_cmd, arrival)
+            if PRINT:
+                print('itself', robo.pos)
+                print('kicked', rt_cmd, arrival)
             return True, kick_way, rt_cmd, arrival
     return False, kick_way, 'N', arrival
 
@@ -349,14 +362,16 @@ def move_with_dir(robo, arrival, curr_dir, ideal_dir, fit_way='FORE', ways=['FOR
     safe_ball = 15*CM_TO_PIX
     dist = _dist(robo.pos, arrival)
     dist_ball = _dist(robo.pos, ball.pos)
-    print('dist:', dist)
+    if PRINT:
+        print('dist:', dist)
     if dist > tol_dist and dist_ball > safe_ball:
         check, rt_cmd = move(robo, arrival, ways)
         if check:
             return True, rt_cmd
     '''fix angle'''
     angle = _angle(ideal_dir, curr_dir)
-    print('move/angle:', angle)
+    if PRINT:
+        print('move/angle:', angle)
     if angle > 0:  # should turn left
         if angle >= robo.MOTION['TURN']['LEFT']['BOUND'][0]:
             rt_cmd = robo.MOTION['TURN']['LEFT']['CMD'][0]
@@ -392,12 +407,13 @@ def move(robo, arrival, ways=['', '', '', '']):
     '''
        To move to assigned point and facing whatever direction
     '''
-    print('---->move w/o dir arr:', arrival)
     move_dir = _unit_vector(robo.pos, arrival)
-    print('dir:', move_dir)
     move_way = find_way(robo, move_dir, ways)
-    print('move way', move_way)
     dist = _dist(robo.pos, arrival)
+    if PRINT:
+        print('---->move w/o dir arr:', arrival)
+        print('dir:', move_dir)
+        print('move way', move_way)
     # if the robot will pass the ball while moving
     dist_ball = _dist(robo.pos, ball.pos)
     if dist > dist_ball:
@@ -410,7 +426,8 @@ def move(robo, arrival, ways=['', '', '', '']):
         safe_angle = math.atan(avoid_dist/dist_ball)
         if angle < safe_angle:
             # change arrival
-            print('change arrival')
+            if PRINT:
+                print('change arrival')
             product = -1
             re_dir = [0, 0]
             for sign in [-1, 1]:
@@ -428,7 +445,8 @@ def move(robo, arrival, ways=['', '', '', '']):
     # fix angle
     direction = _rotate(robo.dir, WAY_ANGLE[move_way])
     angle = _angle(move_dir, direction)
-    print('ang diff:', angle*180/math.pi)
+    if PRINT:
+        print('ang diff:', angle*180/math.pi)
     if angle > 0:  # should turn left
         if angle > robo.MOTION['TURN']['LEFT']['BOUND'][0]:
             rt_cmd = robo.MOTION['TURN']['LEFT']['CMD'][0]
@@ -540,9 +558,10 @@ def find_aim_point(x, y, goal):
         size = goal[1][1] - head_tails[len(head_tails)-1][1]
         aim_point[1] = (goal[1][1] + head_tails[len(head_tails)-1][1])/2
         ava_range.append([head_tails[len(head_tails)-1][1], goal[1][1]])
-    for pair in ava_range:
-        print('ava:', pair[0], pair[1])
-    print('(', x, ',', y, '):', size)
+    if PRINT:
+        for pair in ava_range:
+            print('ava:', pair[0], pair[1])
+        print('(', x, ',', y, '):', size)
     return aim_point, size
 
 
