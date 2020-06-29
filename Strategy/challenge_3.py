@@ -20,10 +20,9 @@ Print = True
 # Parameter needed to adjust
 ID_IN_USE = [3, 3, 3]
 CM_TO_PIX = 3.7
-carrier_range = 70  # range to judge if carry ball
-block_length = 30  # maximum range of a robot to defend area
-free_judge = 50  # determine whether the ball can be rob
-line_range = 50  # when defend , we need to know how close is enough from defend line
+carrier_range = 18 * CM_TO_PIX  # range to judge if carry ball
+# block_length = 7 * CM_TO_PIX  # maximum range of a robot to defend area
+line_range = 7 * CM_TO_PIX  # when defend , we need to know how close is enough from defend line
 SIDE = -1  # -1 for <- , 1 for ->
 ROB_RANG = 35  # enemy's half width
 # global value of movable objects
@@ -44,7 +43,7 @@ our_gate = []  # gate_left to gate_right , penalty_left to penalty_right
 enemy_gate = []
 
 # Define of zone
-x_length = 600
+x_length = 340 * CM_TO_PIX
 y_length = 318
 
 # CONST
@@ -427,6 +426,7 @@ def execute_job(id):
         if ball.speed > danger_spd:
             x_dist = our_gate[0][0] - ball.pos[0]
             if x_dist * ball.dir[0] > 0:
+
                 y_des = ball.pos[0] + x_dist / ball.dir[0] * ball.dir[1]
                 block_dir = [our_gate[0][0] - robo.pos[0], y_des - robo.pos[1]]
                 for orient in ['RIGHT', 'LEFT']:
@@ -819,7 +819,7 @@ def find_aim_point(x, y, goal):
     # if the whole area is beyond border then delete it
     j = 0
     while j < (len(head_tails) - 1):
-        if (head_tails[j][1] >= head_tails[j + 1][0]):
+        if head_tails[j][1] >= head_tails[j + 1][0]:
             head_tails[j][1] = head_tails[j + 1][1]
             del head_tails[j + 1]
         else:
@@ -894,7 +894,7 @@ class Robot:
         dir: list[x,y] -> The direction the robot faces, stored in unit vector
         role: A Role(Enum) represents the robot's role
         job: A Job(Enum) -> the move the robots are going to execute
-        MOTION: motion contants from constant.py
+        MOTION: motion constants from constant.py
         BODY: robot size from constant.py
     """
 
@@ -909,7 +909,7 @@ class Robot:
         self.next = [0, 0]  # next place to go
         self.target = [0, 0]  # where to pass ball
         self.in_zone = Zone.NONE
-        self.howclose = 80  # minimum distance to judge shooting
+        self.howclose = 20 * 3.7  # minimum distance to judge shooting
         self.face_ball = False  # 注意防守時候須不需要面向敵人
         self.MOTION = CONST.getMotion(ID)
         self.BODY = CONST.getBody()
@@ -998,7 +998,7 @@ class Robot:
         carry = None
         kick_forward = [self.pos[0] + SIDE * 50, self.pos[1]]
         gate_center = [enemy_gate[0][0], (enemy_gate[0][1] + enemy_gate[1][1]) / 2]
-        self.next = [ball.pos[0] - SIDE * (ball.radius + 15), ball.pos[1]]
+        self.next = [ball.pos[0] - SIDE * (ball.radius * CM_TO_PIX + 15), ball.pos[1]]
         tar, size = find_aim_point(ball.pos[0], ball.pos[1], [enemy_gate[0], enemy_gate[1]])
         percent = 0.0
         if Print:
@@ -1113,7 +1113,7 @@ class Robot:
         gate_center = [our_gate[1][0], ball.pos[1]]
         carry = None  # index of enemy who carries ball
         self.face_ball = False
-        self.next = [ball.pos[0] - SIDE * (ball.radius + 15), ball.pos[1]]  # default next position
+        self.next = [ball.pos[0] - SIDE * (ball.radius * CM_TO_PIX + 15), ball.pos[1]]  # default next position
         for i in range(3):
             if enemies[i].carrier:
                 carry = i
@@ -1175,7 +1175,8 @@ class Robot:
                 if Print:
                     print("inline\n")
             else:  # move to defend line
-                self.next = [ball.pos[0] - (ball.radius + 15) * SIDE, ball.pos[1]]  # block shortest line to gaol
+                self.next = [ball.pos[0] - (ball.radius * CM_TO_PIX + 15) * SIDE,
+                             ball.pos[1]]  # block shortest line to gaol
                 self.job = Job.MOVE
                 self.face_ball = True
 
@@ -1266,7 +1267,7 @@ class Ball:
         self.speed = 0  # speed rank
         self.dir = [0, 0]
         self.status = 'free'
-        self.radius = 15
+        self.radius = CONST.BALL_RADIUS
         self.in_zone = Zone.NONE
 
 
