@@ -497,7 +497,10 @@ def find_aim_point(x, y, goal):
         retval: the tolerant size
     """
     aim_point = [goal[0][0], -1]
-    if enemies:
+    for enemy in enemies:
+        if not enemy:
+            del enemy
+    if enemies:  
         enemies.sort(key=takeY)  # ??
     head_tails = []  # store the areas that are blocked
     for enemy in enemies:
