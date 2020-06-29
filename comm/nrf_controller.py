@@ -26,7 +26,6 @@ LSHOOT      = 'u', 1     # Left Foot Shoot
 RSHOOT      = 'i', 2     # Right Foot Shoot
 ur strings (like \n)
     if you know in advance how many characters to read, repeat reading until you've received them all
-
 In both cases, specify a timeout (for example 1 second) when opening the serial line, to get back control on your code if the remote end doesn't send anything for whatever reason.
 LPASS       = 'o', 3     # Left Foot Pass
 RPASS       = 'p', 4     # Right Foot Pass
@@ -34,7 +33,6 @@ RPASS       = 'p', 4     # Right Foot Pass
 DEFENCE     = 'y', 5     # Dodge
 STAND       = 'Y', 6     # Stand Up
 REST        = 'x', 7     # Dodge
-
 FFORWARD    = 'W', 0     # Fast Forward
 FORWARD     = 'w', 1     # Forward
 BACKWARD    = 's', 2     # Backward
@@ -54,13 +52,10 @@ DEF_baud = 9600
 def inputFunc(q):
     """
     Multi processing function, get input
-
     Parameters
         param1 - A multiprocess queue to push new input data
-
     Raise
         input character not valid
-
     Description
         a new character will be pushed only when queue is empty
     """
@@ -79,7 +74,6 @@ def inputFunc(q):
 def read_config():
     """
     Read configuration json file
-
     Return
         retva1 - config dictionary data structure
     """
@@ -92,7 +86,6 @@ def read_config():
 def load_cfg(config):
     """
     Load config from other program
-
     Parameters
         param1 - outer config dictionary data structure
     """
@@ -103,15 +96,12 @@ def load_cfg(config):
 def device_read(device, delay=0):
     """
     Reading nRF input after delay
-
     Parameters
         param1 - nRF serial device
         param2 - read after this delay
-
     Return
         retva1 - decode data (in gbk)
         retva2 - length
-
     Raise
         decode error
     """
@@ -162,41 +152,14 @@ def download_cfg(device):
     print(data)
 
 
-# def RF_sendCmd(input_data, device, delay=0, mode=0):
-#     """
-#     Send command through RF
-
-#     Parameters
-#         param1 - data to send
-#         param2 - serial device to use
-#         param3 - delay before sending
-#         param4 - sending mode
-
-#     Description
-#         For mode(@param4) 0, program will extend input character into robot command format and then send
-#         For mode(@param4) 1, program will directly send what it received
-#     """
-#     time.sleep(delay)
-#     current_time = datetime.now().strftime("%H-%M-%S-%f")
-#     if mode == 0:
-#         send_data = '#'+input_data+'1'+input_data+'2'+input_data+'9' +'$'
-#         print(current_time + " Send=", send_data.encode())
-#         device.write(bytes(send_data, encoding='utf8'))
-#     else:
-#         print(current_time + " Send=", input_data.encode())
-#         device.write(bytes(input_data, encoding='utf8'))
-
-
-def RF_sendCmd(input_data, device, robotID, delay=0, mode=0):
+def RF_sendCmd_sys(input_data, device, delay=0, mode=0):
     """
-    Send command through RF
-
+    Send command through RF for whole 3v3 system
     Parameters
         param1 - data to send
         param2 - serial device to use
         param3 - delay before sending
         param4 - sending mode
-
     Description
         For mode(@param4) 0, program will extend input character into robot command format and then send
         For mode(@param4) 1, program will directly send what it received
@@ -204,8 +167,32 @@ def RF_sendCmd(input_data, device, robotID, delay=0, mode=0):
     time.sleep(delay)
     current_time = datetime.now().strftime("%H-%M-%S-%f")
     if mode == 0:
-        send_data = '#' + input_data + '1' + input_data + '1'+ input_data + '1' +'$'
+        send_data = '#' + input_data[0] + '1' + input_data[1] + '1' + input_data[2] + '1' + '$'
+        print(current_time + " Send=", send_data.encode())
+        device.write(bytes(send_data, encoding='utf8'))
+    else:
+        print(current_time + " Send=", input_data.encode())
+        device.write(bytes(input_data, encoding='utf8'))
+
+
+def RF_sendCmd(input_data, device, robotID, delay=0, mode=0):
+    """
+    Send command through RF for testing
+    Parameters
+        param1 - data to send
+        param2 - serial device to use
+        param3 - delay before sending
+        param4 - sending mode
+    Description
+        For mode(@param4) 0, program will extend input character into robot command format and then send
+        For mode(@param4) 1, program will directly send what it received
+    """
+    time.sleep(delay)
+    current_time = datetime.now().strftime("%H-%M-%S-%f")
+    if mode == 0:
+        send_data = '#' + input_data + '1' + input_data + '2' + input_data + '9' + '$'
         # send_data = '#' + robotID + input_data + '1'+'$'
+        print('RF send:', send_data)
         print(current_time + " Send=", send_data.encode())
         device.write(bytes(send_data, encoding='utf8'))
     else:
@@ -225,10 +212,8 @@ def get_device():
 def open_device(portname):
     """
     Scanning through baudrate in the cfg file and existing port
-
     Parameters
         param1 - name of the port to test
-
     Return
         retva1 - device open or not
         retva2 - serial device object (None if not opened)
@@ -254,7 +239,6 @@ def open_device(portname):
 def device_chose():
     """
     The program to teach user how to choose
-
     Return
         retva1 - device open or not
         retva2 - serial device object (None if not opened)
@@ -273,7 +257,7 @@ def device_chose():
         print('%s %s' % (i + 1, port_list[i]))
 
     choose_device = None
-    while True:
+    while (True):
         # Get user input
         input_num = input("Enter device number (or q to quit)>>> ")
 
@@ -296,11 +280,9 @@ def device_chose():
 def main_procedure(device):
     """
     Main function of the nRF control
-
     Parameters
         param1 - port to open. If not open then use COM14
         param2 - baud to use. If not given then use 9600
-
     Description
         Press 'space' to seitch between FREE mode and robot controller mode
         One can use FREE mode to send any character, string or even send AT
@@ -325,7 +307,6 @@ def main_procedure(device):
             if ord(input_data) in [3]:
                 print(current_time + ' End of program')
                 break
-
             # Switch mode
             elif input_data == ' ':
                 saved = ''
@@ -359,10 +340,7 @@ def communicate(device, que):
     if not que.empty():
         # Get input from queue
         input_data = que.get()
-        robotID = input_data[1]
-        input_data = input_data[0]
-        # print(current_time + ' Has new input: ', ord(input_data), input_data)
-        RF_sendCmd(input_data, device, robotID, 0.05, mode)
+        RF_sendCmd_sys(input_data, device, 0.05, mode)
     while time.time() - tstart < 1 / 30:
         # Read input
         data, length = device_read(device)
