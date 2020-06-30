@@ -4,7 +4,7 @@ from enum import Enum
 import cv2
 
 # Parameter needed to adjust
-PRINT = False
+PRINT = True
 ID_IN_USE = [3, 3]
 
 # Field Parameter
@@ -38,6 +38,7 @@ def strategy_update_field(side, boundary, center):
     """
     # Your code
     global SIDE, BOUNDARY, CENTER, GOAL #PENALTY, FB_X
+    SIDE = side
     BOUNDARY = boundary
     CENTER = center
     # for simulator
@@ -101,11 +102,11 @@ def Update_Robo_Info(teamD, teamP, oppoP, ballP, ballS=0, ballD=[0, 0]):
     """
     # Your code
     for i in range(1):
-        if len(teamP[i]) > 0:
+        if teamP[i]:
             robots[i].pos = teamP[i]
-        if len(teamD[i]) > 0:
+        if teamD[i]:
             robots[i].dir = teamD[i]
-        if len(oppoP) >= i + 1:
+        if oppoP[i]:
             enemies[i] = oppoP[i]
     ball.pos = ballP
     if PRINT:
@@ -121,7 +122,7 @@ def strategy():
     """
     # Your code
     global robots
-    robo = robots[0]
+    # robo = robots[0]
     # robo.aim_pos, size = find_aim_point(ball.pos[0], ball.pos[1], GOAL)
     # print('aim:', robo.aim_pos)
     # print('size:', size)
@@ -132,7 +133,11 @@ def strategy():
     assign_job(robots)
     cmd = ['N', 'N', 'N']
     for i in range(len(robots)):
-        cmd[i] = execute_job(i)
+        try:
+            cmd[i] = execute_job(i)
+        except ZeroDivisionError:
+            print('divide zero')
+            cmd[i] = 'N'
     if PRINT:
         print(cmd)
     return cmd
@@ -303,6 +308,7 @@ def is_kickable(robo, tol_dist, tol_angle, kick_dir, ways, force):
         hor_offst = [direct * offst for direct in direction]
         if PRINT:
             print('foot:', foot)
+    print('arr', arrival, 'hor', hor_offst, 'ver', ver_offst)
     arrival = [arr + hor + ver for arr, hor, ver in zip(arrival, hor_offst, ver_offst)]
     if PRINT:
         print('arr in change:', arrival)
@@ -499,13 +505,14 @@ def find_aim_point(x, y, goal):
         retval: the tolerant size
     """
     aim_point = [goal[0][0], -1]
-    for enemy in enemies:
+    enemies_pos = enemies
+    for enemy in enemies_pos:
         if not enemy:
-            del enemy
-    if enemies:  
-        enemies.sort(key=takeY)  # ??
+            enemies_pos.remove([])
+    if enemies_pos:
+        enemies_pos.sort(key=takeY)  # ??
     head_tails = []  # store the areas that are blocked
-    for enemy in enemies:
+    for enemy in enemies_pos:
         if enemy:
             if x < enemy[0] <= goal[0][0] or x > enemy[0] >= goal[0][0]:
                 pair = []

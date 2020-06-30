@@ -7,6 +7,7 @@ import json
 import os
 import sys
 from Strategy import challenge_3 as ch3
+from Strategy import challenge_2 as ch2
 import main_controller as Main
 
 #  紀錄參數用
@@ -16,7 +17,7 @@ with open(fpath, 'r') as file_in:
 font = cv2.FONT_HERSHEY_SIMPLEX
 cap = None
 #  需要調整參數
-challenge_bit = 3
+challenge_bit = 2
 camera_num = 1
 robot_height = 45
 field_height = 268
@@ -25,7 +26,7 @@ color_lower_clipper = 100
 #  遮色片參數
 mask = False
 once_open_mask = False
-threshold = 50
+threshold = 20
 
 # don't care config
 point_show = False  # 場地標點
@@ -753,6 +754,24 @@ def image_func():
                          (int(ch3.robots[2].next[0]), int(ch3.robots[2].next[1])), (220, 50, 200), 3)
                 cv2.putText(show, "ROBO3_NEXT", (int(ch3.robots[2].next[0]), int(ch3.robots[2].next[1])), font, 0.6,
                             (220, 50, 200), 1)
+        elif challenge_bit == 2 and len(ch2.robots) == 1:
+            for i, robo in enumerate(ch2.robots):
+                if our_data[i]:
+                    if robo.job == ch2.Job.SHOOT:
+                        cv2.putText(show, "SHOOT", (our_data[i][0], our_data[i][1] - 20), font, 1, (84, 83, 268), 3)
+                        if not robo.aim_pos[0] == -1:
+                            cv2.circle(show, (int(robo.aim_pos[0]), int(robo.aim_pos[1])), 5, (45, 165, 230), -3)
+                    if robo.job == ch2.Job.NONE:
+                        cv2.putText(show, "NONE", (our_data[i][0], our_data[i][1] - 20), font, 1, (84, 83, 268), 3)
+                    if robo.job == ch2.Job.PASS:
+                        cv2.putText(show, "PASS", (our_data[i][0], our_data[i][1] - 20), font, 1, (84, 83, 268), 3)
+
+            if not ch2.robots[0].arr[0] == -1:
+                cv2.circle(show, (int(ch2.robots[0].arr[0]), int(ch2.robots[0].arr[1])), 5, (45, 165, 230), -3)
+                cv2.line(show, (our_data[0][0], our_data[0][1]),
+                         (int(ch2.robots[0].arr[0]), int(ch2.robots[0].arr[1])), (45, 165, 230), 3)
+                cv2.putText(show, "ROBO1_NEXT", (int(ch2.robots[0].arr[0]), int(ch2.robots[0].arr[1])), font, 0.6,
+                            (45, 165, 230), 1)
         #  print("cost %f second" % (tEnd - tStart))  # 紀錄每一幀時間
         thread7.join()
         # 顯示畫面

@@ -176,7 +176,6 @@ def RF_sendCmd_sys(input_data, device, delay=0, mode=0):
         For mode(@param4) 0, program will extend input character into robot command format and then send
         For mode(@param4) 1, program will directly send what it received
     """
-    time.sleep(delay)
     current_time = datetime.now().strftime("%H-%M-%S-%f")
     if mode == 0:
         send_data = '#'+input_data[0]+'1'+input_data[1]+'1'+input_data[2]+'1' +'$'
@@ -185,7 +184,7 @@ def RF_sendCmd_sys(input_data, device, delay=0, mode=0):
     else:
         print(current_time + " Send=", input_data.encode())
         device.write(bytes(input_data, encoding='utf8'))
-
+    time.sleep(delay)
 
 def RF_sendCmd(input_data, device, robotID, delay=0, mode=0):
     """
@@ -359,7 +358,7 @@ def communicate(device, que):
     if not que.empty():
         # Get input from queue
         input_data = que.get()
-        RF_sendCmd_sys(input_data, device, 0.05, mode)
+        RF_sendCmd_sys(input_data, device, 0.2, mode)
     while time.time() - tstart < 1 / 30:
         # Read input
         data, length = device_read(device)

@@ -126,10 +126,13 @@ def strategy():
     assign_job(robots)
     cmd = ['N', 'N', 'N']
     for i in range(len(robots)):
-        cmd[i] = execute_job(i)
+        try:
+            cmd[i] = execute_job(i)
+        except ZeroDivisionError:
+            print('divide zero')
+            cmd[i] = 'N'
     if PRINT:
         print(cmd)
-    # cmd = execute_job(robots, 0)
     return cmd
 
 
@@ -410,7 +413,11 @@ def move(robo, arrival, ways=['', '', '', '']):
     '''
        To move to assigned point and facing whatever direction
     '''
-    move_dir = _unit_vector(robo.pos, arrival)
+    try:
+        move_dir = _unit_vector(robo.pos, arrival)
+    except ZeroDivisionError:
+        print('robot is arrived')
+        return False, 'N'
     dist = _dist(robo.pos, arrival)
     if dist > 30 * CM_TO_PIX:
         ways = ['RIGHT', 'LEFT']
@@ -422,7 +429,11 @@ def move(robo, arrival, ways=['', '', '', '']):
     # if the robot will pass the ball while moving
     dist_ball = _dist(robo.pos, ball.pos)
     if dist > dist_ball:
-        ball_dir = _unit_vector(robo.pos, ball.pos)
+        try:
+            ball_dir = _unit_vector(robo.pos, ball.pos)
+        except ZeroDivisionError:
+            print('robot collides with ball')
+            return False, 'N'
         angle = abs(_angle(move_dir, ball_dir))
         if move_way == 'FORE' or move_way == 'BACK':
             avoid_dist = robo.BODY['width']/2*CM_TO_PIX
