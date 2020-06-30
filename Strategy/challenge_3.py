@@ -19,7 +19,7 @@ Print = False
 
 # Parameter needed to adjust
 ID_IN_USE = [3, 3, 3]
-CM_TO_PIX = 3.7
+CM_TO_PIX = 3.65
 carrier_range = 18 * CM_TO_PIX  # range to judge if carry ball
 # block_length = 7 * CM_TO_PIX  # maximum range of a robot to defend area
 line_range = 7 * CM_TO_PIX  # when defend , we need to know how close is enough from defend line
@@ -432,7 +432,7 @@ def execute_job(id):
                 for orient in ['RIGHT', 'LEFT']:
                     temp_dir = _rotate(robo.dir, WAY_ANGLE[orient])
                     if _dot(temp_dir, block_dir) >= 0:
-                        return robo.MOTION['DEFENSE'][orient]['CMD']
+                        return robo.MOTION['DEFENSE'][orient]['CMD'][0]
     elif robo.job == Job.REST:
         return robo.MOTION['REST']['CMD'][0]
     return 'N1'
@@ -695,15 +695,16 @@ def move(robo, arrival, ways=['', '', '', '']):
     """
        To move to assigned point and facing whatever direction
     """
-    if Print:
-        print('---->move w/o dir arr:', arrival)
     move_dir = _unit_vector(robo.pos, arrival)
-    if Print:
-        print('dir:', move_dir)
+    dist = _dist(robo.pos, arrival)
+    if dist > 30*CM_TO_PIX:  # limit to side move for long distance
+        ways = ['RIGHT', 'LEFT']
     move_way = find_way(robo, move_dir, ways)
     if Print:
+        print('---->move w/o dir arr:', arrival)
+        print('dir:', move_dir)
         print('move way', move_way)
-    dist = _dist(robo.pos, arrival)
+
     # if the robot will pass the ball while moving
     dist_ball = _dist(robo.pos, ball.pos)
     if dist > dist_ball:

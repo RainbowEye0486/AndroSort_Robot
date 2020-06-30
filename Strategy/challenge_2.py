@@ -8,7 +8,7 @@ PRINT = False
 ID_IN_USE = [3, 3]
 
 # Field Parameter
-CM_TO_PIX = 3.7
+CM_TO_PIX = 3.65
 BOUNDARY = []
 CENTER = [0, 0]
 PENALTY = 0
@@ -391,9 +391,11 @@ def move(robo, arrival, ways=['', '', '', '']):
     '''
        To move to assigned point and facing whatever direction
     '''
-    move_dir = _unit_vector(robo.pos, arrival)    
-    move_way = find_way(robo, move_dir, ways)
+    move_dir = _unit_vector(robo.pos, arrival)
     dist = _dist(robo.pos, arrival)
+    if dist > 30 * CM_TO_PIX:
+        ways = ['RIGHT', 'LEFT']
+    move_way = find_way(robo, move_dir, ways)
     if PRINT:
         print('---->move w/o dir arr:', arrival)
         print('dir:', move_dir)

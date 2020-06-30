@@ -7,7 +7,7 @@ ID_IN_USE = [3, 3]
 PRINT = True
 
 # Field Parameter
-CM_TO_PIX = 3.7
+CM_TO_PIX = 3.65
 BOUNDARY = []
 CENTER = [0, 0]
 PENALTY = 0
@@ -210,10 +210,14 @@ def execute_job(id):
         kickable_ang = 15/180*math.pi  # acceptable angle error when kicking
         kick_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
         move_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
-        kick_dir = _unit_vector(ball.pos, robo.aim_pos)
-        force = 'small'
-        kickable, kick_way, rt_cmd, arrival = is_kickable(robo, kickable_dist, kickable_ang, kick_dir, kick_ways, force)
-        robo.arr = arrival  # 
+        try:
+            kick_dir = _unit_vector(ball.pos, robo.aim_pos)
+            force = 'small'
+            kickable, kick_way, rt_cmd, arrival = is_kickable(robo, kickable_dist, kickable_ang, kick_dir, kick_ways, force)
+            robo.arr = arrival  #
+        except ZeroDivisionError:
+            print("ball has arrived the point")
+            kickable = False
         if kickable:
             robo.job = Job.NONE
             robo.role == Role.NONE
@@ -222,7 +226,6 @@ def execute_job(id):
         movable, rt_cmd = move_with_dir(robo, arrival, _rotate(robo.dir, WAY_ANGLE[kick_way]), kick_dir, kick_way)
         if movable:
             return rt_cmd
-        return
     elif robo.job == Job.SHOOT:
         if robo.aim_pos[0] == -1:
             robo.aim_pos, size = find_aim_point(ball.pos[0], ball.pos[1], GOAL)
@@ -408,8 +411,10 @@ def move(robo, arrival, ways=['', '', '', '']):
        To move to assigned point and facing whatever direction
     '''
     move_dir = _unit_vector(robo.pos, arrival)
-    move_way = find_way(robo, move_dir, ways)
     dist = _dist(robo.pos, arrival)
+    if dist > 30 * CM_TO_PIX:
+        ways = ['RIGHT', 'LEFT']
+    move_way = find_way(robo, move_dir, ways)
     if PRINT:
         print('---->move w/o dir arr:', arrival)
         print('dir:', move_dir)
