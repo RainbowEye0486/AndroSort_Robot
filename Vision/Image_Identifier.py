@@ -14,6 +14,7 @@ fpath = os.path.join(os.path.dirname(__file__), 'param.json')
 with open(fpath, 'r') as file_in:
     jf = json.load(file_in)
 font = cv2.FONT_HERSHEY_SIMPLEX
+cap = None
 #  需要調整參數
 challenge_bit = 3
 camera_num = 1
@@ -528,6 +529,8 @@ def thread_ball():
 
 
 class WebcamVideoStream:
+    stream = None
+
     def __init__(self, src=0):
         # initialize the video camera stream and read the first frame
         # from the stream
@@ -570,12 +573,10 @@ class WebcamVideoStream:
 
 
 def image_func():
-    global frame_counter, ball_pos_last, show, frame, ball_speed, point_show, current_window, mask, ball_dir
+    global frame_counter, ball_pos_last, show, frame, ball_speed, point_show, current_window, mask, ball_dir, cap
     cap = WebcamVideoStream(src=camera_num).start()
     tStart = 0
-    print(cv2.CAP_PROP_EXPOSURE)
     while True:
-
         if frame_counter == 0:
             tStart = time.time()
         frame_counter += 1
