@@ -1,6 +1,9 @@
 import time
 from tkinter import *
 from threading import Thread
+
+import cv2
+
 from Vision import Image_Identifier as image
 from Strategy import challenge_3 as strategy  # change this
 from comm import nrf_controller as nrf
@@ -31,7 +34,6 @@ def start_func():
     global start_bit, go_strategy
     go_strategy = True
     start_bit = 1
-    print("starttttt\n\n\n\n\n\n\n\n")
 
 
 def pause_func():
@@ -40,10 +42,18 @@ def pause_func():
     start_bit = 0
 
 
+def expo_func(self):
+    image.cap.stream.set(cv2.CAP_PROP_EXPOSURE, s2.get())
+
+
 def exit_func():
     window.destroy()
     image.exit_bit = 1
     sys.exit(0)
+
+
+def print_func():
+    strategy.PRINT = not strategy.PRINT
 
 
 def Image_thread():
@@ -64,7 +74,8 @@ def Strategy_thread(que):
         if image.exit_bit != 0:
             sys.exit()
         if go_strategy:
-            strategy.Update_Robo_Info(image.our_dir, image.our_data, image.enemy_data, image.ball_pos_now, image.ball_speed, image.ball_dir)
+            strategy.Update_Robo_Info(image.our_dir, image.our_data, image.enemy_data, image.ball_pos_now,
+                                      image.ball_speed, image.ball_dir)
             cmd = strategy.strategy()
             try:
                 input_data = cmd
@@ -111,6 +122,9 @@ if __name__ == '__main__':
 
     # all the setting of button
     window = tk.Tk()
+
+    s2 = tk.Scale(window, from_=30, to=180, orient="horizontal", command=expo_func, tickinterval=5, resolution=5)
+    s2.pack()
     pick_color_frame = tk.Frame(window)
     pick_color_frame.pack()
     instruction_frame = tk.Frame(window)
@@ -139,6 +153,8 @@ if __name__ == '__main__':
     correct_button.pack(side=tk.LEFT)
     mask_button = tk.Button(instruction_frame, text='mask', fg='Black', command=image.set_mask)
     mask_button.pack(side=tk.LEFT)
+    print_button = tk.Button(instruction_frame, text='Print', fg='Black', command=print_func)
+    print_button.pack(side=tk.LEFT)
     exit_button = tk.Button(instruction_frame, text='exit', fg='Black', command=exit_func)
     exit_button.pack(side=tk.LEFT)
 
