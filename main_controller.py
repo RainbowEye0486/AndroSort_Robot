@@ -5,7 +5,7 @@ from threading import Thread
 import cv2
 
 from Vision import Image_Identifier as image
-from Strategy import challenge_2 as strategy  # change this
+from Strategy import challenge_3 as strategy  # change this
 from comm import nrf_controller as nrf
 from queue import Queue
 import platform
@@ -25,7 +25,7 @@ else:
 image_buffer = list()
 decision_done = False
 # 需要調整參數
-side = -1  # attacking side 1:left is ours; 2: right is ours
+side = 1  # attacking side 1:left is ours; 2: right is ours
 challenge_num = 2
 go_strategy = False
 

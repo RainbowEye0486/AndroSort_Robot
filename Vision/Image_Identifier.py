@@ -17,7 +17,7 @@ with open(fpath, 'r') as file_in:
 font = cv2.FONT_HERSHEY_SIMPLEX
 cap = None
 #  需要調整參數
-challenge_bit = 2
+challenge_bit = 3
 camera_num = 1
 robot_height = 45
 field_height = 268
@@ -731,6 +731,7 @@ def image_func():
         cv2.putText(show, Str, (ball_pos_now[0], ball_pos_now[1] - 30), font, 1, (150, 245, 245), 3)
 
         if (challenge_bit == 3) & (len(ch3.robots) == 3):
+
             for i in range(3):
                 if ch3.robots[i].job == ch3.Job.SHOOT:
                     cv2.putText(show, "SHOOT", (our_data[i][0], our_data[i][1] - 20), font, 1, (84, 83, 268), 3)

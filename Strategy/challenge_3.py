@@ -43,8 +43,8 @@ our_gate = []  # gate_left to gate_right , penalty_left to penalty_right
 enemy_gate = []
 
 # Define of zone
-x_length = 340 * CM_TO_PIX
-y_length = 318
+x_length = 340 * CM_TO_PIX / 2
+y_length = 180 * CM_TO_PIX / 2
 
 # CONST
 WAY_ANGLE = {'FORE': 0, 'LEFT': -math.pi / 2, 'RIGHT': math.pi / 2, 'BACK': math.pi}
@@ -86,9 +86,6 @@ def strategy_update_field(side, boundary, center):
         our_gate = [boundary[5], BOUNDARY[2], PENALTY[2], PENALTY[1]]
         enemy_gate = [boundary[11], BOUNDARY[8], PENALTY[0], PENALTY[3]]
 
-    #  define zone of soccer field
-    x_length = (BOUNDARY[1][0] - BOUNDARY[0][0] + BOUNDARY[6][0] - BOUNDARY[7][0]) / 4
-    y_length = (BOUNDARY[7][1] - BOUNDARY[0][1] + BOUNDARY[6][1] - BOUNDARY[1][1]) / 4
     if PRINT:
         pass
         # print(SIDE)
@@ -698,7 +695,7 @@ def move(robo, arrival, ways=['', '', '', '']):
     """
     move_dir = _unit_vector(robo.pos, arrival)
     dist = _dist(robo.pos, arrival)
-    if dist > 30*CM_TO_PIX:  # limit to side move for long distance
+    if dist > 30 * CM_TO_PIX:  # limit to side move for long distance
         ways = ['RIGHT', 'LEFT']
     move_way = find_way(robo, move_dir, ways)
     if PRINT:
@@ -926,10 +923,10 @@ class Robot:
                 self.job = Job.PASS  # pass toward
                 self.target = [int(target[0]), int(target[1])]  # pass toward
         else:
-            self.next = [ball.pos[0] + 40 * SIDE, ball.pos[1]]  # 等於球的位置在向前幾個單位->推擠
+            self.next = [ball.pos[0] + 55 * SIDE, ball.pos[1]]  # 等於球的位置在向前幾個單位->推擠
 
     def move_and_do(self, angle_condition, tolerance_angle):
-        if get_distance(self.pos, self.next) > 8 * CM_TO_PIX:
+        if get_distance(self.pos, self.next) > 5 * CM_TO_PIX:
             if self.job == Job.REST:
                 pass
             else:
@@ -957,7 +954,7 @@ class Robot:
         angle_condition = abs(_angle(self.dir, [b - p for b, p in zip(ball.pos, self.pos)]))
         carry = False  # bool of enemy whether carries ball
         self.face_ball = True
-        self.next = [gate_center[0] + 40 * SIDE, gate_center[1]]  # default next position
+        self.next = [gate_center[0] + 55 * SIDE, gate_center[1]]  # default next position
         for i in range(3):
             if enemies[i].carrier:
                 carry = True
@@ -979,26 +976,30 @@ class Robot:
                     print("come from middle , watch out!")
                 elif ball.in_zone == Zone.LEFT_DEFEND:
                     self.next = line_fraction(gate_center, our_gate[0], 0.4)
-                    self.next[0] += 40 * SIDE
+                    self.next[0] += 55 * SIDE
                     self.move_and_do(angle_condition, 12)
                     print("come from left , watch out!")
                 elif ball.in_zone == Zone.FAR_LEFT_DEFEND:
                     self.next = line_fraction(gate_center, our_gate[0], 0.8)
-                    self.next[0] += 40 * SIDE
+                    self.next[0] += 55 * SIDE
                     self.move_and_do(angle_condition, 12)
                     print("come from far left , watch out!")
                 elif ball.in_zone == Zone.RIGHT_DEFEND:
                     self.next = line_fraction(gate_center, our_gate[1], 0.4)
-                    self.next[0] += 40 * SIDE
+                    self.next[0] += 55 * SIDE
                     self.move_and_do(angle_condition, 12)
                     print("come from right , watch out!")
                 elif ball.in_zone == Zone.FAR_RIGHT_DEFEND:
                     self.next = line_fraction(gate_center, our_gate[1], 0.8)
-                    self.next[0] += 40 * SIDE
+                    self.next[0] += 55 * SIDE
                     self.move_and_do(angle_condition, 12)
                     print("come from far right , watch out!")
                 else:
-                    print("who am I ? where am I ?")
+                    self.job = Job.SHOOT
+                    target, size = find_aim_point(ball.pos[0], ball.pos[1], [[CENTER[0], CENTER[1] + y_length],
+                                                                             [CENTER[0], CENTER[1] - y_length]])
+                    self.target = target
+                    print("in penalty zone!!!")
                     pass
                 if carry:
                     self.job = Job.STAND
