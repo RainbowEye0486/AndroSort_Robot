@@ -633,7 +633,7 @@ def image_func():
                     cv2.circle(show, our, 2, (252, 255, 255), -1)
                     dist = get_distance(our, color2)
                     try:
-                        our_dir[1] = [our[0] - (color2[0]) / dist, (our[1] - color2[1]) / dist]
+                        our_dir[1] = [(our[0] - color2[0]) / dist, (our[1] - color2[1]) / dist]
                     except ZeroDivisionError:
                         our_dir[1] = [0, 0]
                     if error_open:
@@ -650,7 +650,7 @@ def image_func():
                     cv2.circle(show, our, 2, (252, 255, 255), -1)
                     dist = get_distance(our, color3)
                     try:
-                        our_dir[2] = [our[0] - (color3[0]) / dist, (our[1] - color3[1]) / dist]
+                        our_dir[2] = [(our[0] - color3[0]) / dist, (our[1] - color3[1]) / dist]
                     except ZeroDivisionError:
                         our_dir[2] = [0, 0]
                     if error_open:
@@ -727,6 +727,9 @@ def image_func():
         #  command order
 
         #  from strategy show
+        Str = str(int(ball_speed))
+        cv2.putText(show, Str, (ball_pos_now[0], ball_pos_now[1] - 30), font, 1, (150, 245, 245), 3)
+
         if (challenge_bit == 3) & (len(ch3.robots) == 3):
             for i in range(3):
                 if ch3.robots[i].job == ch3.Job.SHOOT:

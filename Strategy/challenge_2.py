@@ -154,9 +154,9 @@ def get_sent_cmd(sentcmd, update):
 
 
 def assign_role(robots):
-    '''
+    """
     Decide every robot's role and change robot's attribute: role
-    '''
+    """
     if PRINT:
         print('assign role')
     robots[0].role = Role.MAIN
