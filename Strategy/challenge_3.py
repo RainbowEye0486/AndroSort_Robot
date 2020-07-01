@@ -379,7 +379,7 @@ def execute_job(id):
         if PRINT:
             print(robo.target)
         kickable_dist = 5 * CM_TO_PIX  # the distance between ball and the robot should be
-        kickable_ang = 15 / 180 * math.pi  # acceptable angle error when kicking
+        kickable_ang = 10 / 180 * math.pi  # acceptable angle error when kicking
         kick_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
         move_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
         kick_dir = _unit_vector(ball.pos, robo.target)
@@ -403,7 +403,7 @@ def execute_job(id):
         if robo.target[0] != -1:
             force = 'big'
             kickable_dist = 3 * CM_TO_PIX  # the distance between arrival and the robot should be
-            kickable_ang = 15 / 180 * math.pi  # acceptable angle error when kicking
+            kickable_ang = 7 / 180 * math.pi  # acceptable angle error when kicking
             kick_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
             move_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
             kick_dir = _unit_vector(ball.pos, robo.target)
@@ -681,7 +681,7 @@ def move_with_dir(robo, arrival, curr_dir, ideal_dir, fit_way='FORE', ways=['FOR
         temp_dir = _rotate(curr_dir, math.pi / 2 * i)
         diff_vec = [k - p for k, p in zip(arrival, robo.pos)]
         product = _dot(temp_dir, diff_vec)
-        if product >= robo.MOTION['MOVE'][move_way]['BOUND'][0] * CM_TO_PIX:
+        if product >= robo.MOTION['MOVE'][move_way]['BOUND'][0] * CM_TO_PIX and move_way == 'BACK':
             rt_cmd = robo.MOTION['MOVE'][move_way]['CMD'][0]
             return True, rt_cmd
         elif len(robo.MOTION['MOVE'][move_way]['BOUND']) > 1:

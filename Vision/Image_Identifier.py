@@ -8,6 +8,7 @@ import os
 import sys
 from Strategy import challenge_3 as ch3
 from Strategy import challenge_2 as ch2
+from Strategy import challenge_1 as ch1
 import main_controller as Main
 
 #  紀錄參數用

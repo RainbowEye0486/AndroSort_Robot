@@ -99,13 +99,14 @@ def Update_Robo_Info(teamD, teamP, oppoP, ballP, ballS=0, ballD=[0, 0]):
     """
     # Your code
     for i in range(2):
-        if len(teamP[i]) > 0:
+        if teamP[i]:
             robots[i].pos = teamP[i]
-        if len(teamD[i]) > 0:
+        if teamD[i]:
             robots[i].dir = teamD[i]
-        if len(oppoP) >= i + 1:
+        if oppoP[i]:
             enemies[i] = oppoP[i]
-    ball.pos = ballP
+    if ballP:
+        ball.pos = ballP
     if PRINT:
         print('enemy', enemies)
     # ball.sped = ballS
