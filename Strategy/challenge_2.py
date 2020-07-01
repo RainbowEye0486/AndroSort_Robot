@@ -44,7 +44,6 @@ def strategy_update_field(side, boundary, center):
     CENTER = center
     # for simulator
     # SIDE = -1 * side
-
     #FB_X = fb_x # need to change
     # x = 3 if a==2 else 0
     GOAL = [BOUNDARY[11], BOUNDARY[8]] if SIDE == 1 else [BOUNDARY[2], BOUNDARY[5]]
@@ -369,7 +368,7 @@ def move_with_dir(robo, arrival, curr_dir, ideal_dir, fit_way='FORE', ways=['FOR
     '''fix angle'''
     angle = _angle(ideal_dir, curr_dir)
     if PRINT:
-        print('move/angle:', angle)
+        print('move/angle diff:', angle)
     if angle > 0:  # should turn left
         if angle >= robo.MOTION['TURN']['LEFT']['BOUND'][0]:
             rt_cmd = robo.MOTION['TURN']['LEFT']['CMD'][0]
