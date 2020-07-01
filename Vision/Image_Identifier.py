@@ -17,7 +17,7 @@ with open(fpath, 'r') as file_in:
 font = cv2.FONT_HERSHEY_SIMPLEX
 cap = None
 #  需要調整參數
-challenge_bit = 3
+challenge_bit = 2
 camera_num = 1
 robot_height = 45
 field_height = 268
