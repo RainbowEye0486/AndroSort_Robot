@@ -219,7 +219,8 @@ def execute_job(id):
             force = 'big'
             kickable_dist = 3*CM_TO_PIX  # the distance between arrival and the robot should be
             kickable_ang = 7/180*math.pi  # acceptable angle error when kicking
-            kick_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
+            kick_ways = ['RIGHT']
+            # kick_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
             move_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
             kick_dir = _unit_vector(ball.pos, robo.aim_pos)
             kickable, kick_way, rt_cmd, arrival = is_kickable(robo, kickable_dist, kickable_ang, kick_dir, kick_ways, force)
@@ -298,6 +299,7 @@ def is_kickable(robo, tol_dist, tol_angle, kick_dir, ways, force):
     kick_way = find_way(robo, kick_dir, ways)
     if PRINT:
         print()
+        print(ways)
         print('====in kickable===')
         print('robo, kick_dir', robo.dir, kick_dir)
         print('kick way:', kick_way)

@@ -163,22 +163,20 @@ def assign_role(robots):
     '''
     if PRINT:
         print('assign role')
-    # if robots[0].role == '':
-    #     if PRINT:
-    #         print('become sup')
-    #     robots[0].role = Role.SUP
-    #     robots[1].role = Role.NONE
-    # elif robots[0].role == Role.SUP:
-    #     if PRINT:
-    #         print('ball move', _dist(ball.pos, last_ball))
-    #     if _dist(ball.pos, last_ball) > 5 * CM_TO_PIX:
-    #         robots[0].role = Role.NONE
-    #         robots[1].role = Role.MAIN
-    # else:
-    #     if PRINT:
-    #         print('else')
-    robots[0].role = Role.NONE
-    robots[1].role = Role.MAIN
+    if robots[0].role == '':
+        if PRINT:
+            print('become sup')
+        robots[0].role = Role.SUP
+        robots[1].role = Role.NONE
+    elif robots[0].role == Role.SUP:
+        if PRINT:
+            print('ball move', _dist(ball.pos, last_ball))
+        if _dist(ball.pos, last_ball) > 5 * CM_TO_PIX:
+            robots[0].role = Role.NONE
+            robots[1].role = Role.MAIN
+    else:
+        if PRINT:
+            print('else')
     if PRINT:
         print(robots[0].role, robots[1].role)
 
@@ -239,7 +237,6 @@ def execute_job(id):
             kickable = False
         if kickable:
             robo.job = Job.NONE
-            
             robo.aim_pos = [-1, -1]
             return rt_cmd
         movable, rt_cmd = move_with_dir(robo, arrival, _rotate(robo.dir, WAY_ANGLE[kick_way]), kick_dir, kick_way)
