@@ -811,6 +811,7 @@ def image_func():
                             (150, 205, 0), 1)
         #  print("cost %f second" % (tEnd - tStart))  # 紀錄每一幀時間
         thread7.join()
+
         # 顯示畫面
         if mask & once_open_mask:
             cv2.imshow(current_window, mask_frame)

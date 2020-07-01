@@ -6,14 +6,11 @@ In this vision , robot can only do things below
 
 # import constant
 from enum import Enum
-import math
 import numpy as np
 import math
-import time
-import copy
 import cv2
-import enum
 from Strategy import constant as CONST
+import time
 
 PRINT = False
 
@@ -31,6 +28,7 @@ enemies = []
 ball = None
 assist_block = False  # 只有到達當前位置的時候才會執行下一個目標點
 
+last_strategy = [[], [], []]
 # Field Parameter
 # BOUNDARY = []
 BOUNDARY = [[176, 107], [1354, 100], [1362, 272], [1428, 274], [1444, 550], [1374, 552], [1380, 731],
@@ -173,7 +171,6 @@ def Update_Robo_Info(teamD, teamP, oppoP, ballP, ballS, ballD):
         param3: list[list[int]] -> [x,y] for opponent's robot position
         param4: list[int] -> [x,y] for ball position
     """
-    # Your code
     global robots, enemies
     close_ball = [-1, 1000]  # first element is enemy index , second is distance to the ball
     for i in range(3):
@@ -232,7 +229,15 @@ def strategy():
     mode = set_mode()
     # as a defender or an attacker
 
+    for i in range(3):
+        if get_distance(last_strategy[i], robots[i].next) > 100:
+            print("avada")
+            time.sleep(5)
+
     assign_role(mode)
+
+    for i in range(3):
+        last_strategy[i] = robots[i].next
 
     if PRINT:
 
@@ -922,13 +927,13 @@ class Robot:
     def move_and_kick(self, carry, target):  # define how to get place and kick ball
         if carry is None:
             if self.distance > self.howclose:
-                self.next = ball.pos  # 直接等於球的位置->向球走過去
+                self.next = [ball.pos[0] - SIDE * int(10 * CM_TO_PIX), ball.pos[1]]  # 直接等於球的位置->向球走過去
                 self.job = Job.MOVE  # go go go
             else:
                 self.job = Job.PASS  # pass toward
                 self.target = [int(target[0]), int(target[1])]  # pass toward
         else:
-            self.next = [ball.pos[0] + 55 * SIDE, ball.pos[1]]  # 等於球的位置在向前幾個單位->推擠
+            self.job = Job.SHOOT
 
     def move_and_block(self):
         if self.distance > 5 * CM_TO_PIX:
@@ -1026,9 +1031,9 @@ class Robot:
         #      5其他情形就直接站在球的正前方，並且射爆
         global robots, ball, carrier_range
         carry = None
-        kick_forward = [self.pos[0] + SIDE * 50, self.pos[1]]
+
         gate_center = [enemy_gate[0][0], (enemy_gate[0][1] + enemy_gate[1][1]) / 2]
-        self.next = [ball.pos[0] - SIDE * (ball.radius * CM_TO_PIX + 15), ball.pos[1]]
+        self.next = [ball.pos[0] - SIDE * int(ball.radius * CM_TO_PIX + 15), ball.pos[1]]
         tar, size = find_aim_point(ball.pos[0], ball.pos[1], [enemy_gate[0], enemy_gate[1]])
         percent = 0.0
         if PRINT:
@@ -1043,8 +1048,6 @@ class Robot:
             self.move_and_kick(carry, tar)
             if self.job == Job.PASS:
                 self.job = Job.SHOOT  # 可能需要被 override 掉
-            # print(ball.pos[0], ball.pos[1], [enemy_gate[0], enemy_gate[1]])
-            # print(self.target, size)
         elif ball.in_zone == Zone.LEFT_OFFEND:
             # print("left")
             self.move_and_kick(carry, tar)
@@ -1090,8 +1093,9 @@ class Robot:
         #      4如果是極左/極右的話，不管
         #      5其他也站點，不管
         global ball, enemies, robots
+        print("i am assister")
         # print(ball.in_zone)
-        if (ball.in_zone == Zone.CENTER_AREA) | ((robots[other].pos[0] - CENTER[0]) * SIDE < 0):
+        if ball.in_zone == Zone.CENTER_AREA:
             # print("center")
             if self.half == 'left_side':
                 y = robots[other].next[1] - 200 * SIDE
@@ -1127,11 +1131,14 @@ class Robot:
 
         else:  # 其他直接站定點，先不管了
             # print("other")
-            if robots[other].in_zone == Zone.LEFT_OFFEND:
+            if robots[other].half == "right_side":
                 self.next = [enemy_gate[1][0] - 150 * SIDE, enemy_gate[1][1]]
-            elif robots[other].in_zone == Zone.RIGHT_OFFEND:
+            elif robots[other].half == "left_side":
                 self.next = [enemy_gate[0][0] - 150 * SIDE, enemy_gate[0][1]]
             self.move_and_block()
+        print("i am next ", self.next)
+        if self.next[0] < 1000:
+            time.sleep(5)
 
     def counter_assign(self):
         # 戰略：1如果是在中間（非對方進攻位置）直接佔到球的後面往前踢
