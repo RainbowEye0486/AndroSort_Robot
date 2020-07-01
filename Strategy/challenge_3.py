@@ -364,6 +364,8 @@ def execute_job(id):
         change, rt_cmd = move_with_dir(robo, arrival, robo.dir, ideal_dir, fit_way='FORE', ways=[])
         if change:
             return rt_cmd
+        else:
+            return 'R'
     elif robo.job == Job.PASS:
         if PRINT:
             print('job == pass')
@@ -417,20 +419,20 @@ def execute_job(id):
             if movable:
                 return rt_cmd
     elif robo.job == Job.DIVE:
-        danger_spd = 10
-        if ball.speed > danger_spd:
+        if ball.speed > CONST.DANGER_SPEED:
             x_dist = our_gate[0][0] - ball.pos[0]
             if x_dist * ball.dir[0] > 0:
-
                 y_des = ball.pos[0] + x_dist / ball.dir[0] * ball.dir[1]
-                block_dir = [our_gate[0][0] - robo.pos[0], y_des - robo.pos[1]]
-                for orient in ['RIGHT', 'LEFT']:
-                    temp_dir = _rotate(robo.dir, WAY_ANGLE[orient])
-                    if _dot(temp_dir, block_dir) >= 0:
-                        return robo.MOTION['DEFENCE'][orient]['CMD'][0]
+                if our_gate[1][1] < y_des < our_gate[0][1] or our_gate[0][1] < y_des < our_gate[1][1]:
+                    if abs(robo.pos - y_des) > robo.BODY['width'] * CM_TO_PIX / 2:
+                        block_dir = [our_gate[0][0] - robo.pos[0], y_des - robo.pos[1]]
+                        for orient in ['RIGHT', 'LEFT']:
+                            temp_dir = _rotate(robo.dir, WAY_ANGLE[orient])
+                            if _dot(temp_dir, block_dir) >= 0:
+                                return robo.MOTION['DEFENCE'][orient]['CMD'][0]
     elif robo.job == Job.REST:
         return robo.MOTION['REST']['CMD'][0]
-    return 'N1'
+    return 'N'
 
 
 #  function for calculation position
