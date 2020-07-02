@@ -540,7 +540,7 @@ def find_aim_point(x, y, goal):
     if PRINT:
         print('====find aim===')
     aim_point = [goal[0][0], -1]
-    enemies_pos = enemies
+    enemies_pos = enemies[:]
     for enemy in enemies_pos:
         if not enemy:
             enemies_pos.remove([])

@@ -31,7 +31,7 @@ challenge_num = 2
 # ===========================================
 
 go_strategy = False
-rest_bit = True
+rest_bit = False
 if challenge_num == 1:
     strategy = strategy1
     image.challenge_bit = 1
@@ -47,7 +47,6 @@ def start_func():
     global go_strategy, rest_bit
     go_strategy = True
     rest_bit = False
-    
 
 
 def pause_func():
@@ -120,11 +119,11 @@ def NRF_thread(device, que):
         if image.exit_bit != 0:
             nrf.rest_robots(device)
             sys.exit()
-        if not rest_bit:
-            if go_strategy:
-                nrf.communicate(device, que)
-        else:
-            nrf.rest_robots(device)
+        if rest_bit:
+            if not que.empty():
+                que.get()
+                que.put(['N', 'N', 'N'])
+        nrf.communicate(device, que)
         time.sleep(0.01)
 
 

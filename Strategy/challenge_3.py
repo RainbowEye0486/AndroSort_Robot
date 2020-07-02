@@ -369,8 +369,7 @@ def execute_job(id):
             if PRINT:
                 print('no aim')
         # kick ball
-        if PRINT:
-            print(robo.target)
+        check_boundary_ball(robo)
         kickable_dist = 3 * CM_TO_PIX  # the distance between ball and the robot should be
         kickable_ang = 7 / 180 * math.pi  # acceptable angle error when kicking
         kick_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
@@ -396,6 +395,7 @@ def execute_job(id):
             if PRINT:
                 print('no target')
         if robo.target[0] != -1:
+            check_boundary_ball(robo)
             force = 'big'
             kickable_dist = 3 * CM_TO_PIX  # the distance between arrival and the robot should be
             kickable_ang = 7 / 180 * math.pi  # acceptable angle error when kicking
@@ -804,11 +804,19 @@ def find_aim_point(x, y, goal):
     """
     aim_point = [goal[0][0], -1]
     enemies_pos = [enemy.pos for enemy in enemies]
+    for robo in robots:
+        if x < robo.pos[0] <= goal[0][0] or x > robo.pos[0] >= goal[0][0]:
+            enemies_pos.append(robo.pos)
     for enemy in enemies_pos:
         if not enemy:
             enemies_pos.remove([])
     if enemies_pos:
-        enemies_pos.sort(key=takeY)
+        if PRINT:
+            print('enemies_pos:', enemies_pos)
+        try:
+            enemies_pos.sort(key=takeY)
+        except Exception:
+            print(enemies_pos)
     head_tails = []  # store the areas that are blocked
     for enemy in enemies_pos:
         if x < enemy[0] <= goal[0][0] or x > enemy[0] >= goal[0][0]:
@@ -884,6 +892,20 @@ def find_shooting_point(x_pos, segm, goal):
             shooting_pt = [x, y]
             aim_pos = aim
     return shooting_pt, aim_pos, biggest_size
+
+
+def check_boundary_ball(robo):
+    bdry_rang = 12*CM_TO_PIX
+    if ball.pos[1] < BOUNDARY[0][1]+bdry_rang:
+        if PRINT:
+            print('boundary ball')
+        robo.target[0] = ball.pos[0] + SIDE*15
+        robo.target[1] = ball.pos[1] - 15
+    elif ball.pos[1] > BOUNDARY[7][1]-bdry_rang:
+        if PRINT:
+            print('boundary ball')
+        robo.target[0] = ball.pos[0] + SIDE*15
+        robo.target[1] = ball.pos[1] + 15
 
 
 '''end'''

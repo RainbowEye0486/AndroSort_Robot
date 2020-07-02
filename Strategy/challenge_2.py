@@ -58,6 +58,8 @@ def Initialize():
         robots.append(Robot(ID_IN_USE[i]))
     for i in range(1):
         enemies.append([])
+    if PRINT:
+        print('init', enemies)
     ball = Ball()
 
 
@@ -103,6 +105,9 @@ def Update_Robo_Info(teamD, teamP, oppoP, ballP, ballS=0, ballD=[0, 0]):
         if teamD[i]:
             robots[i].dir = teamD[i]
         if oppoP[i]:
+            if PRINT:
+                print('enemies',enemies)
+                print('oppoP', oppoP)
             enemies[i] = oppoP[i]
     ball.pos = ballP
     if PRINT:
@@ -118,11 +123,7 @@ def strategy():
     """
     # Your code
     global robots
-    # robo = robots[0]
-    # robo.aim_pos, size = find_aim_point(ball.pos[0], ball.pos[1], GOAL)
-    # print('aim:', robo.aim_pos)
-    # print('size:', size)
-    # choose_mode() # as a defender or an atacker
+
     if PRINT:    
         pass
     assign_role(robots)
@@ -163,8 +164,9 @@ def assign_job(robots):
     Decide every robot's job and change robot's attribute: job
     '''
     if PRINT:    
-        pass
+        print('pass')
     robots[0].job = Job.SHOOT
+    robots[0].aim_pos, size = find_aim_point(ball.pos[0], ball.pos[1], GOAL)
 
 
 def execute_job(id):
@@ -181,18 +183,10 @@ def execute_job(id):
     elif robo.job == Job.PASS:
         if PRINT:
             print('job == pass')
-        if robo.aim_pos[0] == -1:
-            if PRINT:
-                print('no aim')
-            x_pos = CENTER[0] + (45*CM_TO_PIX)*SIDE
-            segm = 4
-            robo.aim_pos, no_use, no_use = find_shooting_point(x_pos, segm, GOAL)
-        # kick ball
-        if PRINT:
-            pass
-        kickable_dist = 1.5*CM_TO_PIX  # the distance between ball and the robot should be
-        kickable_ang = 15/180*math.pi  # acceptable angle error when kicking
-        kick_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
+        kickable_dist = 2*CM_TO_PIX  # the distance between ball and the robot should be
+        kickable_ang = 7/180*math.pi  # acceptable angle error when kicking
+        # kick_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
+        kick_ways = ['FORE']
         move_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
         kick_dir = _unit_vector(ball.pos, robo.aim_pos)
         force = 'small'
@@ -208,15 +202,12 @@ def execute_job(id):
             return rt_cmd
         return
     elif robo.job == Job.SHOOT:
-        if robo.aim_pos[0] == -1:
-            if enemies[0]:
-                robo.aim_pos, size = find_aim_point(ball.pos[0], ball.pos[1], GOAL)
         if robo.aim_pos[0] != -1:
             force = 'big'
             kickable_dist = 3*CM_TO_PIX  # the distance between arrival and the robot should be
             kickable_ang = 7/180*math.pi  # acceptable angle error when kicking
-            kick_ways = ['RIGHT']
-            # kick_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
+            # kick_ways = ['BACK']
+            kick_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
             move_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
             kick_dir = _unit_vector(ball.pos, robo.aim_pos)
             kickable, kick_way, rt_cmd, arrival = is_kickable(robo, kickable_dist, kickable_ang, kick_dir, kick_ways, force)
@@ -515,7 +506,7 @@ def find_aim_point(x, y, goal):
     if PRINT:
         print('====find aim===')
     aim_point = [goal[0][0], -1]
-    enemies_pos = enemies
+    enemies_pos = enemies[:]
     for enemy in enemies_pos:
         if not enemy:
             enemies_pos.remove([])
@@ -540,7 +531,8 @@ def find_aim_point(x, y, goal):
                 dir_y = (enemy[1] + ROB_RANG) - y
                 pair.append(y + (goal[0][0] - x) / dir_x * dir_y)
                 head_tails.append(pair)
-    print('head_tail', head_tails)
+    if PRINT:
+        print('head_tail', head_tails)
     # if the blocked areas are consectutive, merge them;
     # if the whole area is beyond border then delete it
     j = 0
@@ -612,8 +604,19 @@ def takeY(e):
     return e[1]
 
 
-def test(robots):
-    robots[0].job = Job.PASS
+def check_boundary_ball(robo):
+    bdry_rang = 12*CM_TO_PIX
+    if ball.pos[1] < BOUNDARY[0][1]+bdry_rang:
+        if PRINT:
+            print('boundary ball')
+        robo.aim_pos[0] = ball.pos[0] + SIDE*15
+        robo.aim_pos[1] = ball.pos[1] - 15
+    elif ball.pos[1] > BOUNDARY[7][1]-bdry_rang:
+        if PRINT:
+            print('boundary ball')
+        robo.aim_pos[0] = ball.pos[0] + SIDE*15
+        robo.aim_pos[1] = ball.pos[1] + 15
+
 
 class Robot():
     """
