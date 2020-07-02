@@ -1,11 +1,10 @@
 import time
-from tkinter import *
 from threading import Thread
-
 import cv2
-
 from Vision import Image_Identifier as image
-from Strategy import challenge_3 as strategy  # change this
+from Strategy import challenge_1 as strategy1  # change this
+from Strategy import challenge_2 as strategy2  # change this
+from Strategy import challenge_3 as strategy3  # change this
 from comm import nrf_controller as nrf
 from queue import Queue
 import platform
@@ -25,9 +24,22 @@ else:
 image_buffer = list()
 decision_done = False
 # 需要調整參數
-side = 1  # attacking side 1:left is ours; 2: right is ours
-challenge_num = 2
+
+# ===========adjust==========================
+side = -1  # -1 for <- , 1 for ->
+challenge_num = 3
+# ===========================================
+
 go_strategy = False
+if challenge_num == 1:
+    strategy = strategy1
+    image.challenge_bit = 1
+if challenge_num == 2:
+    strategy = strategy2
+    image.challenge_bit = 2
+if challenge_num == 3:
+    strategy = strategy3
+    image.challenge_bit = 3
 
 
 def start_func():
@@ -112,13 +124,12 @@ if __name__ == '__main__':
         thread1.start()
         time.sleep(0.5)
         image.return_field()
-        if challenge_num == 2:
-            thread2 = Thread(target=Strategy_thread, name='C2_Tr', args=(cmd_in_wait,))
-            thread2.start()
-            time.sleep(0.5)
-            thread3 = Thread(target=NRF_thread, name='Comm_Tr', args=(device, cmd_in_wait,))
-            thread3.start()
-            time.sleep(0.5)
+        thread2 = Thread(target=Strategy_thread, name='C2_Tr', args=(cmd_in_wait,))
+        thread2.start()
+        time.sleep(0.5)
+        thread3 = Thread(target=NRF_thread, name='Comm_Tr', args=(device, cmd_in_wait,))
+        thread3.start()
+        time.sleep(0.5)
 
     # all the setting of button
     window = tk.Tk()

@@ -1,5 +1,5 @@
 {
-  "version": "whatever 1.0",
+  "version": "param 2.0",
   "name": "parameter file",
   "color_patch": {
     "color1_lower": [
@@ -23,19 +23,19 @@
       46
     ],
     "ball_lower": [
-      132,
-      221,
-      221
+      32,
+      218,
+      215
     ],
     "our_upper": [
-      72,
-      50,
-      190
+      71,
+      49,
+      182
     ],
     "ball_upper": [
-      193,
-      282,
-      282
+      94,
+      279,
+      276
     ],
     "color1_upper": [
       220,
@@ -48,9 +48,9 @@
       -10
     ],
     "our_lower": [
-      32,
-      10,
-      150
+      31,
+      9,
+      142
     ],
     "color3_upper": [
       251,

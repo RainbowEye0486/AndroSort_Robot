@@ -83,7 +83,6 @@ def strategy_update_field(side, boundary, center):
     else:
         our_gate = [boundary[5], BOUNDARY[2], PENALTY[2], PENALTY[1]]
         enemy_gate = [boundary[11], BOUNDARY[8], PENALTY[0], PENALTY[3]]
-
     if PRINT:
         pass
         # print(SIDE)
@@ -207,7 +206,7 @@ def Update_Robo_Info(teamD, teamP, oppoP, ballP, ballS, ballD):
 
     ball.dir = ballD
     ball.in_zone = in_zone(ball.pos)
-    print("ball_inZone:", ball.in_zone)
+#    print("ball_inZone:", ball.in_zone)
     if PRINT:
         print("ball_inZone:", ball.in_zone)
         # print(teamD, teamP, oppoP, ball.pos, ball.speed, ball.dir)
@@ -228,17 +227,14 @@ def strategy():
 
     mode = set_mode()
     # as a defender or an attacker
-
-    for i in range(3):
-        if get_distance(last_strategy[i], robots[i].next) > 100:
-            print("avada")
-            time.sleep(5)
+    print(last_strategy)
 
     assign_role(mode)
 
     for i in range(3):
         last_strategy[i] = robots[i].next
-
+    print(last_strategy)
+    print("\n")
     if PRINT:
 
         for i in range(3):
@@ -423,9 +419,9 @@ def execute_job(id):
         if ball.speed > CONST.DANGER_SPEED:
             x_dist = our_gate[0][0] - ball.pos[0]
             if x_dist * ball.dir[0] > 0:
-                y_des = ball.pos[0] + x_dist / ball.dir[0] * ball.dir[1]
+                y_des = ball.pos[1] + x_dist / ball.dir[0] * ball.dir[1]
                 if our_gate[1][1] < y_des < our_gate[0][1] or our_gate[0][1] < y_des < our_gate[1][1]:
-                    if abs(robo.pos - y_des) > robo.BODY['width'] * CM_TO_PIX / 2:
+                    if abs(robo.pos[1] - y_des) > robo.BODY['width'] * CM_TO_PIX / 2:
                         block_dir = [our_gate[0][0] - robo.pos[0], y_des - robo.pos[1]]
                         for orient in ['RIGHT', 'LEFT']:
                             temp_dir = _rotate(robo.dir, WAY_ANGLE[orient])
@@ -500,9 +496,9 @@ def in_zone(pos):
             return Zone.FAR_RIGHT_DEFEND
         elif (ra_x - ratio(-7 * SIDE / 17, 1)[0]) * SIDE > 0:
             return Zone.FAR_RIGHT_OFFEND
-    elif (ra_y > PENALTY[0][1]) & (ra_y < PENALTY[3][1]) & (ra_x < PENALTY[0][0] + 35):
+    elif (ra_y > PENALTY[0][1]) & (ra_y < PENALTY[3][1]) & (ra_x < PENALTY[0][0] + 45):
         return Zone.OUR_PENALTY if SIDE == 1 else Zone.ENEMY_PENALTY
-    elif (ra_y > PENALTY[0][1]) & (ra_y < PENALTY[3][1]) & (ra_x > PENALTY[1][0] - 35):
+    elif (ra_y > PENALTY[0][1]) & (ra_y < PENALTY[3][1]) & (ra_x > PENALTY[1][0] - 45):
         return Zone.ENEMY_PENALTY if SIDE == 1 else Zone.OUR_PENALTY
     elif (ra_y - ratio(1, 2 * SIDE / 9)[1]) * SIDE < 0:  # left
         if (ra_x - ratio(7 * SIDE / 17, 1)[0]) * SIDE < 0:
@@ -596,8 +592,8 @@ def is_kickable(robo, tol_dist, tol_angle, kick_dir, ways, force):
         print('====in kickable===')
         print('robo, kick_dir', robo.dir, kick_dir)
         print('kick way:', kick_way)
-    arrival = [b - un_dir*ball.RADIUS*CM_TO_PIX for b, un_dir in zip(ball.pos, kick_dir)]
-    ver_offst = [direct * -robo.MOTION['MOVE'][kick_way]['OFFSET'][0]*CM_TO_PIX for direct in kick_dir]
+    arrival = [b - un_dir * ball.radius * CM_TO_PIX for b, un_dir in zip(ball.pos, kick_dir)]
+    ver_offst = [direct * -robo.MOTION['MOVE'][kick_way]['OFFSET'][0] * CM_TO_PIX for direct in kick_dir]
     hor_offst = [0, 0]
     if kick_way == 'FORE' or kick_way == 'BACK':
         angle = _angle(robo.dir, [ball-pos for ball, pos in zip(ball.pos, robo.pos)])
@@ -760,10 +756,10 @@ def move(robo, arrival, ways=['', '', '', '']):
     '''MOVE'''
     # if the robot is supporter,
     # should give the way of main robot
-    if robo.role == Role.SUP:
+    if robo.role == Role.INTERFERER or robo.role == Role.ASSISTER:
         chief = None
         for rob in robots:
-            if rob.role == Role.MAIN:
+            if rob.role == Role.STRICKER or robo.role == Role.COUNTER:
                 chief = rob
                 break
         # if main robot in the neiborhood of support and in the way of the next step
@@ -927,7 +923,7 @@ class Robot:
     def move_and_kick(self, carry, target):  # define how to get place and kick ball
         if carry is None:
             if self.distance > self.howclose:
-                self.next = [ball.pos[0] - SIDE * int(10 * CM_TO_PIX), ball.pos[1]]  # 直接等於球的位置->向球走過去
+                self.next = [ball.pos[0] - SIDE * int(10 * CM_TO_PIX), ball.pos[1]]  # 等於球後方一些的位置->向球走過去
                 self.job = Job.MOVE  # go go go
             else:
                 self.job = Job.PASS  # pass toward
@@ -1093,7 +1089,6 @@ class Robot:
         #      4如果是極左/極右的話，不管
         #      5其他也站點，不管
         global ball, enemies, robots
-        print("i am assister")
         # print(ball.in_zone)
         if ball.in_zone == Zone.CENTER_AREA:
             # print("center")
@@ -1136,9 +1131,6 @@ class Robot:
             elif robots[other].half == "left_side":
                 self.next = [enemy_gate[0][0] - 150 * SIDE, enemy_gate[0][1]]
             self.move_and_block()
-        print("i am next ", self.next)
-        if self.next[0] < 1000:
-            time.sleep(5)
 
     def counter_assign(self):
         # 戰略：1如果是在中間（非對方進攻位置）直接佔到球的後面往前踢
@@ -1165,7 +1157,7 @@ class Robot:
                 if PRINT:
                     print("inline\n")
             else:  # move to defend line
-                self.next = line_fraction(ball.pos, gate_center, 0.35)
+                self.next = line_fraction(ball.pos, gate_center, 0.4)
                 self.job = Job.MOVE
                 if PRINT:
                     print("outline\n")
@@ -1176,7 +1168,8 @@ class Robot:
                 if PRINT:
                     print("inline\n")
             else:  # move to defend line
-                self.next = line_fraction(ball.pos, our_gate[0], 0.3)  # gate_left
+                self.next = line_fraction(ball.pos, our_gate[0], 0.4)  # gate_left
+                self.next[1] += int(SIDE * 8 * CM_TO_PIX)
                 self.job = Job.MOVE
                 if PRINT:
                     print("outline\n")
@@ -1187,7 +1180,8 @@ class Robot:
                 if PRINT:
                     print("inline\n")
             else:  # move to defend line
-                self.next = line_fraction(ball.pos, our_gate[0], 0.3)  # gate_left
+                self.next = line_fraction(ball.pos, our_gate[0], 0.4)  # gate_left
+                self.next[1] += int(SIDE * 8 * CM_TO_PIX)
                 self.job = Job.MOVE
         elif ball.in_zone == Zone.FAR_RIGHT_DEFEND:
             if in_line(ball.pos, our_gate[1], self.pos, False):  # on defend line , defend line is right
@@ -1195,7 +1189,8 @@ class Robot:
                 if PRINT:
                     print("inline\n")
             else:  # move to defend line
-                self.next = line_fraction(ball.pos, our_gate[1], 0.3)  # gate_right
+                self.next = line_fraction(ball.pos, our_gate[1], 0.4)  # gate_right
+                self.next[1] += int(SIDE * 8 * CM_TO_PIX)
                 self.job = Job.MOVE
                 self.face_ball = True
         elif ball.in_zone == Zone.RIGHT_DEFEND:
@@ -1205,19 +1200,15 @@ class Robot:
                     print("inline\n")
             else:  # move to defend line
                 self.next = line_fraction(ball.pos, our_gate[1], 0.3)  # gate_right
+                self.next[1] -= int(SIDE * 8 * CM_TO_PIX)
                 self.job = Job.MOVE
                 self.face_ball = True
         else:
-            if in_line(ball.pos, [our_gate[0][0], (our_gate[0][1] + our_gate[1][1]) / 2],
-                       self.pos, False):  # on defend line , defend line is middle
-                self.move_and_kick(carry, kick_forward)
-                if PRINT:
-                    print("inline\n")
-            else:  # move to defend line
-                self.next = [ball.pos[0] - (ball.radius * CM_TO_PIX + 15) * SIDE,
-                             ball.pos[1]]  # block shortest line to gaol
-                self.job = Job.MOVE
-                self.face_ball = True
+            if self.half == "right_side":
+                self.next = our_gate[3]
+            else:
+                self.next = our_gate[2]
+            self.move_and_block()
 
     def interferer_assign(self, other):
         # 戰略：1如果是在中間（非對方進攻的位置），設定為跟隨模式，跟隨模式為一旦超出邊界，便會站到中央
@@ -1256,7 +1247,7 @@ class Robot:
                 self.face_ball = True
                 self.job = Job.REST
             else:  # move to defend line
-                self.next = line_fraction(ball.pos, our_gate[1], 0.5)  # gate_right
+                self.next = line_fraction(ball.pos, our_gate[1], 0.75)  # gate_right
                 self.move_and_block()
                 # print(self.next)
         elif ball.in_zone == Zone.LEFT_DEFEND:
@@ -1264,7 +1255,7 @@ class Robot:
                 self.face_ball = True
                 self.job = Job.STAND
             else:  # move to defend line
-                self.next = in_line(ball.pos, our_gate[1], self.pos, True)  # gate_right
+                self.next = line_fraction(ball.pos, our_gate[1], 0.75)
                 self.job = Job.MOVE
                 # print(self.next)
         elif ball.in_zone == Zone.FAR_RIGHT_DEFEND:
@@ -1272,19 +1263,22 @@ class Robot:
                 self.face_ball = True
                 self.job = Job.REST
             else:  # move to defend line
-                self.next = line_fraction(ball.pos, our_gate[0], 0.5)  # gate_left
+                self.next = line_fraction(ball.pos, our_gate[0], 0.75)  # gate_left
                 self.job = Job.MOVE
         elif ball.in_zone == Zone.RIGHT_DEFEND:
             if in_line(ball.pos, our_gate[0], self.pos, False):  # on defend line , defend line is left
                 self.face_ball = True
                 self.job = Job.REST
             else:  # move to defend line
-                self.next = line_fraction(ball.pos, our_gate[0], 0.5)  # gate_left
+                self.next = line_fraction(ball.pos, our_gate[0], 0.75)  # gate_left
                 self.job = Job.MOVE
 
         else:
-            if robots[other].side == "right_side":
-                pass
+            if self.half == "right_side":
+                self.next = our_gate[3]
+            else:
+                self.next = our_gate[2]
+            self.move_and_block()
 
     def roamer_assign(self):
         print('no job assign?')
@@ -1299,7 +1293,7 @@ class Enemy:
         self.distance = 1000  # distance between robot and ball
         self.carrier = False  # who is carry ball
         self.in_zone = Zone.NONE
-        self.miss = False
+        self.miss = True
 
 
 class Ball:

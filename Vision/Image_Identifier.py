@@ -9,17 +9,21 @@ import sys
 from Strategy import challenge_3 as ch3
 from Strategy import challenge_2 as ch2
 from Strategy import challenge_1 as ch1
-import main_controller as Main
 
+camera_switch = 0  # 哪一個相機
 #  紀錄參數用
-fpath = os.path.join(os.path.dirname(__file__), 'param.json')
+if camera_switch == 0:
+    fpath = os.path.join(os.path.dirname(__file__), 'param.json')
+else:
+    fpath = os.path.join(os.path.dirname(__file__), 'param2.json')
+
 with open(fpath, 'r') as file_in:
     jf = json.load(file_in)
 font = cv2.FONT_HERSHEY_SIMPLEX
 cap = None
 #  需要調整參數
-challenge_bit = 2
-camera_num = 1
+challenge_bit = 3
+camera_num = 2
 robot_height = 45
 field_height = 268
 color_upper_clipper = 850  # 調整面積的讀取區間
@@ -377,13 +381,15 @@ def pick_color_ball(event, x, y, flags, param):
         pick_time[5] += 1
         pixel = frame[y, x]
         if pick_time[5] < 6:
-            upper = [int(max(pixel[0] + threshold, ball_upper[0])), int(max(pixel[1] + threshold, ball_upper[1])),
-                     int(max(pixel[2] + threshold, ball_upper[2]))]
-            lower = [int(min(pixel[0] - threshold, ball_lower[0])), int(min(pixel[1] - threshold, ball_lower[1])),
-                     int(min(pixel[2] - threshold, ball_lower[2]))]
+            upper = [int(max(pixel[0] + threshold + 10, ball_upper[0])),
+                     int(max(pixel[1] + threshold + 10, ball_upper[1])),
+                     int(max(pixel[2] + threshold + 10, ball_upper[2]))]
+            lower = [int(min(pixel[0] - threshold - 10, ball_lower[0])),
+                     int(min(pixel[1] - threshold - 10, ball_lower[1])),
+                     int(min(pixel[2] - threshold - 10, ball_lower[2]))]
         else:
-            upper = [int(pixel[0] + threshold), int(pixel[1] + threshold), int(pixel[2] + threshold)]
-            lower = [int(pixel[0] - threshold), int(pixel[1] - threshold), int(pixel[2] - threshold)]
+            upper = [int(pixel[0] + threshold + 10), int(pixel[1] + threshold + 10), int(pixel[2] + threshold + 10)]
+            lower = [int(pixel[0] - threshold - 10), int(pixel[1] - threshold - 10), int(pixel[2] - threshold - 10)]
             pick_time[5] = 0
         jf["color_patch"]["ball_upper"] = upper
         jf["color_patch"]["ball_lower"] = lower
