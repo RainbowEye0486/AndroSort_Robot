@@ -44,7 +44,7 @@ MOTION = {
 
 BALL_RADIUS = 3.75  # Ball Size #diameter 6.5cm = 20 pixel
 DANGER_SPEED = 30
-
+TREATING_ZONE = 30
 
 def getMotion(roboID):
     return MOTION[roboID]
