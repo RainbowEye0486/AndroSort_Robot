@@ -10,7 +10,7 @@ from Strategy import challenge_3 as ch3
 from Strategy import challenge_2 as ch2
 from Strategy import challenge_1 as ch1
 
-camera_switch = 0  # 哪一個相機
+camera_switch = 1  # 哪一個相機
 #  紀錄參數用
 if camera_switch == 0:
     fpath = os.path.join(os.path.dirname(__file__), 'param.json')
@@ -234,7 +234,7 @@ def pick_field(event, x, y, flags, param):
         else:
             if len(jf["special_point"]["penalty_pos"]) < 4:
                 if len(jf["special_point"]["penalty_pos"]) == 0:
-                    jf["special_point"]["penalty_pos"].pop()
+                    jf["special_point"]["field_pos"].pop()
                 else:
                     jf["special_point"]["penalty_pos"].pop()
             else:
