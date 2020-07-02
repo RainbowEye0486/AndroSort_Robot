@@ -227,14 +227,11 @@ def strategy():
 
     mode = set_mode()
     # as a defender or an attacker
-    print(last_strategy)
 
     assign_role(mode)
 
     for i in range(3):
         last_strategy[i] = robots[i].next
-    print(last_strategy)
-    print("\n")
     if PRINT:
 
         for i in range(3):

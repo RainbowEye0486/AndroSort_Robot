@@ -64,6 +64,10 @@ def exit_func():
     sys.exit(0)
 
 
+def rest_func():
+    nrf.rest_robots(device)
+
+
 def print_func():
     strategy.PRINT = not strategy.PRINT
 
@@ -158,6 +162,8 @@ if __name__ == '__main__':
     exit_button.pack(side=tk.LEFT)
     exit_button = tk.Button(instruction_frame, text='PAUSE', fg='Black', command=pause_func)
     exit_button.pack(side=tk.LEFT)
+    rest_button = tk.Button(instruction_frame, text='REST', fg='Black', command=rest_func)
+    rest_button.pack(side=tk.LEFT)
     field_button = tk.Button(instruction_frame, text='field', fg='Black', command=image.set_field)
     field_button.pack(side=tk.LEFT)
     correct_button = tk.Button(instruction_frame, text='projection', fg='Black', command=image.set_correct)
