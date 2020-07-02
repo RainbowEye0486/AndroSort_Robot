@@ -5,7 +5,7 @@ import cv2
 import time
 
 # Parameter needed to adjust
-PRINT = True
+PRINT = False
 ID_IN_USE = [3, 3]
 
 # Field Parameter

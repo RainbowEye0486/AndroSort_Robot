@@ -11,7 +11,7 @@ import platform
 import tkinter as tk
 import sys
 
-start_bit = 0
+
 PRINT = False
 
 if 'Linux' in platform.system():
@@ -31,6 +31,7 @@ challenge_num = 2
 # ===========================================
 
 go_strategy = False
+rest_bit = True
 if challenge_num == 1:
     strategy = strategy1
     image.challenge_bit = 1
@@ -43,15 +44,15 @@ if challenge_num == 3:
 
 
 def start_func():
-    global start_bit, go_strategy
+    global go_strategy, rest_bit
     go_strategy = True
-    start_bit = 1
+    rest_bit = False
+    
 
 
 def pause_func():
-    global start_bit, go_strategy
+    global go_strategy
     go_strategy = False
-    start_bit = 0
 
 
 def expo_func(self):
@@ -65,7 +66,9 @@ def exit_func():
 
 
 def rest_func():
-    nrf.rest_robots(device)
+    global go_strategy, rest_bit
+    go_strategy = False
+    rest_bit = True
 
 
 def print_func():
@@ -106,6 +109,9 @@ def Strategy_thread(que):
                     time.sleep(0.001)
             except OverflowError:
                 print('invalid cmd value')
+        else:  # clean the buffer when pause
+            if not que.empty():
+                que.get()
         time.sleep(0.01)
 
 
@@ -114,7 +120,11 @@ def NRF_thread(device, que):
         if image.exit_bit != 0:
             nrf.rest_robots(device)
             sys.exit()
-        nrf.communicate(device, que)
+        if not rest_bit:
+            if go_strategy:
+                nrf.communicate(device, que)
+        else:
+            nrf.rest_robots(device)
         time.sleep(0.01)
 
 
