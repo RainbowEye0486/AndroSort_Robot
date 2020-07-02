@@ -934,7 +934,7 @@ class Robot:
         self.next = [0, 0]  # next place to go
         self.target = [0, 0]  # where to pass ball
         self.in_zone = Zone.NONE
-        self.howclose = 20 * 3.7  # minimum distance to judge shooting
+        self.howclose = CONST.TREATING_ZONE * CM_TO_PIX  # minimum distance to judge shooting
         self.face_ball = False  # 注意防守時候須不需要面向敵人
         self.MOTION = CONST.getMotion(ID)
         self.BODY = CONST.getBody()
@@ -990,7 +990,7 @@ class Robot:
         for i in range(3):
             if enemies[i].carrier:
                 carry = True
-                #print("enemy carry, in danger!!")
+                print("enemy carry, in danger!!")
 
         if mode == Mode.OFFENSE:
             #print("i can have rest woooo")
@@ -1036,7 +1036,7 @@ class Robot:
                     pass
                 if carry:
                     self.job = Job.STAND
-                # print("ready for battle")
+                    print("ready for battle")
         if PRINT:
             print("keeper next", self.next)
 
