@@ -26,8 +26,8 @@ decision_done = False
 # 需要調整參數
 
 # ===========adjust==========================
-side = -1  # -1 for <- , 1 for ->
-challenge_num = 3
+side = 1  # -1 for <- , 1 for -> (left is our field)
+challenge_num = 2
 # ===========================================
 
 go_strategy = False

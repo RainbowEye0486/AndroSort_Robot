@@ -396,7 +396,8 @@ def execute_job(id):
             return rt_cmd
     elif robo.job == Job.SHOOT:
         if robo.target[0] == -1:
-            robo.target, size = find_aim_point(ball.pos[0], ball.pos[1], our_gate)
+            if PRINT:
+                print('no target')
         if robo.target[0] != -1:
             force = 'big'
             kickable_dist = 3 * CM_TO_PIX  # the distance between arrival and the robot should be

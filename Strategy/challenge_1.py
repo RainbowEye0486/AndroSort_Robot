@@ -12,7 +12,7 @@ CM_TO_PIX = 3.65
 BOUNDARY = []
 CENTER = [0, 0]
 PENALTY = 0
-SIDE = 1  # right is our field
+SIDE = 1  # left is our field
 FB_X = 0
 GOAL = []
 #  
@@ -44,11 +44,7 @@ def strategy_update_field(side, boundary, center):
     SIDE = side
     BOUNDARY = boundary
     CENTER = center
-    # for simulator
-    # SIDE = -1 * side
-    # FB_X = fb_x # need to change
-    # x = 3 if a==2 else 0
-    GOAL = [BOUNDARY[11], BOUNDARY[8]] if SIDE == 1 else [BOUNDARY[2], BOUNDARY[5]]
+    GOAL = [BOUNDARY[2], BOUNDARY[5]] if SIDE == 1 else [BOUNDARY[11], BOUNDARY[8]]
     if PRINT:
         print('GOAL:', GOAL)
 
@@ -188,7 +184,7 @@ def assign_job(robots):
     for robo in robots:
         if robo.role == Role.SUP:
             robo.job = Job.PASS
-            robo.aim_pos = [ball.pos[0]-SIDE*10, ball.pos[1]]
+            robo.aim_pos = [ball.pos[0]+SIDE*10, ball.pos[1]]
             if PRINT:
                 print('pass aim at:', robo.aim_pos)
             # robo.aim_pos = CENTER
@@ -198,7 +194,7 @@ def assign_job(robots):
             else:  #unsure
                 robo.job = Job.LEAVE
         elif robo.role == Role.MAIN:
-            if (ball.pos[0] - (CENTER[0]-shoot_zone*SIDE))*SIDE < 0 :
+            if (ball.pos[0] - (CENTER[0]+shoot_zone*SIDE))*SIDE > 0 :
                 robo.job = Job.SHOOT  # to goal
             else:
                 robo.job = Job.PASS  # to three point line
@@ -217,7 +213,7 @@ def execute_job(id):
             print('job == pass')
         if PRINT:
             print('no aim')
-        x_pos = CENTER[0] - (shoot_zone)*SIDE
+        x_pos = CENTER[0] + (shoot_zone)*SIDE
         segm = 4
         robo.aim_pos, no_use, no_use = find_shooting_point(x_pos, segm, GOAL)
         # kick ball

@@ -23,7 +23,7 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 cap = None
 #  需要調整參數
 challenge_bit = 3
-camera_num = 2
+camera_num = 1
 robot_height = 45
 field_height = 268
 color_upper_clipper = 850  # 調整面積的讀取區間
@@ -783,6 +783,8 @@ def image_func():
                          (int(robo.arr[0]), int(robo.arr[1])), (45, 165, 230), 3)
                 cv2.putText(show, "ROBO1_NEXT", (int(robo.arr[0]), int(robo.arr[1])), font, 0.6,
                             (45, 165, 230), 1)
+            if not ch2.ball.kick == -1:
+                cv2.circle(show, (int(ch2.ball.kick[0]), int(ch2.ball.kick[1])), 5, (45, 165, 230), -3)
         elif challenge_bit == 1 and len(ch1.robots) == 2:
             for i, robo in enumerate(ch1.robots):
                 if our_data[i]:

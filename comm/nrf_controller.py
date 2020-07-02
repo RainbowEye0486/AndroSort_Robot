@@ -358,7 +358,7 @@ def communicate(device, que):
     if not que.empty():
         # Get input from queue
         input_data = que.get()
-        RF_sendCmd_sys(input_data, device, 0.4, mode)
+        RF_sendCmd_sys(input_data, device, 0.2, mode)
     while time.time() - tstart < 1 / 30:
         # Read input
         data, length = device_read(device)

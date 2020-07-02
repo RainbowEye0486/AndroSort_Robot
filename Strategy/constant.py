@@ -42,7 +42,7 @@ MOTION = {
 }
 
 
-BALL_RADIUS = 2.7  # Ball Size #diameter 6.5cm = 20 pixel
+BALL_RADIUS = 3.75  # Ball Size #diameter 6.5cm = 20 pixel
 DANGER_SPEED = 30
 
 

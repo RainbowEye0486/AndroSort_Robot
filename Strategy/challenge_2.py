@@ -13,7 +13,7 @@ CM_TO_PIX = 3.65
 BOUNDARY = []
 CENTER = [0, 0]
 PENALTY = 0
-SIDE = 1  # right is our field
+SIDE = 1  # 1:left is our field
 FB_X = 0
 GOAL = []
 #  
@@ -42,13 +42,9 @@ def strategy_update_field(side, boundary, center):
     SIDE = side
     BOUNDARY = boundary
     CENTER = center
-    # for simulator
-    # SIDE = -1 * side
-    #FB_X = fb_x # need to change
-    # x = 3 if a==2 else 0
-    GOAL = [BOUNDARY[11], BOUNDARY[8]] if SIDE == 1 else [BOUNDARY[2], BOUNDARY[5]]
+    GOAL = [BOUNDARY[2], BOUNDARY[5]] if SIDE == 1 else [BOUNDARY[11], BOUNDARY[8]]
     if PRINT:
-        print('GOAL:', GOAL)
+        print(GOAL)
 
 
 def Initialize():
@@ -188,7 +184,7 @@ def execute_job(id):
         if robo.aim_pos[0] == -1:
             if PRINT:
                 print('no aim')
-            x_pos = CENTER[0] - (FB_X)*SIDE
+            x_pos = CENTER[0] + (45*CM_TO_PIX)*SIDE
             segm = 4
             robo.aim_pos, no_use, no_use = find_shooting_point(x_pos, segm, GOAL)
         # kick ball
@@ -304,6 +300,7 @@ def is_kickable(robo, tol_dist, tol_angle, kick_dir, ways, force):
         print('robo, kick_dir', robo.dir, kick_dir)
         print('kick way:', kick_way)
     arrival = [b - un_dir*ball.RADIUS*CM_TO_PIX for b, un_dir in zip(ball.pos, kick_dir)]
+    ball.kick = arrival
     ver_offst = [direct * -robo.MOTION['MOVE'][kick_way]['OFFSET'][0]*CM_TO_PIX for direct in kick_dir]
     hor_offst = [0, 0]
     if kick_way == 'FORE' or kick_way == 'BACK':
@@ -668,6 +665,7 @@ class Ball():
     def __init__(self):
         self.pos = [0, 0]
         self.RADIUS = CONST.getRadius()
+        self.kick = [-1, -1]
 
 
 if __name__ == '__main__':
