@@ -38,6 +38,36 @@ MOTION = {
             'RIGHT': {'CMD': ['g']}
         },
         'REST': {'CMD': ['r']}
+    },
+    4: {
+        'MOVE': {  # offset[verticle(, horizon)]
+            'FORE': {'CMD': ['W', 'w'], 'BOUND': [6.3, 2.09], 'OFFSET': [11, 4.3]},
+            # BOUND': [30, 15] for simulator [18, 8]
+            'BACK': {'CMD': ['s'], 'BOUND': [2], 'OFFSET': [16, 6]},
+            # BOUND': [15] ;[4]
+            'LEFT': {'CMD': ['A', 'a'], 'BOUND': [18.5, 1.33], 'OFFSET': [13.5]},
+            # BOUND': [75,15] ;[71, 3.1]
+            'RIGHT': {'CMD': ['D', 'd'], 'BOUND': [16.5, 1.275], 'OFFSET': [13.5]}
+            #  [76, 2.22]
+        },
+
+        'TURN': {
+            'LEFT': {'CMD': ['Q', 'q'], 'BOUND': [0.358, 0.196]},
+            'RIGHT': {'CMD': ['E', 'e'], 'BOUND': [0.358, 0.196]}
+        },
+
+        'KICK': {
+            'PASS': {'CMD': ['o', 'p'], 'BOUND': []},  # [left, right]
+            'FSHOOT': {'CMD': ['u', 'i'], 'BOUND': []},
+            'SSHOOT': {'CMD': ['h', 'j'], 'BOUND': []},
+            'BSHOOT': {'CMD': ['b', 'n'], 'BOUND': []}
+        },
+        'DEFENCE': {
+            'FORE': {'CMD': ['Y']},
+            'LEFT': {'CMD': ['f']},
+            'RIGHT': {'CMD': ['g']}
+        },
+        'REST': {'CMD': ['r']}
     }
 }
 

@@ -130,6 +130,8 @@ def device_read(device, delay=0):
 
 
 def download_cfg(device):
+    # for recieve
+    mode_select = input("Enter user mode(1:normal, 2:recieve) >>> ")
     for i in range(len(cfg["RESET"]) - 3):
         print(str(i + 1) + ' ' + str(cfg["RESET"]["default" + str(i + 1)]))
 
@@ -150,12 +152,18 @@ def download_cfg(device):
     if "成功" in data:
         print('rate setting success')
     print(data)
-    device.write(bytes(cfg["CMD"]["RXA"] + cfg["RESET"][address_select]["RXA"], encoding='utf8'))
+    if int(mode_select) == 2:
+        device.write(bytes(cfg["CMD"]["RXA"] + cfg["RESET"][address_select]["TXA"], encoding='utf8'))
+    else:
+        device.write(bytes(cfg["CMD"]["RXA"] + cfg["RESET"][address_select]["RXA"], encoding='utf8'))
     data, __ = device_read(device, 0.5)
     if "成功" in data:
         print('rxa setting success')
     print(data)
-    device.write(bytes(cfg["CMD"]["TXA"] + cfg["RESET"][address_select]["TXA"], encoding='utf8'))
+    if int(mode_select) == 2:
+        device.write(bytes(cfg["CMD"]["TXA"] + cfg["RESET"][address_select]["RXA"], encoding='utf8'))
+    else:
+        device.write(bytes(cfg["CMD"]["TXA"] + cfg["RESET"][address_select]["TXA"], encoding='utf8'))
     data, __ = device_read(device, 0.5)
     if "成功" in data:
         print('txa setting success')

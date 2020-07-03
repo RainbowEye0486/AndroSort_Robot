@@ -1,6 +1,77 @@
 {
+  "color_patch": {
+    "color2_lower": [
+      146,
+      26,
+      72
+    ],
+    "enemy_lower": [
+      176,
+      67,
+      12
+    ],
+    "enemy_upper": [
+      216,
+      107,
+      52
+    ],
+    "ball_upper": [
+      89,
+      249,
+      228
+    ],
+    "color1_upper": [
+      133,
+      188,
+      60
+    ],
+    "ball_lower": [
+      22,
+      161,
+      140
+    ],
+    "color3_lower": [
+      123,
+      -5,
+      46
+    ],
+    "color3_upper": [
+      251,
+      95,
+      157
+    ],
+    "color1_lower": [
+      45,
+      90,
+      12
+    ],
+    "our_upper": [
+      53,
+      53,
+      224
+    ],
+    "our_lower": [
+      11,
+      10,
+      147
+    ],
+    "color2_upper": [
+      186,
+      66,
+      112
+    ]
+  },
   "version": "whatever 1.0",
+  "name": "parameter file",
   "special_point": {
+    "camera_project": [
+      773,
+      524
+    ],
+    "middle": [
+      771,
+      420
+    ],
     "field_pos": [
       [
         176,
@@ -68,77 +139,6 @@
         221,
         577
       ]
-    ],
-    "camera_project": [
-      773,
-      524
-    ],
-    "middle": [
-      771,
-      420
-    ]
-  },
-  "name": "parameter file",
-  "color_patch": {
-    "color3_lower": [
-      94,
-      22,
-      39
-    ],
-    "enemy_upper": [
-      169,
-      98,
-      52
-    ],
-    "color3_upper": [
-      146,
-      65,
-      93
-    ],
-    "ball_upper": [
-      122,
-      234,
-      225
-    ],
-    "our_upper": [
-      52,
-      49,
-      165
-    ],
-    "color2_upper": [
-      87,
-      130,
-      58
-    ],
-    "ball_lower": [
-      62,
-      174,
-      165
-    ],
-    "enemy_lower": [
-      127,
-      58,
-      12
-    ],
-    "color2_lower": [
-      36,
-      78,
-      15
-    ],
-    "color1_upper": [
-      156,
-      56,
-      238
-    ],
-    "color1_lower": [
-      97,
-      15,
-      178
-    ],
-    "our_lower": [
-      10,
-      6,
-      112
     ]
   }
 }
