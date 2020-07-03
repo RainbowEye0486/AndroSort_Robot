@@ -10,8 +10,8 @@ BODY = {
 }
 MOTION = {
     3: {
-        'MOVE': {# offset[verticle(, horizon)]
-            'FORE': {'CMD': ['W', 'w'], 'BOUND':  [7.3, 2.09], 'OFFSET': [9, 6]},
+        'MOVE': {  # offset[verticle(, horizon)]
+            'FORE': {'CMD': ['W', 'w'], 'BOUND': [7.3, 2.09], 'OFFSET': [11, 6]},
             # BOUND': [30, 15] for simulator [18, 8]
             'BACK': {'CMD': ['s'], 'BOUND': [2], 'OFFSET': [16, 6]},
             # BOUND': [15] ;[4]
@@ -75,6 +75,7 @@ MOTION = {
 BALL_RADIUS = 3.75  # Ball Size #diameter 6.5cm = 20 pixel
 DANGER_SPEED = 30
 TREATING_ZONE = 30
+
 
 def getMotion(roboID):
     return MOTION[roboID]
