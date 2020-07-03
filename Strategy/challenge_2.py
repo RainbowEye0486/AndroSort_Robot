@@ -207,7 +207,7 @@ def execute_job(id):
             kickable_dist = 3*CM_TO_PIX  # the distance between arrival and the robot should be
             kickable_ang = 7/180*math.pi  # acceptable angle error when kicking
             # kick_ways = ['BACK']
-            kick_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
+            kick_ways = ['LEFT', 'RIGHT']
             move_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
             kick_dir = _unit_vector(ball.pos, robo.aim_pos)
             kickable, kick_way, rt_cmd, arrival = is_kickable(robo, kickable_dist, kickable_ang, kick_dir, kick_ways, force)
@@ -315,6 +315,8 @@ def is_kickable(robo, tol_dist, tol_angle, kick_dir, ways, force):
             if PRINT:
                 print('======kicked!!!!')
                 time.sleep(3)
+            else:
+                time.sleep(0.2)
             # assign the right CMD according to the strength
             if kick_way == 'FORE':
                 if force == 'big':
@@ -380,10 +382,12 @@ def move_with_dir(robo, arrival, curr_dir, ideal_dir, fit_way='FORE', ways=['FOR
         temp_dir = _rotate(curr_dir, math.pi/2*i)
         diff_vec = [k - p for k, p in zip(arrival, robo.pos)]
         product = _dot(temp_dir, diff_vec)
-        if product >= robo.MOTION['MOVE'][move_way]['BOUND'][0]*CM_TO_PIX and move_way == 'BACK':
-            rt_cmd = robo.MOTION['MOVE'][move_way]['CMD'][0]
-            return True, rt_cmd
-        elif len(robo.MOTION['MOVE'][move_way]['BOUND']) > 1:
+        if product >= robo.MOTION['MOVE'][move_way]['BOUND'][0]*CM_TO_PIX:
+            too_close = is_close_ball(robo.pos, temp_dir, robo.MOTION['MOVE'][move_way]['BOUND'][0]*CM_TO_PIX)
+            if (not too_close) or move_way == 'BACK':
+                rt_cmd = robo.MOTION['MOVE'][move_way]['CMD'][0]
+                return True, rt_cmd
+        if len(robo.MOTION['MOVE'][move_way]['BOUND']) > 1:
             if product >= robo.MOTION['MOVE'][move_way]['BOUND'][1]*CM_TO_PIX:
                 rt_cmd = robo.MOTION['MOVE'][move_way]['CMD'][1]
                 return True, rt_cmd
@@ -473,9 +477,11 @@ def move(robo, arrival, ways=['', '', '', '']):
                     rt_cmd = 'N'
                     return True, rt_cmd
     if dist >= robo.MOTION['MOVE'][move_way]['BOUND'][0]*CM_TO_PIX:
-        rt_cmd = robo.MOTION['MOVE'][move_way]['CMD'][0]
-        return True, rt_cmd
-    elif len(robo.MOTION['MOVE'][move_way]['BOUND']) > 1:
+        too_close = is_close_ball(robo.pos, direction, robo.MOTION['MOVE'][move_way]['BOUND'][0]*CM_TO_PIX)
+        if (not too_close) or move_way == 'BACK':
+            rt_cmd = robo.MOTION['MOVE'][move_way]['CMD'][0]
+            return True, rt_cmd
+    if len(robo.MOTION['MOVE'][move_way]['BOUND']) > 1:
         if dist >= robo.MOTION['MOVE'][move_way]['BOUND'][1]*CM_TO_PIX:
             rt_cmd = robo.MOTION['MOVE'][move_way]['CMD'][1]
             return True, rt_cmd
@@ -616,6 +622,14 @@ def check_boundary_ball(robo):
             print('boundary ball')
         robo.aim_pos[0] = ball.pos[0] + SIDE*15
         robo.aim_pos[1] = ball.pos[1] + 15
+
+
+def is_close_ball(pos, direction, len):
+    safe_dist = (10+ball.RADIUS)*CM_TO_PIX
+    the_next = [p + d*len for p, d in zip(pos, direction)]
+    if _dist(the_next, ball.pos) < safe_dist:
+        return True
+    return False
 
 
 class Robot():
