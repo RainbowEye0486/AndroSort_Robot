@@ -5,8 +5,8 @@ import cv2
 import time
 
 # Parameter needed to adjust
-PRINT = False
-ID_IN_USE = [3, 3]
+PRINT = True
+ID_IN_USE = [3]
 
 # Field Parameter
 CM_TO_PIX = 3.65
@@ -204,8 +204,8 @@ def execute_job(id):
     elif robo.job == Job.SHOOT:
         if robo.aim_pos[0] != -1:
             force = 'big'
-            kickable_dist = 3*CM_TO_PIX  # the distance between arrival and the robot should be
-            kickable_ang = 7/180*math.pi  # acceptable angle error when kicking
+            kickable_dist = 4*CM_TO_PIX  # the distance between arrival and the robot should be
+            kickable_ang = 6/180*math.pi  # acceptable angle error when kicking
             # kick_ways = ['BACK']
             kick_ways = ['LEFT', 'RIGHT']
             move_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']

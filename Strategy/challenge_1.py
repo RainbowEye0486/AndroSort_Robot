@@ -264,7 +264,15 @@ def execute_job(id):
     elif robo.job == Job.DRIBBLE:
         pass
     elif robo.job == Job.LEAVE:
-        pass
+        leave_dist = 5 * CM_TO_PIX  # if too close, leave for 5 cm
+        ball_dir = _unit_vector(robo.pos, ball.pos)
+        arrival = [p-d*leave_dist for p, d in zip(robo.pos, ball_dir)]
+        movable = False
+        if GOAL[0][0] < arrival[0] < GOAL[1][0] and GOAL[0][1] < arrival[1] < GOAL[7][1]:
+            movable, rt_cmd = move(robo, arrival, ['FORE', 'LEFT', 'RIGHT', 'BACK'])
+            robo.arr = arrival
+        if movable:
+            return rt_cmd
     elif robo.job == Job.REST:
         return robo.MOTION['REST']['CMD'][0]
     return 'N'
@@ -433,7 +441,7 @@ def move_with_dir(robo, arrival, curr_dir, ideal_dir, fit_way='FORE', ways=['FOR
     return False, 'N'
 
 
-def move(robo, arrival, ways=['', '', '', '']):
+def move(robo, arrival, ways=['FORE', 'LEFT', 'RIGHT', 'BACK']):
     '''
        To move to assigned point and facing whatever direction
     '''
