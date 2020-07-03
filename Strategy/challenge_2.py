@@ -625,7 +625,7 @@ def check_boundary_ball(robo):
 
 
 def is_close_ball(pos, direction, len):
-    safe_dist = (10+ball.RADIUS)*CM_TO_PIX
+    safe_dist = (15+ball.RADIUS)*CM_TO_PIX
     the_next = [p + d*len for p, d in zip(pos, direction)]
     if _dist(the_next, ball.pos) < safe_dist:
         return True

@@ -361,7 +361,7 @@ def is_kickable(robo, tol_dist, tol_angle, kick_dir, ways, force):
         if abs(angle) < tol_angle:  # with right angle
             if PRINT:
                 print('======kicked!!!!')
-                time.sleep(3)
+                time.sleep(0.1)
             else:
                 time.sleep(0.1)
             # assign the right CMD according to the strength
