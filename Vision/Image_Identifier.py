@@ -10,7 +10,7 @@ from Strategy import challenge_3 as ch3
 from Strategy import challenge_2 as ch2
 from Strategy import challenge_1 as ch1
 
-camera_switch = 0  # 哪一個相機
+camera_switch = 1  # 哪一個相機
 #  紀錄參數用
 if camera_switch == 0:
     fpath = os.path.join(os.path.dirname(__file__), 'param.json')
@@ -23,7 +23,7 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 cap = None
 #  需要調整參數
 challenge_bit = 3
-camera_num = 1
+camera_num = 0
 robot_height = 45
 field_height = 268
 color_upper_clipper = 850  # 調整面積的讀取區間
@@ -770,18 +770,18 @@ def image_func():
                 if our_data[i]:
                     if robo.job == ch2.Job.SHOOT:
                         cv2.putText(show, "SHOOT", (our_data[i][0], our_data[i][1] - 20), font, 1, (84, 83, 268), 3)
-                        if not robo.aim_pos[0] == -1:
-                            cv2.circle(show, (int(robo.aim_pos[0]), int(robo.aim_pos[1])), 5, (45, 165, 230), -3)
+                        if not robo.target[0] == -1:
+                            cv2.circle(show, (int(robo.target[0]), int(robo.target[1])), 5, (45, 165, 230), -3)
                     if robo.job == ch2.Job.NONE:
                         cv2.putText(show, "NONE", (our_data[i][0], our_data[i][1] - 20), font, 1, (84, 83, 268), 3)
                     if robo.job == ch2.Job.PASS:
                         cv2.putText(show, "PASS", (our_data[i][0], our_data[i][1] - 20), font, 1, (84, 83, 268), 3)
 
-            if not ch2.robots[0].arr[0] == -1:
-                cv2.circle(show, (int(robo.arr[0]), int(robo.arr[1])), 5, (45, 165, 230), -3)
+            if not ch2.robots[0].next[0] == -1:
+                cv2.circle(show, (int(robo.next[0]), int(robo.next[1])), 5, (45, 165, 230), -3)
                 cv2.line(show, (our_data[0][0], our_data[0][1]),
-                         (int(robo.arr[0]), int(robo.arr[1])), (45, 165, 230), 3)
-                cv2.putText(show, "ROBO1_NEXT", (int(robo.arr[0]), int(robo.arr[1])), font, 0.6,
+                         (int(robo.next[0]), int(robo.next[1])), (45, 165, 230), 3)
+                cv2.putText(show, "ROBO1_NEXT", (int(robo.next[0]), int(robo.next[1])), font, 0.6,
                             (45, 165, 230), 1)
             if not ch2.ball.kick == -1:
                 cv2.circle(show, (int(ch2.ball.kick[0]), int(ch2.ball.kick[1])), 5, (45, 165, 230), -3)
@@ -790,8 +790,8 @@ def image_func():
                 if our_data[i]:
                     if robo.job == ch1.Job.SHOOT:
                         cv2.putText(show, "SHOOT", (our_data[i][0], our_data[i][1] - 20), font, 0.8, (84, 83, 268), 3)
-                        if not robo.aim_pos[0] == -1:
-                            cv2.circle(show, (int(robo.aim_pos[0]), int(robo.aim_pos[1])), 5, (45, 165, 230), -3)
+                        if not robo.target[0] == -1:
+                            cv2.circle(show, (int(robo.target[0]), int(robo.target[1])), 5, (45, 165, 230), -3)
                     if robo.job == ch1.Job.NONE:
                         cv2.putText(show, "NONE", (our_data[i][0], our_data[i][1] - 20), font, 0.8, (84, 83, 268), 3)
                     if robo.job == ch1.Job.LEAVE:
@@ -800,22 +800,22 @@ def image_func():
                         cv2.putText(show, "REST", (our_data[i][0], our_data[i][1] - 20), font, 0.8, (84, 83, 268), 3)
                     if robo.job == ch1.Job.PASS:
                         cv2.putText(show, "PASS", (our_data[i][0], our_data[i][1] - 20), font, 0.8, (84, 83, 268), 3)
-                        if not robo.aim_pos[0] == -1:
-                            cv2.circle(show, (int(robo.aim_pos[0]), int(robo.aim_pos[1])), 5, (45, 165, 230), -3)
+                        if not robo.target[0] == -1:
+                            cv2.circle(show, (int(robo.target[0]), int(robo.target[1])), 5, (45, 165, 230), -3)
                     
-            if not ch1.robots[0].arr[0] == -1:
+            if not ch1.robots[0].next[0] == -1:
                 robo = ch1.robots[0]
-                cv2.circle(show, (int(robo.arr[0]), int(robo.arr[1])), 5, (45, 165, 230), -3)
+                cv2.circle(show, (int(robo.next[0]), int(robo.next[1])), 5, (45, 165, 230), -3)
                 cv2.line(show, (our_data[0][0], our_data[0][1]),
-                         (int(robo.arr[0]), int(robo.arr[1])), (45, 165, 230), 3)
-                cv2.putText(show, "ROBO1_NEXT", (int(robo.arr[0]), int(robo.arr[1])), font, 0.6,
+                         (int(robo.next[0]), int(robo.next[1])), (45, 165, 230), 3)
+                cv2.putText(show, "ROBO1_NEXT", (int(robo.next[0]), int(robo.next[1])), font, 0.6,
                             (45, 165, 230), 1)
-            if not ch1.robots[1].arr[0] == -1:
+            if not ch1.robots[1].next[0] == -1:
                 robo = ch1.robots[1]
-                cv2.circle(show, (int(robo.arr[0]), int(robo.arr[1])), 5, (150, 205, 0), -3)
+                cv2.circle(show, (int(robo.next[0]), int(robo.next[1])), 5, (150, 205, 0), -3)
                 cv2.line(show, (our_data[1][0], our_data[1][1]),
-                         (int(robo.arr[0]), int(robo.arr[1])), (150, 205, 0), 3)
-                cv2.putText(show, "ROBO2_NEXT", (int(robo.arr[0]), int(robo.arr[1])), font, 0.6,
+                         (int(robo.next[0]), int(robo.next[1])), (150, 205, 0), 3)
+                cv2.putText(show, "ROBO2_NEXT", (int(robo.next[0]), int(robo.next[1])), font, 0.6,
                             (150, 205, 0), 1)
         #  print("cost %f second" % (tEnd - tStart))  # 紀錄每一幀時間
         thread7.join()

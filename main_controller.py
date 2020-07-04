@@ -26,8 +26,8 @@ decision_done = False
 # 需要調整參數
 
 # ===========adjust==========================
-side = 1  # -1 for <- , 1 for -> (left is our field)
-challenge_num = 3
+side = -1  # -1 for <- , 1 for -> (left is our field)
+challenge_num = 2
 # ===========================================
 
 go_strategy = False
@@ -92,7 +92,8 @@ def Strategy_thread(que):
         if image.exit_bit != 0:
             sys.exit()
         if go_strategy:
-            time.sleep(0.5)
+            if challenge_num == 2:
+                time.sleep(0.5)
             strategy.Update_Robo_Info(image.our_dir, image.our_data, image.enemy_data, image.ball_pos_now,
                                       image.ball_speed, image.ball_dir)
             cmd = strategy.strategy()
@@ -121,11 +122,16 @@ def NRF_thread(device, que):
             nrf.rest_robots(device)
             sys.exit()
         if rest_bit:
-            if not que.empty():
+            if que.empty():
+                que.put(['r', 'r', 'r'])
+                time.sleep(0.001)
+            else:
                 que.get()
-                que.put(['N', 'N', 'N'])
+                que.put(['r', 'r', 'r'])
+                time.sleep(0.001)
         nrf.communicate(device, que)
-        time.sleep(0.01)
+        if challenge_num == 2:
+            time.sleep(0.5)
 
 
 if __name__ == '__main__':

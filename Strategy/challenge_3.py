@@ -355,7 +355,6 @@ def execute_job(id):
     """
     global robots
     robo = robots[id]
-    rough_dist = 10 * CM_TO_PIX  # the distance between ball and the robot should be
     if robo.job == Job.MOVE:
         move_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
         moveable, rt_cmd = move(robo, robo.next, move_ways)
@@ -380,7 +379,7 @@ def execute_job(id):
         check_boundary_ball(robo)
         kickable_dist = 3 * CM_TO_PIX  # the distance between ball and the robot should be
         kickable_ang = 7 / 180 * math.pi  # acceptable angle error when kicking
-        kick_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
+        kick_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT'] # restrict to FORE??
         move_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
         try:
             kick_dir = _unit_vector(ball.pos, robo.target)
@@ -727,7 +726,7 @@ def move(robo, arrival, ways=['', '', '', '']):
         if angle < safe_angle:
             # change arrival
             if PRINT:
-                print('change arrival')
+                print('change arrival because of the ball!!!!')
             product = -1
             re_dir = [0, 0]
             for sign in [-1, 1]:
@@ -779,6 +778,8 @@ def move(robo, arrival, ways=['', '', '', '']):
                 chief_dir = _unit_vector(robo.pos, chief.pos)
                 angle = abs(_angle(move_dir, chief_dir))
                 if angle < safe_angle:
+                    if PRINT:
+                        print('supporter pause for the main')
                     rt_cmd = 'N'
                     return True, rt_cmd
     if dist >= robo.MOTION['MOVE'][move_way]['BOUND'][0] * CM_TO_PIX:
