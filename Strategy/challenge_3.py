@@ -230,8 +230,6 @@ def strategy():
 
     assign_role(mode)
 
-    for i in range(3):
-        last_strategy[i] = robots[i].next
     if PRINT:
 
         for i in range(3):
@@ -255,15 +253,16 @@ def strategy():
                     fac=robots[i].face_ball))
             print("\n")
     cmd = ['N', 'N', 'N']
-    try:
+    for i in range(len(robots)):
+        # try:
         cmd[i] = execute_job(i)
-    except ZeroDivisionError:
-        print('divide zero...')
-        cmd[i] = 'N'
-    except Exception as e:
-        print('Catch Error.....')
-        print(e)
-        cmd[i] = 'N'
+        # except ZeroDivisionError:
+        #    print('divide zero...')
+        #    cmd[i] = 'N'
+        # except Exception as e:
+        #    print('Catch Error.....')
+        #    print(e)
+        #    cmd[i] = 'N'
     if PRINT:
         print(cmd)
         print()
@@ -922,7 +921,7 @@ def check_boundary_ball(robo):
 
 
 def is_close_ball(pos, direction, len):
-    safe_dist = (10 + ball.RADIUS) * CM_TO_PIX
+    safe_dist = (10 + ball.radius) * CM_TO_PIX
     the_next = [p + d * len for p, d in zip(pos, direction)]
     if _dist(the_next, ball.pos) < safe_dist:
         return True

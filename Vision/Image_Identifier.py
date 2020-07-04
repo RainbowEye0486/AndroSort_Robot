@@ -5,7 +5,7 @@ import time
 from threading import Thread
 import json
 import os
-import sys
+import main_controller as Main
 from Strategy import challenge_3 as ch3
 from Strategy import challenge_2 as ch2
 from Strategy import challenge_1 as ch1
@@ -23,8 +23,9 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 cap = None
 #  需要調整參數
 challenge_bit = 3
-camera_num = 1
+camera_num = 2
 robot_height = 45
+robot_crouch = 32
 field_height = 268
 color_upper_clipper = 850  # 調整面積的讀取區間
 color_lower_clipper = 100
@@ -102,10 +103,13 @@ def get_distance(start, end):
     return distance
 
 
-def error_correct(i):
+def error_correct(i, crouch):
+    height = robot_height
+    if crouch:
+        height = robot_crouch
     oasis = [i[0], i[1]]
-    oasis[0] = int(camera_project[0] + (i[0] - camera_project[0]) * (1 - (robot_height / field_height)))
-    oasis[1] = int(camera_project[1] + (i[1] - camera_project[1]) * (1 - (robot_height / field_height)))
+    oasis[0] = int(camera_project[0] + (i[0] - camera_project[0]) * (1 - (height / field_height)))
+    oasis[1] = int(camera_project[1] + (i[1] - camera_project[1]) * (1 - (height / field_height)))
     return oasis
 
 
@@ -407,13 +411,13 @@ def thread_our():
     # our_mask = cv2.medianBlur(our_mask, FILTER_KERNEL)  # medium filter
     contours, hierarchy = cv2.findContours(our_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     for cnt in contours:
+        if (cv2.contourArea(cnt) < color_lower_clipper) | (cv2.contourArea(cnt) > color_upper_clipper):  # 面積過小
+            continue
         rect = cv2.minAreaRect(cnt)
         box = cv2.boxPoints(rect)  # cv.boxPoints(rect) for OpenCV 3.x 获取最小外接矩形的4个顶点
         box = np.int0(box)
         x = int(rect[0][0])
         y = int(rect[0][1])
-        if (cv2.contourArea(cnt) < color_lower_clipper) | (cv2.contourArea(cnt) > color_upper_clipper):  # 面積過小
-            continue
         our_pos.add((x, y))
         cv2.circle(show, (x, y), 1, (252, 255, 255), 1)
         cv2.circle(show, (x, y), 30, (252, 255, 255), 1)  # patten range
@@ -429,13 +433,13 @@ def thread_enemy():
     enemy_mask = cv2.inRange(frame, enemy_lower, enemy_upper)
     contours, hierarchy = cv2.findContours(enemy_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     for cnt in contours:
+        if (cv2.contourArea(cnt) < color_lower_clipper) | (cv2.contourArea(cnt) > color_upper_clipper):  # 面積過小
+            continue
         rect = cv2.minAreaRect(cnt)
         box = cv2.boxPoints(rect)  # cv.boxPoints(rect) for OpenCV 3.x 获取最小外接矩形的4个顶点
         box = np.int0(box)
         x = int(rect[0][0])
         y = int(rect[0][1])
-        if (cv2.contourArea(cnt) < color_lower_clipper) | (cv2.contourArea(cnt) > color_upper_clipper):  # 面積過小
-            continue
         enemy_pos.add((x, y))
         cv2.circle(show, (x, y), 1, (252, 255, 255), 1)
         cv2.circle(show, (x, y), 30, (252, 255, 255), 1)  # patten range
@@ -452,13 +456,13 @@ def thread_color1():
     # color1_mask = cv2.medianBlur(color1_mask, FILTER_KERNEL)  # medium filter
     contours, hierarchy = cv2.findContours(color1_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     for cnt in contours:
+        if (cv2.contourArea(cnt) < color_lower_clipper) | (cv2.contourArea(cnt) > color_upper_clipper):  # 面積過小
+            continue
         rect = cv2.minAreaRect(cnt)
         box = cv2.boxPoints(rect)  # cv.boxPoints(rect) for OpenCV 3.x 获取最小外接矩形的4个顶点
         box = np.int0(box)
         x = int(rect[0][0])
         y = int(rect[0][1])
-        if (cv2.contourArea(cnt) < color_lower_clipper) | (cv2.contourArea(cnt) > color_upper_clipper):  # 面積過小
-            continue
         color1_pos.add((x, y))
         cv2.circle(show, (x, y), 1, (252, 255, 255), 1)
         cv2.drawContours(show, [box], -1, (45, 265, 230), 1)
@@ -474,13 +478,13 @@ def thread_color2():
     # color2_mask = cv2.medianBlur(color2_mask, FILTER_KERNEL)  # medium filter
     contours, hierarchy = cv2.findContours(color2_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     for cnt in contours:
+        if (cv2.contourArea(cnt) < color_lower_clipper) | (cv2.contourArea(cnt) > color_upper_clipper):  # 面積過小
+            continue
         rect = cv2.minAreaRect(cnt)
         box = cv2.boxPoints(rect)  # cv.boxPoints(rect) for OpenCV 3.x 获取最小外接矩形的4个顶点
         box = np.int0(box)
         x = int(rect[0][0])
         y = int(rect[0][1])
-        if (cv2.contourArea(cnt) < color_lower_clipper) | (cv2.contourArea(cnt) > color_upper_clipper):  # 面積過小
-            continue
         color2_pos.add((x, y))
         cv2.circle(show, (x, y), 1, (252, 255, 255), 1)
         cv2.drawContours(show, [box], -1, (150, 205, 0), 1)
@@ -496,13 +500,13 @@ def thread_color3():
     # color3_mask = cv2.medianBlur(color3_mask, FILTER_KERNEL)  # medium filter
     contours, hierarchy = cv2.findContours(color3_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     for cnt in contours:
+        if (cv2.contourArea(cnt) < color_lower_clipper) | (cv2.contourArea(cnt) > color_upper_clipper):  # 面積過小
+            continue
         rect = cv2.minAreaRect(cnt)
         box = cv2.boxPoints(rect)  # cv.boxPoints(rect) for OpenCV 3.x 获取最小外接矩形的4个顶点
         box = np.int0(box)
         x = int(rect[0][0])
         y = int(rect[0][1])
-        if (cv2.contourArea(cnt) < color_lower_clipper) | (cv2.contourArea(cnt) > color_upper_clipper):  # 面積過小
-            continue
         color3_pos.add((x, y))
         cv2.circle(show, (x, y), 1, (252, 255, 255), 1)
         cv2.drawContours(show, [box], -1, (220, 50, 200), 1)
@@ -518,14 +522,14 @@ def thread_ball():
     # ball_mask = cv2.medianBlur(ball_mask, FILTER_KERNEL)  # medium filter
     contours, hierarchy = cv2.findContours(ball_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     for cnt in contours:
+        if (cv2.contourArea(cnt) < 30) | (cv2.contourArea(cnt) > color_upper_clipper):  # 面積過小
+            continue
         rect = cv2.minAreaRect(cnt)
         box = cv2.boxPoints(rect)  # cv.boxPoints(rect) for OpenCV 3.x 获取最小外接矩形的4个顶点
         box = np.int0(box)
         x = int(rect[0][0])
         y = int(rect[0][1])
-        if (cv2.contourArea(cnt) < 30) | (cv2.contourArea(cnt) > color_upper_clipper):  # 面積過小
-            continue
-        elif (x > field_pos[1][0]) | (x < field_pos[0][0]) | (y > field_pos[7][1]) | (y < field_pos[0][1]):
+        if (x > field_pos[1][0]) | (x < field_pos[0][0]) | (y > field_pos[7][1]) | (y < field_pos[0][1]):
             continue
         cv2.circle(show, (x, y), 1, (252, 255, 255), 1)
         #  speed of ball
@@ -627,7 +631,7 @@ def image_func():
                     except ZeroDivisionError:
                         our_dir[0] = [0, 0]
                     if error_open:
-                        q = error_correct(our)
+                        q = error_correct(our, Main.crouch[0])
                         cv2.circle(show, (q[0], q[1]), 3, (252, 255, 255), -1)
                         our_data[0] = [q[0], q[1]]
 
@@ -644,7 +648,7 @@ def image_func():
                     except ZeroDivisionError:
                         our_dir[1] = [0, 0]
                     if error_open:
-                        q = error_correct(our)
+                        q = error_correct(our, Main.crouch[1])
                         cv2.circle(show, (q[0], q[1]), 3, (252, 255, 255), -1)
                         our_data[1] = [q[0], q[1]]
 
@@ -661,7 +665,7 @@ def image_func():
                     except ZeroDivisionError:
                         our_dir[2] = [0, 0]
                     if error_open:
-                        q = error_correct(our)
+                        q = error_correct(our, Main.crouch[2])
                         cv2.circle(show, (q[0], q[1]), 3, (252, 255, 255), -1)
                         our_data[2] = [q[0], q[1]]
 
@@ -676,7 +680,10 @@ def image_func():
             if enemy_code > 3:
                 break
             elif error_open:
-                q = error_correct(enemy)
+                if challenge_bit == 1 or challenge_bit == 2:
+                    q = error_correct(enemy, True)
+                else:
+                    q = error_correct(enemy, False)
                 cv2.circle(show, (q[0], q[1]), 3, (252, 255, 255), -1)
                 cv2.putText(show, "ENEMY", (q[0], q[1]), font, 0.6, (255, 255, 255), 1)
                 enemy_data[enemy_code - 1] = [q[0], q[1]]

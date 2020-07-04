@@ -12,7 +12,7 @@ import tkinter as tk
 import sys
 
 
-PRINT = False
+PRINT = True
 
 if 'Linux' in platform.system():
     from getch import getch
@@ -27,9 +27,10 @@ decision_done = False
 
 # ===========adjust==========================
 side = 1  # -1 for <- , 1 for -> (left is our field)
-challenge_num = 3
+challenge_num = 2
 # ===========================================
 
+crouch = [False, False, False]
 go_strategy = False
 rest_bit = False
 if challenge_num == 1:
