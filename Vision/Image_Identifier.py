@@ -412,7 +412,7 @@ def thread_our():
     # our_mask = cv2.medianBlur(our_mask, FILTER_KERNEL)  # medium filter
     contours, hierarchy = cv2.findContours(our_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     for cnt in contours:
-        if (cv2.contourArea(cnt) < color_lower_clipper) | (cv2.contourArea(cnt) > color_upper_clipper):  # 面積過小
+        if cv2.contourArea(cnt) < color_lower_clipper or cv2.contourArea(cnt) > color_upper_clipper:  # 面積過小
             continue
         rect = cv2.minAreaRect(cnt)
         box = cv2.boxPoints(rect)  # cv.boxPoints(rect) for OpenCV 3.x 获取最小外接矩形的4个顶点
@@ -525,17 +525,17 @@ def thread_ball():
     for cnt in contours:
         if (cv2.contourArea(cnt) < 30) | (cv2.contourArea(cnt) > color_upper_clipper):  # 面積過小
             continue
-        rect = cv2.minAreaRect(cnt)
-        box = cv2.boxPoints(rect)  # cv.boxPoints(rect) for OpenCV 3.x 获取最小外接矩形的4个顶点
-        box = np.int0(box)
-        x = int(rect[0][0])
-        y = int(rect[0][1])
+        (X, Y), ra = cv2.minEnclosingCircle(cnt)
+        x = int(X)
+        y = int(Y)
+        radius = int(ra)
+        color3_pos.add((x, y))
         if (x > field_pos[1][0]) | (x < field_pos[0][0]) | (y > field_pos[7][1]) | (y < field_pos[0][1]):
             continue
         cv2.circle(show, (x, y), 1, (252, 255, 255), 1)
         #  speed of ball
         ball_pos_now = [x, y]
-        cv2.drawContours(show, [box], -1, (150, 245, 245), 1)
+        cv2.circle(show, (x, y), radius, (252, 255, 255), 2)
         cv2.putText(show, "Ball", (x, y - 5), font, 0.7, (150, 245, 245), 1)
     if mask_color == 'b':
         mask_frame = ball_mask
@@ -783,7 +783,7 @@ def image_func():
                             cv2.circle(show, (int(robo.target[0]), int(robo.target[1])), 5, (45, 165, 230), -3)
                             cv2.line(show, (int(robo.target[0]), int(robo.target[1])),
                          (int(ch2.ball.pos[0]), int(ch2.ball.pos[1])), (45, 165, 230), 3)
-                
+
                     if robo.job == ch2.Job.NONE:
                         pass
                         # cv2.putText(show, "NONE", (our_data[i][0], our_data[i][1] - 20), font, 1, (84, 83, 268), 3)
@@ -797,7 +797,7 @@ def image_func():
                          (int(robo.next[0]), int(robo.next[1])), (45, 165, 230), 3)
                 cv2.putText(show, "ROBO1_NEXT", (int(robo.next[0]), int(robo.next[1])), font, 0.6,
                             (45, 165, 230), 1)
-                
+
             if not ch2.ball.kick == -1:
                 pass
                 # cv2.circle(show, (int(ch2.ball.kick[0]), int(ch2.ball.kick[1])), 5, (45, 165, 230), -3)
@@ -818,7 +818,7 @@ def image_func():
                         cv2.putText(show, "PASS", (our_data[i][0], our_data[i][1] - 20), font, 0.8, (84, 83, 268), 3)
                         if not robo.target[0] == -1:
                             cv2.circle(show, (int(robo.target[0]), int(robo.target[1])), 5, (45, 165, 230), -3)
-                    
+
             if not ch1.robots[0].next[0] == -1:
                 robo = ch1.robots[0]
                 cv2.circle(show, (int(robo.next[0]), int(robo.next[1])), 5, (45, 165, 230), -3)
