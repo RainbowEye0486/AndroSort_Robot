@@ -254,15 +254,15 @@ def strategy():
             print("\n")
     cmd = ['N', 'N', 'N']
     for i in range(len(robots)):
-        # try:
-        cmd[i] = execute_job(i)
-        # except ZeroDivisionError:
-        #    print('divide zero...')
-        #    cmd[i] = 'N'
-        # except Exception as e:
-        #    print('Catch Error.....')
-        #    print(e)
-        #    cmd[i] = 'N'
+        try:
+            cmd[i] = execute_job(i)
+        except ZeroDivisionError:
+            print('divide zero...')
+            cmd[i] = 'N'
+        except Exception as e:
+            print('Catch Error.....')
+            print(e)
+            cmd[i] = 'N'
     if PRINT:
         print(cmd)
         print()

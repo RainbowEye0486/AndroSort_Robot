@@ -22,9 +22,11 @@ ball = None
 ROB_RANG = 40  # 12cm = 40pixel
 last_ball = []
 record_ball = False
-shoot_zone = 0 * CM_TO_PIX
+shoot_zone = 10 * CM_TO_PIX
+best_loc = [950, 230]
+
 # CONST
-WAY_ANGLE = {'FORE': 0, 'LEFT': -math.pi/2, 'RIGHT': math.pi/2, 'BACK': math.pi}
+WAY_ANGLE = {'FORE': 0, 'LEFT': -math.pi / 2, 'RIGHT': math.pi / 2, 'BACK': math.pi}
 
 
 def strategy_update_field(side, boundary, center):
@@ -136,10 +138,10 @@ def strategy():
         except ZeroDivisionError:
             print('divide zero...')
             cmd[i] = 'N'
-        except Exception as e:
-            print('Catch Error.....')
-            print(e)
-            cmd[i] = 'N'
+        # except Exception as e:
+        #     print('Catch Error.....')
+        #     print(e)
+        #     cmd[i] = 'N'
     if PRINT:
         print(cmd)
     return cmd
@@ -187,16 +189,11 @@ def assign_job(robots):
     '''
     for robo in robots:
         if robo.role == Role.SUP:
-            robo.job = Job.PASS
-            robo.aim_pos = CENTER
-            # robo.aim_pos = [ball.pos[0]+SIDE*10, ball.pos[1]]
-            if PRINT:
-                print('pass aim at:', robo.aim_pos)
-            # robo.aim_pos = CENTER
+            robo.job = Job.MOVE
         elif robo.role == Role.NONE:
             if _dist(robo.pos, ball.pos) > 10*CM_TO_PIX:  # 10cm
                 robo.job = Job.REST
-            else:  #unsure
+            else:  # unsure
                 robo.job = Job.LEAVE
         elif robo.role == Role.MAIN:
             if (ball.pos[0] - (CENTER[0]+shoot_zone*SIDE))*SIDE > 0 :
@@ -212,14 +209,30 @@ def execute_job(id):
     global robots
     robo = robots[id]
     if robo.job == Job.MOVE:
-        pass
+        dirct = _unit_vector(ball.pos, best_loc)
+        init_pt = [b - d * 15 * CM_TO_PIX for b, d in zip(ball.pos, dirct)]
+        if _dist(init_pt, robo.pos) > 5 * CM_TO_PIX:
+            arrival = init_pt
+            robo.arr = arrival
+            move_ways = ['FORE', 'LEFT', 'RIGHT', 'BACK']
+            movable, rt_cmd = move_with_dir(robo, init_pt, robo.dir, dirct, 'FORE', move_ways)
+            if movable:
+                return rt_cmd
+        else:
+            arrival = [b + d * 15 * CM_TO_PIX for b, d in zip(ball.pos, dirct)]
+            robo.arr = arrival
+            move_ways = ['FORE']
+            movable, rt_cmd = move_with_dir(robo, arrival, robo.dir, dirct, 'FORE', move_ways)
+            if movable:
+                return rt_cmd
     elif robo.job == Job.PASS:
         if PRINT:
             print('role, job', robo.role, robo.job)
         if robo.aim_pos[0] == -1:
-            x_pos = CENTER[0] + (shoot_zone) * SIDE
-            segm = 4
-            robo.aim_pos, no_use, no_use = find_shooting_point(x_pos, segm, GOAL)
+            # x_pos = CENTER[0] + (shoot_zone)*SIDE
+            # segm = 4
+            # robo.aim_pos, no_use, no_use = find_shooting_point(x_pos, segm, GOAL)
+            robo.aim_pos = best_loc
         # kick ball
         if PRINT:
             print(robo.aim_pos)
