@@ -40,8 +40,8 @@ MOTION = {
         'REST': {'CMD': ['r']}
     },
     4: {
-        'MOVE': {# offset[verticle(, horizon)]
-            'FORE': {'CMD': ['W', 'w'], 'BOUND':  [6.3, 2.09], 'OFFSET': [11, 4.3]},
+        'MOVE': {  # offset[verticle(, horizon)]
+            'FORE': {'CMD': ['W', 'w'], 'BOUND': [6.3, 2.09], 'OFFSET': [11, 4.3]},
             # BOUND': [30, 15] for simulator [18, 8]
             'BACK': {'CMD': ['s'], 'BOUND': [2], 'OFFSET': [16, 6]},
             # BOUND': [15] ;[4]
