@@ -10,7 +10,7 @@ from Strategy import challenge_3 as ch3
 from Strategy import challenge_2 as ch2
 from Strategy import challenge_1 as ch1
 
-camera_switch = 1  # 哪一個相機
+camera_switch = 0  # 哪一個相機
 #  紀錄參數用
 if camera_switch == 0:
     fpath = os.path.join(os.path.dirname(__file__), 'param.json')
@@ -525,17 +525,17 @@ def thread_ball():
     for cnt in contours:
         if (cv2.contourArea(cnt) < 30) | (cv2.contourArea(cnt) > color_upper_clipper):  # 面積過小
             continue
-        (X, Y), ra = cv2.minEnclosingCircle(cnt)
-        x = int(X)
-        y = int(Y)
-        radius = int(ra)
-        color3_pos.add((x, y))
+        rect = cv2.minAreaRect(cnt)
+        box = cv2.boxPoints(rect)  # cv.boxPoints(rect) for OpenCV 3.x 获取最小外接矩形的4个顶点
+        box = np.int0(box)
+        x = int(rect[0][0])
+        y = int(rect[0][1])
         if (x > field_pos[1][0]) | (x < field_pos[0][0]) | (y > field_pos[7][1]) | (y < field_pos[0][1]):
             continue
         cv2.circle(show, (x, y), 1, (252, 255, 255), 1)
         #  speed of ball
         ball_pos_now = [x, y]
-        cv2.circle(show, (x, y), radius, (252, 255, 255), 2)
+        cv2.drawContours(show, [box], -1, (150, 245, 245), 1)
         cv2.putText(show, "Ball", (x, y - 5), font, 0.7, (150, 245, 245), 1)
     if mask_color == 'b':
         mask_frame = ball_mask
