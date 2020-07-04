@@ -359,13 +359,18 @@ def main_procedure(device):
                 print(current_time + ' ' + data)
 
 
-def communicate(device, que):
+def communicate(device, que, crouch):
     mode = 0
     tstart = time.time()
     current_time = datetime.now().strftime("%H-%M-%S-%f")
     if not que.empty():
         # Get input from queue
         input_data = que.get()
+        for i, inpt in enumerate(input_data):
+            if inpt == 'r':
+                crouch[i] = True
+            elif not inpt == 'N':
+                crouch[i] = False
         RF_sendCmd_sys(input_data, device, 0.01, mode)
     while time.time() - tstart < 1 / 30:
         # Read input
@@ -373,6 +378,7 @@ def communicate(device, que):
         if length != 0:
             current_time = datetime.now().strftime("%H-%M-%S-%f")
             print(current_time + ' ' + data)
+    return crouch
 
 
 def rest_robots(device):

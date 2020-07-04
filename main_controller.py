@@ -12,7 +12,7 @@ import tkinter as tk
 import sys
 
 
-PRINT = False
+PRINT = True
 
 if 'Linux' in platform.system():
     from getch import getch
@@ -30,8 +30,10 @@ side = -1  # -1 for <- , 1 for -> (left is our field)
 challenge_num = 2
 # ===========================================
 
+crouch = [False, False, False]
 go_strategy = False
 rest_bit = False
+
 if challenge_num == 1:
     strategy = strategy1
     image.challenge_bit = 1
@@ -93,9 +95,13 @@ def Strategy_thread(que):
             sys.exit()
         if go_strategy:
             if challenge_num == 2:
-                time.sleep(0.5)
+                time.sleep(1)
+            while not image.update_frame:
+                pass
             strategy.Update_Robo_Info(image.our_dir, image.our_data, image.enemy_data, image.ball_pos_now,
                                       image.ball_speed, image.ball_dir)
+            image.update_frame = False
+            # print('u_f in main b', image.update_frame)
             cmd = strategy.strategy()
             try:
                 input_data = cmd
@@ -117,6 +123,7 @@ def Strategy_thread(que):
 
 
 def NRF_thread(device, que):
+    global crouch
     while True:
         if image.exit_bit != 0:
             nrf.rest_robots(device)
@@ -129,9 +136,7 @@ def NRF_thread(device, que):
                 que.get()
                 que.put(['r', 'r', 'r'])
                 time.sleep(0.001)
-        nrf.communicate(device, que)
-        if challenge_num == 2:
-            time.sleep(0.5)
+        crouch = nrf.communicate(device, que, crouch)
 
 
 if __name__ == '__main__':

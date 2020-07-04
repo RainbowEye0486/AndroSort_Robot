@@ -22,11 +22,11 @@ ball = None
 ROB_RANG = 40  # 12cm = 40pixel
 last_ball = []
 record_ball = False
-shoot_zone = 10*CM_TO_PIX
+shoot_zone = 10 * CM_TO_PIX
 best_loc = [950, 230]
 
 # CONST
-WAY_ANGLE = {'FORE': 0, 'LEFT': -math.pi/2, 'RIGHT': math.pi/2, 'BACK': math.pi}
+WAY_ANGLE = {'FORE': 0, 'LEFT': -math.pi / 2, 'RIGHT': math.pi / 2, 'BACK': math.pi}
 
 
 def strategy_update_field(side, boundary, center):
@@ -211,7 +211,7 @@ def execute_job(id):
     if robo.job == Job.MOVE:
         dirct = _unit_vector(ball.pos, best_loc)
         init_pt = [b - d * 15 * CM_TO_PIX for b, d in zip(ball.pos, dirct)]
-        if _dist(init_pt, robo.pos) > 5*CM_TO_PIX:
+        if _dist(init_pt, robo.pos) > 5 * CM_TO_PIX:
             arrival = init_pt
             robo.next = arrival
             move_ways = ['FORE', 'LEFT', 'RIGHT', 'BACK']
