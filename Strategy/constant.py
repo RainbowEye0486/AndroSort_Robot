@@ -15,9 +15,9 @@ MOTION = {
             # BOUND': [30, 15] for simulator [18, 8]
             'BACK': {'CMD': ['s'], 'BOUND': [2], 'OFFSET': [16, 6]},
             # BOUND': [15] ;[4]
-            'LEFT': {'CMD': ['A', 'a'], 'BOUND': [19.5, 1.33], 'OFFSET': [13.5]},
+            'LEFT': {'CMD': ['A', 'a'], 'BOUND': [19.5, 1.33], 'OFFSET': [17]},
             # BOUND': [75,15] ;[71, 3.1]
-            'RIGHT': {'CMD': ['D', 'd'], 'BOUND': [19.5, 1.275], 'OFFSET': [13.5]}
+            'RIGHT': {'CMD': ['D', 'd'], 'BOUND': [19.5, 1.275], 'OFFSET': [17]}
             #  [76, 2.22]
         },
 
@@ -75,9 +75,9 @@ MOTION = {
             # BOUND': [30, 15] for simulator [18, 8]
             'BACK': {'CMD': ['s'], 'BOUND': [2], 'OFFSET': [16, 6]},
             # BOUND': [15] ;[4]
-            'LEFT': {'CMD': ['A', 'a'], 'BOUND': [19.5, 1.33], 'OFFSET': [13.5]},
+            'LEFT': {'CMD': ['A', 'a'], 'BOUND': [19.5, 1.33], 'OFFSET': [17]},
             # BOUND': [75,15] ;[71, 3.1]
-            'RIGHT': {'CMD': ['D', 'd'], 'BOUND': [19.5, 1.275], 'OFFSET': [13.5]}
+            'RIGHT': {'CMD': ['D', 'd'], 'BOUND': [19.5, 1.275], 'OFFSET': [17]}
             #  [76, 2.22]
         },
 

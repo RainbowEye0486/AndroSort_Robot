@@ -207,7 +207,7 @@ def execute_job(id):
             kickable_dist = 4 * CM_TO_PIX  # the distance between arrival and the robot should be
             kickable_ang = 6 / 180 * math.pi  # acceptable angle error when kicking
             # kick_ways = ['BACK']
-            kick_ways = ['LEFT', 'RIGHT']
+            kick_ways = ['LEFT']
             move_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
             kick_dir = _unit_vector(ball.pos, robo.target)
             kickable, kick_way, rt_cmd, arrival = is_kickable(robo, kickable_dist, kickable_ang, kick_dir, kick_ways,
@@ -291,7 +291,8 @@ def is_kickable(robo, tol_dist, tol_angle, kick_dir, ways, force):
         print('====in kickable===')
         print('robo, kick_dir', robo.dir, kick_dir)
         print('kick way:', kick_way)
-    arrival = [b - un_dir*ball.RADIUS*CM_TO_PIX for b, un_dir in zip(ball.pos, kick_dir)]
+    # arrival = [b - un_dir*ball.RADIUS*CM_TO_PIX for b, un_dir in zip(ball.pos, kick_dir)]
+    arrival = ball.pos[:]
     ball.kick = arrival
     ver_offst = [direct * -robo.MOTION['MOVE'][kick_way]['OFFSET'][0]*CM_TO_PIX for direct in kick_dir]
     hor_offst = [0, 0]
@@ -307,11 +308,13 @@ def is_kickable(robo, tol_dist, tol_angle, kick_dir, ways, force):
     if PRINT:
         # print('arr changed:', arrival)
         print('kick-dist:', _dist(arrival, robo.pos))
+    print('kick-dist:', _dist(arrival, robo.pos))
     if _dist(arrival, robo.pos) < tol_dist:  # can reach the ball
         direction = _rotate(robo.dir, WAY_ANGLE[kick_way])
         angle = _angle(kick_dir, direction)
         if PRINT:
             print('kick-angle:', angle)
+        print('kick-angle:', angle)
         if abs(angle) < tol_angle:  # with right angle
             if PRINT:
                 print('======kicked!!!!')
@@ -636,7 +639,7 @@ def check_boundary_ball(robo):
 
 
 def is_close_ball(pos, direction, len):
-    safe_dist = (20 + ball.RADIUS) * CM_TO_PIX
+    safe_dist = (15 + ball.RADIUS) * CM_TO_PIX
     the_next = [p + d * len for p, d in zip(pos, direction)]
     if _dist(the_next, ball.pos) < safe_dist:
         if PRINT:

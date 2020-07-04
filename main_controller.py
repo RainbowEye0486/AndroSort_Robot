@@ -95,7 +95,7 @@ def Strategy_thread(que):
             sys.exit()
         if go_strategy:
             if challenge_num == 2:
-                time.sleep(1)
+                time.sleep(0.7)
             while not image.update_frame:
                 pass
             strategy.Update_Robo_Info(image.our_dir, image.our_data, image.enemy_data, image.ball_pos_now,

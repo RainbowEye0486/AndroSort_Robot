@@ -777,11 +777,16 @@ def image_func():
             for i, robo in enumerate(ch2.robots):
                 if our_data[i]:
                     if robo.job == ch2.Job.SHOOT:
-                        cv2.putText(show, "SHOOT", (our_data[i][0], our_data[i][1] - 20), font, 1, (84, 83, 268), 3)
+                        pass
+                        # cv2.putText(show, "SHOOT", (our_data[i][0], our_data[i][1] - 20), font, 1, (84, 83, 268), 3)
                         if not robo.target[0] == -1:
                             cv2.circle(show, (int(robo.target[0]), int(robo.target[1])), 5, (45, 165, 230), -3)
+                            cv2.line(show, (int(robo.target[0]), int(robo.target[1])),
+                         (int(ch2.ball.pos[0]), int(ch2.ball.pos[1])), (45, 165, 230), 3)
+                
                     if robo.job == ch2.Job.NONE:
-                        cv2.putText(show, "NONE", (our_data[i][0], our_data[i][1] - 20), font, 1, (84, 83, 268), 3)
+                        pass
+                        # cv2.putText(show, "NONE", (our_data[i][0], our_data[i][1] - 20), font, 1, (84, 83, 268), 3)
                     if robo.job == ch2.Job.PASS:
                         cv2.putText(show, "PASS", (our_data[i][0], our_data[i][1] - 20), font, 1, (84, 83, 268), 3)
 
@@ -792,8 +797,10 @@ def image_func():
                          (int(robo.next[0]), int(robo.next[1])), (45, 165, 230), 3)
                 cv2.putText(show, "ROBO1_NEXT", (int(robo.next[0]), int(robo.next[1])), font, 0.6,
                             (45, 165, 230), 1)
+                
             if not ch2.ball.kick == -1:
-                cv2.circle(show, (int(ch2.ball.kick[0]), int(ch2.ball.kick[1])), 5, (45, 165, 230), -3)
+                pass
+                # cv2.circle(show, (int(ch2.ball.kick[0]), int(ch2.ball.kick[1])), 5, (45, 165, 230), -3)
         elif challenge_bit == 1 and len(ch1.robots) == 2:
             for i, robo in enumerate(ch1.robots):
                 if our_data[i]:
