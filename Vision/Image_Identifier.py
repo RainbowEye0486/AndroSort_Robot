@@ -560,6 +560,9 @@ class WebcamVideoStream:
         self.stream.set(cv2.CAP_PROP_BRIGHTNESS, 154)
         self.stream.set(cv2.CAP_PROP_GAIN, 106)
         self.stream.set(cv2.CAP_PROP_FOCUS, 0)
+        self.stream.set(cv2.CAP_PROP_BUFFERSIZE, 3)
+        print("buffer size", cv2.CAP_PROP_BUFFERSIZE)
+        print(cv2.getBuildInformation())
 
     def start(self):
         # start the thread to read frames from the video stream
@@ -573,7 +576,7 @@ class WebcamVideoStream:
             # if the thread indicator variable is set, stop the thread
             if exit_bit == 1:
                 return
-            if reduce_lag <= 15:
+            if reduce_lag <= 20:
                 reduce_lag += 1
                 continue
             # otherwise, read the next frame from the stream
