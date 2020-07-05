@@ -11,9 +11,9 @@ BODY = {
 MOTION = {
     3: {
         'MOVE': {  # offset[verticle(, horizon)]
-            'FORE': {'CMD': ['W', 'w'], 'BOUND': [7.3, 2.09], 'OFFSET': [11, 6]},
+            'FORE': {'CMD': ['W', 'w'], 'BOUND': [7.3, 2.09], 'OFFSET': [7.5, 5]},
             # BOUND': [30, 15] for simulator [18, 8]
-            'BACK': {'CMD': ['s'], 'BOUND': [2], 'OFFSET': [16, 6]},
+            'BACK': {'CMD': ['s'], 'BOUND': [2], 'OFFSET': [14, 6]},
             # BOUND': [15] ;[4]
             'LEFT': {'CMD': ['A', 'a'], 'BOUND': [19.5, 1.33], 'OFFSET': [17]},
             # BOUND': [75,15] ;[71, 3.1]

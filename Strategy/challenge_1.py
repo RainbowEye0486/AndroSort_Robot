@@ -4,8 +4,8 @@ from enum import Enum
 import time
 
 # Parameter needed to adjust
-ID_IN_USE = [7, 3]
-PRINT = True
+ID_IN_USE = [5, 3]
+PRINT = False
 
 # Field Parameter
 CM_TO_PIX = 3.65
@@ -21,10 +21,13 @@ enemies = []
 ball = None
 ROB_RANG = 40  # 12cm = 40pixel
 last_ball = []
+ball_in_move = []
 record_ball = False
-shoot_zone = 10 * CM_TO_PIX
-best_loc = [480, 665]
-
+start_pass = False
+shoot_zone = 20 * CM_TO_PIX
+best_loc = [616, 492]
+our_gate = []
+leave_at = []
 # CONST
 WAY_ANGLE = {'FORE': 0, 'LEFT': -math.pi / 2, 'RIGHT': math.pi / 2, 'BACK': math.pi}
 
@@ -42,11 +45,12 @@ def strategy_update_field(side, boundary, center, penalty):
         param5: int -> x coordinate of free ball point w.r.t center
     """
     # Your code
-    global SIDE, BOUNDARY, CENTER, GOAL
+    global SIDE, BOUNDARY, CENTER, GOAL, our_gate
     SIDE = side
     BOUNDARY = boundary
     CENTER = center
     GOAL = [BOUNDARY[2], BOUNDARY[5]] if SIDE == 1 else [BOUNDARY[11], BOUNDARY[8]]
+    our_gate = [BOUNDARY[11], BOUNDARY[8]] if SIDE == 1 else [BOUNDARY[2], BOUNDARY[5]]
     if PRINT:
         print('GOAL:', GOAL)
 
@@ -124,10 +128,12 @@ def strategy():
         retva1: str -> command for this robot
     """
     # Your code
-    global robots, last_ball, record_ball
+    global robots, last_ball, record_ball, ball_in_move, leave_at
     # choose_mode() # as a defender or an atacker
     if not record_ball:
         last_ball = ball.pos
+        ball_in_move = ball.pos
+        leave_at = [robots[0].pos[0]-SIDE*15*CM_TO_PIX, robots[0].pos[1]]
         record_ball = True
     assign_role(robots)
     assign_job(robots)
@@ -173,8 +179,8 @@ def assign_role(robots):
     elif robots[0].role == Role.SUP:
         if PRINT:
             print('ball move', _dist(ball.pos, last_ball))
-        if _dist(ball.pos, last_ball) > 5 * CM_TO_PIX:
-            robots[0].role = Role.NONE
+        if _dist(ball.pos, last_ball) > 11 * CM_TO_PIX:
+            # robots[0].role = Role.NONE
             robots[1].role = Role.MAIN
     else:
         if PRINT:
@@ -189,17 +195,17 @@ def assign_job(robots):
     '''
     for robo in robots:
         if robo.role == Role.SUP:
-            robo.job = Job.MOVE
-        elif robo.role == Role.NONE:
-            if _dist(robo.pos, ball.pos) > 10*CM_TO_PIX:  # 10cm
-                robo.job = Job.REST
-            else:  # unsure
+            if _dist(last_ball, ball.pos) > 10*CM_TO_PIX:
                 robo.job = Job.LEAVE
+            else:
+                robo.job = Job.MOVE
+        elif robo.role == Role.NONE:
+            robo.job = Job.REST
         elif robo.role == Role.MAIN:
             if (ball.pos[0] - (CENTER[0]+shoot_zone*SIDE))*SIDE > 0 :
                 robo.job = Job.SHOOT  # to goal
             else:
-                robo.job = Job.PASS  # to three point line
+                robo.job = Job.MOVE  # to three point line
 
 
 def execute_job(id):
@@ -210,21 +216,33 @@ def execute_job(id):
     robo = robots[id]
     if robo.job == Job.MOVE:
         dirct = _unit_vector(ball.pos, best_loc)
-        init_pt = [b - d * 20 * CM_TO_PIX for b, d in zip(ball.pos, dirct)]
-        if _dist(init_pt, robo.pos) > 5 * CM_TO_PIX:
+        init_pt = [b - d * 13 * CM_TO_PIX for b, d in zip(ball.pos, dirct)]
+        # r_offst = _rotate(dirct, WAY_ANGLE('RIGHT'))
+        global start_pass, ball_in_move
+        if not start_pass:
+            dist_err = 2*CM_TO_PIX
+            ang_err = 15/180*math.pi
+            ball_in_move = ball.pos
             arrival = init_pt
             robo.next = arrival
             move_ways = ['FORE', 'LEFT', 'RIGHT', 'BACK']
-            movable, rt_cmd = move_with_dir(robo, init_pt, robo.dir, dirct, 'FORE', move_ways)
-            if movable:
+            direction = _rotate(robo.dir, WAY_ANGLE['LEFT'])
+            movable, rt_cmd = move_with_dir(robo, arrival, direction, dirct, 'LEFT', move_ways)
+            if movable and _dist(robo.pos, arrival) > dist_err and abs(_angle(direction, dirct)) > ang_err:
                 return rt_cmd
+            else:
+                start_pass = True
         else:
             arrival = [b + d * 15 * CM_TO_PIX for b, d in zip(ball.pos, dirct)]
             robo.next = arrival
-            move_ways = ['FORE']
-            movable, rt_cmd = move_with_dir(robo, arrival, robo.dir, dirct, 'FORE', move_ways)
+            move_ways = ['LEFT']
+            movable, rt_cmd = move_special(robo, arrival, move_ways)
+            if _dist(ball.pos, ball_in_move) > 3*CM_TO_PIX:
+                start_pass = False
             if movable:
                 return rt_cmd
+            else:
+                start_pass = False
     elif robo.job == Job.PASS:
         if PRINT:
             print('role, job', robo.role, robo.job)
@@ -256,11 +274,12 @@ def execute_job(id):
             return rt_cmd
     elif robo.job == Job.SHOOT:
         robo.target, size = find_aim_point(ball.pos[0], ball.pos[1], GOAL)
+        print('size:', size/GOAL[0][1]-GOAL[1][1])
         if robo.target[0] != -1:
             force = 'big'
             kickable_dist = 3*CM_TO_PIX  # the distance between arrival and the robot should be
             kickable_ang = 7/180*math.pi  # acceptable angle error when kicking
-            kick_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
+            kick_ways = ['LEFT', 'RIGHT']
             move_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
             kick_dir = _unit_vector(ball.pos, robo.target)
             kickable, kick_way, rt_cmd, arrival = is_kickable(robo, kickable_dist, kickable_ang, kick_dir, kick_ways,
@@ -279,15 +298,14 @@ def execute_job(id):
     elif robo.job == Job.DRIBBLE:
         pass
     elif robo.job == Job.LEAVE:
-        leave_dist = 5 * CM_TO_PIX  # if too close, leave for 5 cm
-        ball_dir = _unit_vector(robo.pos, ball.pos)
-        arrival = [p - d * leave_dist for p, d in zip(robo.pos, ball_dir)]
+        arrival = leave_at
         movable = False
-        if GOAL[0][0] < arrival[0] < GOAL[1][0] and GOAL[0][1] < arrival[1] < GOAL[7][1]:
-            movable, rt_cmd = move(robo, arrival, ['FORE', 'LEFT', 'RIGHT', 'BACK'])
-            robo.next = arrival
-        if movable:
+        movable, rt_cmd = move(robo, arrival, ['FORE', 'LEFT', 'RIGHT', 'BACK'])
+        robo.next = arrival
+        if movable and _dist(arrival, robo.pos) > 3*CM_TO_PIX:
             return rt_cmd
+        else:
+            robo.role = Role.NONE
     elif robo.job == Job.REST:
         return robo.MOTION['REST']['CMD'][0]
     return 'N'
@@ -448,6 +466,7 @@ def move_with_dir(robo, arrival, curr_dir, ideal_dir, fit_way='FORE', ways=['FOR
             too_close = is_close_ball(robo.pos, temp_dir, robo.MOTION['MOVE'][move_way]['BOUND'][0] * CM_TO_PIX)
             if (not too_close) or move_way == 'BACK':
                 rt_cmd = robo.MOTION['MOVE'][move_way]['CMD'][0]
+                time.sleep(0.2)
                 return True, rt_cmd
         if len(robo.MOTION['MOVE'][move_way]['BOUND']) > 1:
             if product >= robo.MOTION['MOVE'][move_way]['BOUND'][1] * CM_TO_PIX:
@@ -473,7 +492,6 @@ def move(robo, arrival, ways=['FORE', 'LEFT', 'RIGHT', 'BACK']):
         print('dist', dist)
     # if the robot will pass the ball while moving
     dist_ball = _dist(robo.pos, ball.pos)
-    '''
     if dist > dist_ball:
         ball_dir = _unit_vector(robo.pos, ball.pos)
         angle = abs(_angle(move_dir, ball_dir))
@@ -500,7 +518,6 @@ def move(robo, arrival, ways=['FORE', 'LEFT', 'RIGHT', 'BACK']):
             move_dir = _unit_vector(robo.pos, arrival)
             move_way = find_way(robo, move_dir, ways)
             dist = _dist(robo.pos, arrival)
-    '''
     # fix angle
     direction = _rotate(robo.dir, WAY_ANGLE[move_way])
     angle = _angle(move_dir, direction)
@@ -544,6 +561,7 @@ def move(robo, arrival, ways=['FORE', 'LEFT', 'RIGHT', 'BACK']):
         too_close = is_close_ball(robo.pos, direction, robo.MOTION['MOVE'][move_way]['BOUND'][0] * CM_TO_PIX)
         if (not too_close) or move_way == 'BACK':
             rt_cmd = robo.MOTION['MOVE'][move_way]['CMD'][0]
+            time.sleep(0.2)
             return True, rt_cmd
     if len(robo.MOTION['MOVE'][move_way]['BOUND']) > 1:
         if dist >= robo.MOTION['MOVE'][move_way]['BOUND'][1] * CM_TO_PIX:
@@ -552,6 +570,55 @@ def move(robo, arrival, ways=['FORE', 'LEFT', 'RIGHT', 'BACK']):
     if PRINT:
         print('Cant Find proper cmd.....')
     return False, 'N'
+
+
+def move_special(robo, arrival, ways=['FORE', 'LEFT', 'RIGHT', 'BACK']):
+    '''
+       To move to assigned point and facing whatever direction
+    '''
+    move_dir = _unit_vector(robo.pos, arrival)
+    dist = _dist(robo.pos, arrival)
+    move_way = find_way(robo, move_dir, ways)
+    if PRINT:
+        print()
+        print('---->move w/o dir arr:', arrival)
+        print('dir:', move_dir)
+        print('move way', move_way)
+        print('dist', dist)
+    # fix angle
+    direction = _rotate(robo.dir, WAY_ANGLE[move_way])
+    angle = _angle(move_dir, direction)
+    if PRINT:
+        print('ang diff:', angle*180/math.pi)
+    if angle > 0:  # should turn left
+        if angle > robo.MOTION['TURN']['LEFT']['BOUND'][0]:
+            rt_cmd = robo.MOTION['TURN']['LEFT']['CMD'][0]
+            return True, rt_cmd
+        # elif angle > robo.MOTION['TURN']['LEFT']['BOUND'][1]:
+        #     rt_cmd = robo.MOTION['TURN']['LEFT']['CMD'][1]
+        #     return True, rt_cmd
+    else:
+        if abs(angle) > robo.MOTION['TURN']['RIGHT']['BOUND'][0]:
+            rt_cmd = robo.MOTION['TURN']['RIGHT']['CMD'][0]
+            return True, rt_cmd
+        # elif abs(angle) > robo.MOTION['TURN']['RIGHT']['BOUND'][1]:
+        #     rt_cmd = robo.MOTION['TURN']['RIGHT']['CMD'][1]
+        #     return True, rt_cmd
+    '''MOVE'''
+    # if dist >= robo.MOTION['MOVE'][move_way]['BOUND'][0] * CM_TO_PIX:
+    #     # too_close = is_close_ball(robo.pos, direction, robo.MOTION['MOVE'][move_way]['BOUND'][0] * CM_TO_PIX)
+    #     # if (not too_close) or move_way == 'BACK':
+    #     rt_cmd = robo.MOTION['MOVE'][move_way]['CMD'][0]
+    #     time.sleep(0.2)
+    #     return True, rt_cmd
+    if len(robo.MOTION['MOVE'][move_way]['BOUND']) > 1:
+        if dist >= robo.MOTION['MOVE'][move_way]['BOUND'][1] * CM_TO_PIX:
+            rt_cmd = robo.MOTION['MOVE'][move_way]['CMD'][1]
+            return True, rt_cmd
+    if PRINT:
+        print('Cant Find proper cmd.....')
+    return False, 'N'
+
 
 
 def find_way(robo, ideal_dir, ways):

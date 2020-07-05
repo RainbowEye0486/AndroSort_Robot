@@ -870,7 +870,7 @@ def image_func():
             except ZeroDivisionError:
                 ball_speed = 0
                 print("speed error")
-            print("ball speed:", ball_speed, ", ball speed vector:", ball_dir, ", time:", time_interval)
+            # print("ball speed:", ball_speed, ", ball speed vector:", ball_dir, ", time:", time_interval)
             frame_counter = 0
         global update_frame
         # print('u_f in i', update_frame)
