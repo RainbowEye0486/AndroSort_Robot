@@ -5,7 +5,7 @@ import cv2
 import time
 
 # Parameter needed to adjust
-PRINT = False
+PRINT = True
 ID_IN_USE = [3]
 
 # Field Parameter
@@ -531,6 +531,7 @@ def find_aim_point(x, y, goal):
     # if PRINT:
     #     print('====find aim===')
     aim_point = [goal[0][0], -1]
+    size = 0
     enemies_pos = enemies[:]
     for enemy in enemies_pos:
         if not enemy:
@@ -575,27 +576,51 @@ def find_aim_point(x, y, goal):
             j += 1
     # Map non-blocked areas, and find the biggest area
     ava_range = []
-    size = 0
+    sizes = []
+    dists = []
+    point = [goal[0][0], -1]
+    points = []
     if len(head_tails) == 0:
-        size = goal[1][1] - goal[0][1]
-        aim_point[1] = (goal[1][1] + goal[0][1]) / 2
+        sizes.append(goal[1][1] - goal[0][1])
+        point[1] = (goal[1][1] + goal[0][1]) / 2
+        points.append(point[:])
+        dists.append(_dist([x, y], point))
+        ava_range.append(goal)
     if len(head_tails) > 0 and head_tails[0][0] - goal[0][1] > size:
-        size = head_tails[0][0] - goal[0][1]
-        aim_point[1] = (head_tails[0][0] + goal[0][1]) / 2
+        sizes.append(head_tails[0][0] - goal[0][1])
+        point[1] = (head_tails[0][0] + goal[0][1]) / 2
+        dists.append(_dist([x, y], point))
+        points.append(point[:])
         ava_range.append([goal[0][1], head_tails[0][0]])
     for i in range(len(head_tails) - 1):
         if head_tails[i + 1][0] - head_tails[i][0] > size:
-            size = head_tails[i + 1][0] - head_tails[i][0]
-            aim_point[1] = (head_tails[i + 1][0] + head_tails[i][0]) / 2
+            sizes.append(head_tails[i + 1][0] - head_tails[i][0])
+            point[1] = (head_tails[i + 1][0] + head_tails[i][0]) / 2
+            points.append(point[:])
+            dists.append(_dist([x, y], point))
             ava_range.append([head_tails[i][1], head_tails[i + 1][0]])
     if len(head_tails) > 0 and goal[1][1] - head_tails[len(head_tails) - 1][1] > size:
-        size = goal[1][1] - head_tails[len(head_tails) - 1][1]
-        aim_point[1] = (goal[1][1] + head_tails[len(head_tails) - 1][1]) / 2
+        sizes.append(goal[1][1] - head_tails[len(head_tails) - 1][1])
+        point[1] = (goal[1][1] + head_tails[len(head_tails) - 1][1]) / 2
+        points.append(point[:])
+        if PRINT:
+            print('pts', points)
+        dists.append(_dist([x, y], point))
         ava_range.append([head_tails[len(head_tails) - 1][1], goal[1][1]])
-    # if PRINT:
-    #     for pair in ava_range:
-    #         print('available area:', pair[0], pair[1])
-    #     print('(', aim_point[0], ',', aim_point[1], '):', size)
+    if sizes:
+        size_max = max(sizes)
+        dist_max = max(dists)
+        comp = -1.1
+        for i in range(len(sizes)):
+            temp_comp = sizes[i]/size_max - dists[i]/dist_max
+            if temp_comp > comp:
+                comp = temp_comp
+                aim_point = points[i]
+                size = sizes[i]
+    if PRINT:
+        for pair in ava_range:
+            print('available area:', pair[0], pair[1])
+        print('(', aim_point[0], ',', aim_point[1], '):', size)
     return aim_point, size
 
 
@@ -611,14 +636,14 @@ def find_shooting_point(x_pos, segm, goal):
         retval2: the best point to aim
         retval3: the tolerant size
     """
-    biggest_size = -2 * CM_TO_PIX
+    biggest_size = 0
     shooting_pt = []
     aim_pos = []
     for i in range(1, segm):
         x = x_pos
         y = BOUNDARY[0][1] + (BOUNDARY[7][1] - BOUNDARY[0][1]) / segm * i
         aim, size = find_aim_point(x, y, goal)
-        if size - 2 * CM_TO_PIX > biggest_size:  # at least is larger than 2 cm, then change
+        if size > biggest_size:
             biggest_size = size
             shooting_pt = [x, y]
             aim_pos = aim

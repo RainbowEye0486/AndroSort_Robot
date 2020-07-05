@@ -4,7 +4,7 @@ from enum import Enum
 import time
 
 # Parameter needed to adjust
-ID_IN_USE = [4, 3]
+ID_IN_USE = [7, 3]
 PRINT = True
 
 # Field Parameter
@@ -23,7 +23,7 @@ ROB_RANG = 40  # 12cm = 40pixel
 last_ball = []
 record_ball = False
 shoot_zone = 10 * CM_TO_PIX
-best_loc = [950, 230]
+best_loc = [480, 665]
 
 # CONST
 WAY_ANGLE = {'FORE': 0, 'LEFT': -math.pi / 2, 'RIGHT': math.pi / 2, 'BACK': math.pi}
@@ -210,7 +210,7 @@ def execute_job(id):
     robo = robots[id]
     if robo.job == Job.MOVE:
         dirct = _unit_vector(ball.pos, best_loc)
-        init_pt = [b - d * 15 * CM_TO_PIX for b, d in zip(ball.pos, dirct)]
+        init_pt = [b - d * 20 * CM_TO_PIX for b, d in zip(ball.pos, dirct)]
         if _dist(init_pt, robo.pos) > 5 * CM_TO_PIX:
             arrival = init_pt
             robo.next = arrival
@@ -473,6 +473,7 @@ def move(robo, arrival, ways=['FORE', 'LEFT', 'RIGHT', 'BACK']):
         print('dist', dist)
     # if the robot will pass the ball while moving
     dist_ball = _dist(robo.pos, ball.pos)
+    '''
     if dist > dist_ball:
         ball_dir = _unit_vector(robo.pos, ball.pos)
         angle = abs(_angle(move_dir, ball_dir))
@@ -499,6 +500,7 @@ def move(robo, arrival, ways=['FORE', 'LEFT', 'RIGHT', 'BACK']):
             move_dir = _unit_vector(robo.pos, arrival)
             move_way = find_way(robo, move_dir, ways)
             dist = _dist(robo.pos, arrival)
+    '''
     # fix angle
     direction = _rotate(robo.dir, WAY_ANGLE[move_way])
     angle = _angle(move_dir, direction)
@@ -573,9 +575,10 @@ def find_aim_point(x, y, goal):
         retva1: the best point to aim
         retval: the tolerant size
     """
-    if PRINT:
-        print('====find aim===')
+    # if PRINT:
+    #     print('====find aim===')
     aim_point = [goal[0][0], -1]
+    size = 0
     enemies_pos = enemies[:]
     for enemy in enemies_pos:
         if not enemy:
@@ -583,17 +586,17 @@ def find_aim_point(x, y, goal):
     if enemies_pos:
         enemies_pos.sort(key=takeY)  # ??
     head_tails = []  # store the areas that are blocked
-    if PRINT:
-        print('enenies_pos', enemies_pos)
-        print('ball(', x, y, ')')
-        print('goal:', goal)
+    # if PRINT:
+    #     print('enenies_pos', enemies_pos)
+    #     print('ball(', x, y, ')')
+    #     print('goal:', goal)
     for enemy in enemies_pos:
         if enemy:
-            if PRINT:
-                print('enemy', enemy)
+            # if PRINT:
+            #     print('enemy', enemy)
             if x < enemy[0] <= goal[0][0] or x > enemy[0] >= goal[0][0]:
-                if PRINT:
-                    print('between')
+                # if PRINT:
+                #     print('between')
                 pair = []
                 dir_x = enemy[0] - x
                 dir_y = (enemy[1] - ROB_RANG) - y
@@ -601,13 +604,15 @@ def find_aim_point(x, y, goal):
                 dir_y = (enemy[1] + ROB_RANG) - y
                 pair.append(y + (goal[0][0] - x) / dir_x * dir_y)
                 head_tails.append(pair)
+    # if PRINT:
+    #     print('head_tail', head_tails)
     # if the blocked areas are consectutive, merge them;
     # if the whole area is beyond border then delete it
     j = 0
-    while j < (len(head_tails)-1):
-        if(head_tails[j][1] >= head_tails[j+1][0]):
-            head_tails[j][1] = head_tails[j+1][1]
-            del head_tails[j+1]
+    while j < (len(head_tails) - 1):
+        if head_tails[j][1] >= head_tails[j + 1][0]:
+            head_tails[j][1] = head_tails[j + 1][1]
+            del head_tails[j + 1]
         else:
             j += 1
     j = 0
@@ -618,23 +623,47 @@ def find_aim_point(x, y, goal):
             j += 1
     # Map non-blocked areas, and find the biggest area
     ava_range = []
-    size = 0
+    sizes = []
+    dists = []
+    point = [goal[0][0], -1]
+    points = []
     if len(head_tails) == 0:
-        size = goal[1][1] - goal[0][1]
-        aim_point[1] = (goal[1][1] + goal[0][1])/2
+        sizes.append(goal[1][1] - goal[0][1])
+        point[1] = (goal[1][1] + goal[0][1]) / 2
+        points.append(point[:])
+        dists.append(_dist([x, y], point))
+        ava_range.append(goal)
     if len(head_tails) > 0 and head_tails[0][0] - goal[0][1] > size:
-        size = head_tails[0][0] - goal[0][1]
-        aim_point[1] = (head_tails[0][0] + goal[0][1])/2
+        sizes.append(head_tails[0][0] - goal[0][1])
+        point[1] = (head_tails[0][0] + goal[0][1]) / 2
+        dists.append(_dist([x, y], point))
+        points.append(point[:])
         ava_range.append([goal[0][1], head_tails[0][0]])
-    for i in range(len(head_tails)-1):
-        if head_tails[i+1][0] - head_tails[i][0] > size:
-            size = head_tails[i+1][0] - head_tails[i][0]
-            aim_point[1] = (head_tails[i+1][0] + head_tails[i][0])/2
-            ava_range.append([head_tails[i][1], head_tails[i+1][0]])
-    if len(head_tails) > 0 and goal[1][1] - head_tails[len(head_tails)-1][1] > size:
-        size = goal[1][1] - head_tails[len(head_tails)-1][1]
-        aim_point[1] = (goal[1][1] + head_tails[len(head_tails)-1][1])/2
-        ava_range.append([head_tails[len(head_tails)-1][1], goal[1][1]])
+    for i in range(len(head_tails) - 1):
+        if head_tails[i + 1][0] - head_tails[i][0] > size:
+            sizes.append(head_tails[i + 1][0] - head_tails[i][0])
+            point[1] = (head_tails[i + 1][0] + head_tails[i][0]) / 2
+            points.append(point[:])
+            dists.append(_dist([x, y], point))
+            ava_range.append([head_tails[i][1], head_tails[i + 1][0]])
+    if len(head_tails) > 0 and goal[1][1] - head_tails[len(head_tails) - 1][1] > size:
+        sizes.append(goal[1][1] - head_tails[len(head_tails) - 1][1])
+        point[1] = (goal[1][1] + head_tails[len(head_tails) - 1][1]) / 2
+        points.append(point[:])
+        if PRINT:
+            print('pts', points)
+        dists.append(_dist([x, y], point))
+        ava_range.append([head_tails[len(head_tails) - 1][1], goal[1][1]])
+    if sizes:
+        size_max = max(sizes)
+        dist_max = max(dists)
+        comp = -1.1
+        for i in range(len(sizes)):
+            temp_comp = sizes[i]/size_max - dists[i]/dist_max
+            if temp_comp > comp:
+                comp = temp_comp
+                aim_point = points[i]
+                size = sizes[i]
     if PRINT:
         for pair in ava_range:
             print('available area:', pair[0], pair[1])

@@ -26,7 +26,7 @@ decision_done = False
 # 需要調整參數
 
 # ===========adjust==========================
-side = 1  # -1 for <- , 1 for -> (left is our field)
+side = -1  # -1 for <- , 1 for -> (left is our field)
 challenge_num = 1
 # ===========================================
 
@@ -96,6 +96,8 @@ def Strategy_thread(que):
         if go_strategy:
             if challenge_num == 2:
                 time.sleep(0.7)
+            elif challenge_num == 1:
+                time.sleep(0.5)
             while not image.update_frame:
                 pass
             strategy.Update_Robo_Info(image.our_dir, image.our_data, image.enemy_data, image.ball_pos_now,

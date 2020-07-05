@@ -23,7 +23,7 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 cap = None
 #  需要調整參數
 challenge_bit = 3
-camera_num = 0
+camera_num = 1
 robot_height = 45
 robot_crouch = 32
 field_height = 268
@@ -818,7 +818,8 @@ def image_func():
                         cv2.putText(show, "PASS", (our_data[i][0], our_data[i][1] - 20), font, 0.8, (84, 83, 268), 3)
                         if not robo.target[0] == -1:
                             cv2.circle(show, (int(robo.target[0]), int(robo.target[1])), 5, (45, 165, 230), -3)
-
+            if not ch1.best_loc[0] == -1:
+                cv2.circle(show, (int(ch1.best_loc[0]), int(ch1.best_loc[1])), 5, (45, 165, 230), -3)
             if not ch1.robots[0].next[0] == -1:
                 robo = ch1.robots[0]
                 cv2.circle(show, (int(robo.next[0]), int(robo.next[1])), 5, (45, 165, 230), -3)
