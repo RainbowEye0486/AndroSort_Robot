@@ -39,6 +39,7 @@ point_show = False  # 場地標點
 error_open = True  # 如果標好相機投影點將會開啟
 frame_counter = 0
 exit_bit = 0
+update_frame = True  # show if the image update
 
 #  紀錄特殊點位置
 ball_pos_last = [0, 0]
@@ -867,6 +868,9 @@ def image_func():
                 print("speed error")
             print("ball speed:", ball_speed, ", ball speed vector:", ball_dir, ", time:", time_interval)
             frame_counter = 0
+        global update_frame
+        # print('u_f in i', update_frame)
+        update_frame = True
 
 
 if __name__ == '__main__':
