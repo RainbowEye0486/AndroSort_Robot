@@ -9,7 +9,7 @@ PRINT = True
 ID_IN_USE = [3]
 
 # Field Parameter
-CM_TO_PIX = 3.65
+CM_TO_PIX = 3.0
 BOUNDARY = []
 CENTER = [0, 0]
 PENALTY = 0
