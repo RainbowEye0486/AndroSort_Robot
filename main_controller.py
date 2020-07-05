@@ -27,7 +27,7 @@ decision_done = False
 
 # ===========adjust==========================
 side = -1  # -1 for <- , 1 for -> (left is our field)
-challenge_num = 1
+challenge_num = 2
 # ===========================================
 
 crouch = [False, False, False]
@@ -98,11 +98,8 @@ def Strategy_thread(que):
                 time.sleep(0.7)
             elif challenge_num == 1:
                 time.sleep(0.5)
-            while not image.update_frame:
-                pass
             strategy.Update_Robo_Info(image.our_dir, image.our_data, image.enemy_data, image.ball_pos_now,
                                       image.ball_speed, image.ball_dir)
-            image.update_frame = False
             # print('u_f in main b', image.update_frame)
             cmd = strategy.strategy()
             try:

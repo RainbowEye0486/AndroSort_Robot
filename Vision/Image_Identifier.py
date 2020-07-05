@@ -753,14 +753,15 @@ def image_func():
         if (challenge_bit == 3) & (len(ch3.robots) == 3):
 
             for i in range(3):
-                if ch3.robots[i].job == ch3.Job.SHOOT:
-                    cv2.putText(show, "SHOOT", (our_data[i][0], our_data[i][1] - 20), font, 1, (84, 83, 268), 3)
-                if ch3.robots[i].job == ch3.Job.DIVE:
-                    cv2.putText(show, "DIVE", (our_data[i][0], our_data[i][1] - 20), font, 1, (84, 83, 268), 3)
-                if ch3.robots[i].job == ch3.Job.PASS:
-                    cv2.putText(show, "PASS", (our_data[i][0], our_data[i][1] - 20), font, 1, (84, 83, 268), 3)
+                if our_data[i]:
+                    if ch3.robots[i].job == ch3.Job.SHOOT:
+                        cv2.putText(show, "SHOOT", (our_data[i][0], our_data[i][1] - 20), font, 1, (84, 83, 268), 3)
+                    if ch3.robots[i].job == ch3.Job.DIVE:
+                        cv2.putText(show, "DIVE", (our_data[i][0], our_data[i][1] - 20), font, 1, (84, 83, 268), 3)
+                    if ch3.robots[i].job == ch3.Job.PASS:
+                        cv2.putText(show, "PASS", (our_data[i][0], our_data[i][1] - 20), font, 1, (84, 83, 268), 3)
 
-            if not ch3.robots[0].next[0] == 0:
+            if not ch3.robots[0].next[0] == 0 and our_data[0]:
                 cv2.circle(show, (int(ch3.robots[0].next[0]), int(ch3.robots[0].next[1])), 5, (45, 165, 230), -3)
                 cv2.line(show, (our_data[0][0], our_data[0][1]),
                          (int(ch3.robots[0].next[0]), int(ch3.robots[0].next[1])), (45, 165, 230), 3)
