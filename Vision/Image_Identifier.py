@@ -39,7 +39,6 @@ point_show = False  # 場地標點
 error_open = True  # 如果標好相機投影點將會開啟
 frame_counter = 0
 exit_bit = 0
-update_frame = True  # show if the image update
 
 #  紀錄特殊點位置
 ball_pos_last = [0, 0]
@@ -568,11 +567,14 @@ class WebcamVideoStream:
 
     def update(self):
         # keep looping infinitely until the thread is stopped
+        reduce_lag = 0
         while True:
             # if the thread indicator variable is set, stop the thread
             if exit_bit == 1:
                 return
-
+            if reduce_lag <= 15:
+                reduce_lag += 1
+                continue
             # otherwise, read the next frame from the stream
             (self.grabbed, self.frame) = self.stream.read()
 
@@ -600,7 +602,6 @@ def image_func():
         if len(frame) == 0:
             continue
         show = frame.copy()
-
         # thread begin
         thread2 = Thread(target=thread_our, name='T2', daemon=True)
         thread3 = Thread(target=thread_enemy, name='T3', daemon=True)
@@ -847,7 +848,7 @@ def image_func():
             cv2.destroyAllWindows()
             break
 
-        if frame_counter >= 10:
+        if frame_counter >= 15:
             move_distance = get_distance(ball_pos_last, ball_pos_now)
             if move_distance == 0:
                 x = 0
@@ -865,11 +866,8 @@ def image_func():
             except ZeroDivisionError:
                 ball_speed = 0
                 print("speed error")
-            # print("ball speed:", ball_speed, ", ball speed vector:", ball_dir, ", time:", time_interval)
+            print("ball speed:", ball_speed, ", ball speed vector:", ball_dir, ", time:", time_interval)
             frame_counter = 0
-        global update_frame
-        # print('u_f in i', update_frame)
-        update_frame = True
 
 
 if __name__ == '__main__':
