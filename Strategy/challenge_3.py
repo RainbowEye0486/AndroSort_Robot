@@ -18,10 +18,10 @@ PRINT = False
 ID_IN_USE = [3, 3, 3]
 CM_TO_PIX = 3.65
 carrier_range = 18 * CM_TO_PIX  # range to judge if carry ball
-# block_length = 7 * CM_TO_PIX  # maximum range of a robot to defend area
 line_range = 7 * CM_TO_PIX  # when defend , we need to know how close is enough from defend line
 SIDE = -1  # -1 for <- , 1 for ->
 ROB_RANG = 35  # enemy's half width
+
 # global value of movable objects
 robots = []
 enemies = []
@@ -58,7 +58,7 @@ def simulator_adjust(pos, reverse):
     return x, y
 
 
-def strategy_update_field(side, boundary, center):
+def strategy_update_field(side, boundary, center, penalty):
     """
     Description:
         Pass field information into strategy system.
@@ -73,9 +73,9 @@ def strategy_update_field(side, boundary, center):
 
     global SIDE, BOUNDARY, CENTER, PENALTY, x_length, y_length, our_gate, enemy_gate
     SIDE = side
-    # BOUNDARY = boundary
-    # CENTER = center
-    # PENALTY = penalty
+    BOUNDARY = boundary
+    CENTER = center
+    PENALTY = penalty
     #  set gate
     if SIDE == 1:  # ->
         our_gate = [BOUNDARY[11], BOUNDARY[8], PENALTY[0], PENALTY[3]]

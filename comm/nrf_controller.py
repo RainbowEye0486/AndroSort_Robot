@@ -194,6 +194,7 @@ def RF_sendCmd_sys(input_data, device, delay=0, mode=0):
         device.write(bytes(input_data, encoding='utf8'))
     time.sleep(delay)
 
+
 def RF_sendCmd(input_data, device, robotID, delay=0, mode=0):
     """
     Send command through RF for testing

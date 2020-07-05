@@ -84,7 +84,7 @@ def Strategy_thread(que):
     #  first set field coordinate
     global go_strategy
     strategy.Initialize()
-    strategy.strategy_update_field(side, image.field_pos, image.middle)
+    strategy.strategy_update_field(side, image.field_pos, image.middle, image.penalty_pos)
     while True:
         """print("our direction", image.our_dir)
         print("our position", image.our_data)

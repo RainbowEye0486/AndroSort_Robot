@@ -29,7 +29,7 @@ best_loc = [950, 230]
 WAY_ANGLE = {'FORE': 0, 'LEFT': -math.pi / 2, 'RIGHT': math.pi / 2, 'BACK': math.pi}
 
 
-def strategy_update_field(side, boundary, center):
+def strategy_update_field(side, boundary, center, penalty):
     """
     Description:
         Pass field information into strategy system.
@@ -643,7 +643,7 @@ def find_aim_point(x, y, goal):
 
 
 def find_shooting_point(x_pos, segm, goal):
-    '''
+    """
        Divide line x='x' into 'segm' segments, and find which one is the best shooting position
        Parameter:
         param1: assign the lin x = 'x' to be examined
@@ -653,7 +653,7 @@ def find_shooting_point(x_pos, segm, goal):
         retval1: the best shooting position(next moving point)
         retval2: the best point to aim
         retval3: the tolerant size
-    '''
+    """
     biggest_size = 0
     shooting_pt = []
     aim_pos = []
@@ -680,7 +680,7 @@ def is_close_ball(pos, direction, len):
     return False
 
 
-class Robot():
+class Robot:
     """
     Attributes:
         ID: An int stands for the robot's ID(1-7)
@@ -726,7 +726,7 @@ class Job(Enum):
 #         self.pos = [0, 0]
 
 
-class Ball():
+class Ball:
     def __init__(self):
         self.pos = [0, 0]
         self.RADIUS = CONST.getRadius()
