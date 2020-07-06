@@ -36,6 +36,12 @@ leave_at = []
 WAY_ANGLE = {'FORE': 0, 'LEFT': -math.pi / 2, 'RIGHT': math.pi / 2, 'BACK': math.pi}
 
 
+def restart():
+    global record_ball, start_pass
+    record_ball = False
+    start_pass = False
+
+
 def strategy_update_field(side, boundary, center, penalty):
     """
     Description:
@@ -406,7 +412,7 @@ def is_kickable(robo, tol_dist, tol_angle, kick_dir, ways, force):
     hor_offst = [0, 0]
     if kick_way == 'FORE' or kick_way == 'BACK':
         angle = _angle(robo.dir, [ball-pos for ball, pos in zip(ball.pos, robo.pos)])
-        foot = 'RIGHT' if angle > 0 else 'LEFT'
+        foot = 'RIGHT' if angle > 0 and force == 'big' else 'LEFT'
         direction = _rotate(kick_dir, WAY_ANGLE[foot])
         offst = -robo.MOTION['MOVE'][kick_way]['OFFSET'][1]*CM_TO_PIX if kick_way=='FORE' else  robo.MOTION['MOVE'][kick_way]['OFFSET'][1]*CM_TO_PIX
         hor_offst = [direct * offst for direct in direction]

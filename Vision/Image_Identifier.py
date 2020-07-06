@@ -102,7 +102,7 @@ def return_motion():  # 回傳所有可移動物體的位置
 
 
 def return_field():
-    print(field_data)
+    # print(field_data)
     return field_data
 
 
