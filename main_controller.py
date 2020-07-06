@@ -5,6 +5,7 @@ from Vision import Image_Identifier as image
 from Strategy import challenge_1 as strategy1  # change this
 from Strategy import challenge_2 as strategy2  # change this
 from Strategy import challenge_3 as strategy3  # change this
+from Strategy import challenge_pk as strategy_pk  # change this
 from comm import nrf_controller as nrf
 from queue import Queue
 import platform
@@ -43,6 +44,9 @@ if challenge_num == 2:
 if challenge_num == 3:
     strategy = strategy3
     image.challenge_bit = 3
+if challenge_num == 4:
+    strategy = strategy_pk
+    image.challenge_bit = 0
 
 
 def start_func():
@@ -77,7 +81,10 @@ def print_func():
 
 
 def Image_thread():
-    image.image_func()
+    if PK:
+        image.pk_image()
+    else:
+        image.image_func()
 
 
 def Strategy_thread(que):
