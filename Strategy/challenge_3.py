@@ -28,15 +28,10 @@ enemies = []
 ball = None
 assist_block = False  # 只有到達當前位置的時候才會執行下一個目標點
 
-last_strategy = [[], [], []]
 # Field Parameter
 BOUNDARY = []
-# BOUNDARY = [[176, 107], [1354, 100], [1362, 272], [1428, 274], [1444, 550], [1374, 552], [1380, 731],
-#            [154, 743], [158, 560], [91, 560], [100, 281], [168, 279]]
 CENTER = [0, 0]
-# CENTER = [777, 417]
 PENALTY = [[], [], [], []]
-# PENALTY = [[233, 267], [1300, 260], [1314, 571], [221, 577]]
 
 our_gate = []  # gate_left to gate_right , penalty_left to penalty_right
 enemy_gate = []
@@ -1023,10 +1018,9 @@ class Robot:
             #print("i can have rest woooo")
             self.move_and_do(angle_condition, 15)
         elif mode == Mode.DEFENSE:
-            if (ball.speed > CONST.DANGER_SPEED) & (ball.dir[0] * SIDE < 0):
-
+            if ball.speed > CONST.DANGER_SPEED and ball.dir[0] * SIDE < 0:
                 self.job = Job.DIVE
-                #print("ready to dive")
+                # print("ready to dive")
             else:
                 if ball.in_zone == Zone.MIDDLE_DEFEND:
                     self.move_and_do(angle_condition, 10)
