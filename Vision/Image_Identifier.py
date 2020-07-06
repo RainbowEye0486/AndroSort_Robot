@@ -86,6 +86,15 @@ our_dir = [[], [], []]
 enemy_data = [[], [], []]
 field_data.append(field_pos)
 
+robot1_buffer = [[], [], [], [], []]
+robot2_buffer = [[], [], [], [], []]
+robot3_buffer = [[], [], [], [], []]
+vector1_buffer = [[], [], [], [], []]
+vector2_buffer = [[], [], [], [], []]
+vector3_buffer = [[], [], [], [], []]
+
+vibration_counter = 0
+
 
 def return_motion():  # 回傳所有可移動物體的位置
     motion = [our_data, enemy_data]
@@ -595,10 +604,11 @@ class WebcamVideoStream:
 
 
 def image_func():
-    global frame_counter, ball_pos_last, show, frame, ball_speed, point_show, current_window, mask, ball_dir, cap
+    global frame_counter, ball_pos_last, show, frame, ball_speed, point_show, current_window, mask, ball_dir, cap, vibration_counter
     cap = WebcamVideoStream(src=camera_num).start()
     tStart = 0
     while True:
+        vibration_counter += 1
         if frame_counter == 0:
             tStart = time.time()
         frame_counter += 1
@@ -634,14 +644,40 @@ def image_func():
                     cv2.circle(show, our, 2, (252, 255, 255), -1)
                     dist = get_distance(our, color1)
                     try:
-                        our_dir[0] = [(our[0] - color1[0]) / dist, (our[1] - color1[1]) / dist]
+                        element = 0
+                        accumulate = [0, 0]
+                        vector1_buffer[vibration_counter % 5] = [(our[0] - color1[0]) / dist,
+                                                                 (our[1] - color1[1]) / dist]
+                        for vec in vector1_buffer:
+                            if not vec:
+                                continue
+                            else:
+                                accumulate[0] += vec[0]
+                                accumulate[1] += vec[1]
+                                element += 1
+                        if element == 0:
+                            our_dir[0] = []
+                        else:
+                            our_dir[0] = [accumulate[0] / element, accumulate[1] / element]
                     except ZeroDivisionError:
                         our_dir[0] = [0, 0]
                     if error_open:
                         q = error_correct(our, Main.crouch[0])
                         cv2.circle(show, (q[0], q[1]), 3, (252, 255, 255), -1)
-                        our_data[0] = [q[0], q[1]]
-
+                        robot1_buffer[vibration_counter % 5] = [q[0], q[1]]
+                    element = 0
+                    accumulate = [0, 0]
+                    for vib in robot1_buffer:
+                        if not vib:
+                            continue
+                        else:
+                            accumulate[0] += vib[0]
+                            accumulate[1] += vib[1]
+                            element += 1
+                    if element == 0:
+                        our_data[0] = []
+                    else:
+                        our_data[0] = [int(accumulate[0] / element), int(accumulate[1] / element)]
         thread5.join()
         for our in our_pos:
             for color2 in color2_pos:
@@ -653,11 +689,38 @@ def image_func():
                     try:
                         our_dir[1] = [(our[0] - color2[0]) / dist, (our[1] - color2[1]) / dist]
                     except ZeroDivisionError:
-                        our_dir[1] = [0, 0]
+                        element = 0
+                        accumulate = [0, 0]
+                        vector2_buffer[vibration_counter % 5] = [(our[0] - color2[0]) / dist,
+                                                                 (our[1] - color2[1]) / dist]
+                        for vec in vector2_buffer:
+                            if not vec:
+                                continue
+                            else:
+                                accumulate[0] += vec[0]
+                                accumulate[1] += vec[1]
+                                element += 1
+                        if element == 0:
+                            our_dir[1] = []
+                        else:
+                            our_dir[1] = [accumulate[0] / element, accumulate[1] / element]
                     if error_open:
                         q = error_correct(our, Main.crouch[1])
                         cv2.circle(show, (q[0], q[1]), 3, (252, 255, 255), -1)
-                        our_data[1] = [q[0], q[1]]
+                        robot2_buffer[vibration_counter % 5] = [q[0], q[1]]
+                    element = 0
+                    accumulate = [0, 0]
+                    for vib in robot2_buffer:
+                        if not vib:
+                            continue
+                        else:
+                            accumulate[0] += vib[0]
+                            accumulate[1] += vib[1]
+                            element += 1
+                    if element == 0:
+                        our_data[1] = []
+                    else:
+                        our_data[1] = [int(accumulate[0] / element), int(accumulate[1] / element)]
 
         thread6.join()
         for our in our_pos:
@@ -668,16 +731,43 @@ def image_func():
                     cv2.circle(show, our, 2, (252, 255, 255), -1)
                     dist = get_distance(our, color3)
                     try:
-                        our_dir[2] = [(our[0] - color3[0]) / dist, (our[1] - color3[1]) / dist]
+                        element = 0
+                        accumulate = [0, 0]
+                        vector3_buffer[vibration_counter % 5] = [(our[0] - color3[0]) / dist,
+                                                                 (our[1] - color3[1]) / dist]
+                        for vec in vector2_buffer:
+                            if not vec:
+                                continue
+                            else:
+                                accumulate[0] += vec[0]
+                                accumulate[1] += vec[1]
+                                element += 1
+                        if element == 0:
+                            our_dir[2] = []
+                        else:
+                            our_dir[2] = [accumulate[0] / element, accumulate[1] / element]
+
                     except ZeroDivisionError:
                         our_dir[2] = [0, 0]
                     if error_open:
                         q = error_correct(our, Main.crouch[2])
                         cv2.circle(show, (q[0], q[1]), 3, (252, 255, 255), -1)
-                        our_data[2] = [q[0], q[1]]
+                        robot3_buffer[vibration_counter % 5] = [q[0], q[1]]
+                    element = 0
+                    accumulate = [0, 0]
+                    for vib in robot3_buffer:
+                        if not vib:
+                            continue
+                        else:
+                            accumulate[0] += vib[0]
+                            accumulate[1] += vib[1]
+                            element += 1
+                    if element == 0:
+                        our_data[2] = []
+                    else:
+                        our_data[2] = [int(accumulate[0] / element), int(accumulate[1] / element)]
 
         # print(our_data)
-
         thread3.join()
         enemy_code = 0
         global enemy_data
