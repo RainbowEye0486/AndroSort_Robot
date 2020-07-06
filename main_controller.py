@@ -29,11 +29,13 @@ decision_done = False
 # ===========adjust==========================
 side = -1  # -1 for <- , 1 for -> (left is our field)
 challenge_num = 1
+PK = False
 # ===========================================
 
 crouch = [False, False, False]
 go_strategy = False
 rest_bit = False
+start_bit = False
 
 if challenge_num == 1:
     strategy = strategy1
@@ -50,9 +52,10 @@ if challenge_num == 4:
 
 
 def start_func():
-    global go_strategy, rest_bit
-    go_strategy = True
+    global go_strategy, rest_bit, start_bit
+    # go_strategy = True
     rest_bit = False
+    start_bit = True
 
 
 def pause_func():
@@ -129,18 +132,29 @@ def Strategy_thread(que):
 
 
 def NRF_thread(device, que):
-    global crouch
+    global crouch, start_bit, rest_bit, go_strategy
     while True:
         if image.exit_bit != 0:
             nrf.rest_robots(device)
             sys.exit()
-        if rest_bit:
+        if start_bit:
+            start_bit = False
             if que.empty():
-                que.put(['r', 'r', 'r'])
+                que.put(['z', 'z', 'z'])
                 time.sleep(0.001)
             else:
                 que.get()
-                que.put(['r', 'r', 'r'])
+                que.put(['z', 'z', 'z'])
+                time.sleep(0.001)
+            go_strategy = True
+        if rest_bit:
+            rest_bit = False
+            if que.empty():
+                que.put(['x', 'x', 'x'])
+                time.sleep(0.001)
+            else:
+                que.get()
+                que.put(['x', 'x', 'x'])
                 time.sleep(0.001)
         crouch = nrf.communicate(device, que, crouch)
 

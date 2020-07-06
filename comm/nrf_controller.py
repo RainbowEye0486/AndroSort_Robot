@@ -384,7 +384,7 @@ def communicate(device, que, crouch):
 
 def rest_robots(device):
     '''before system close, rest the robots'''
-    input_data = 'r'
+    input_data = 'x'
     mode = 0
     RF_sendCmd(input_data, device, '1', 0.05, mode)
 
