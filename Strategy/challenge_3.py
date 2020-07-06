@@ -15,7 +15,7 @@ import time
 PRINT = False
 
 # Parameter needed to adjust
-ID_IN_USE = [3, 3, 3]
+ID_IN_USE = [3, 4, 3]
 CM_TO_PIX = 3.0
 carrier_range = 18 * CM_TO_PIX  # range to judge if carry ball
 line_range = 7 * CM_TO_PIX  # when defend , we need to know how close is enough from defend line
@@ -974,7 +974,7 @@ class Robot:
             self.job = Job.SHOOT
 
     def move_and_block(self):
-        if self.distance > 5 * CM_TO_PIX:
+        if self.distance > 10 * CM_TO_PIX:
             self.job = Job.MOVE
         else:
             self.job = Job.STAND
@@ -1020,7 +1020,7 @@ class Robot:
         elif mode == Mode.DEFENSE:
             if ball.speed > CONST.DANGER_SPEED and ball.dir[0] * SIDE < 0:
                 self.job = Job.DIVE
-                # print("ready to dive")
+                print("ready to dive")
             else:
                 if ball.in_zone == Zone.MIDDLE_DEFEND:
                     self.move_and_do(angle_condition, 10)
@@ -1250,6 +1250,8 @@ class Robot:
             else:
                 self.next = our_gate[2]
             self.move_and_block()
+        if robots[2].job == Job.DIVE or robots[2].job == Job.SHOOT:
+            self.job = Job.NONE
 
     def interferer_assign(self, other):
         # 戰略：1如果是在中間（非對方進攻的位置），設定為跟隨模式，跟隨模式為一旦超出邊界，便會站到中央
@@ -1321,6 +1323,9 @@ class Robot:
                 self.next = our_gate[2]
             self.move_and_block()
 
+        if robots[2].job == Job.DIVE or robots[2].job == Job.SHOOT:
+            self.job = Job.NONE
+
     def roamer_assign(self):
         print('no job assign?')
         self.job = Job.STAND
@@ -1360,7 +1365,7 @@ class Job(Enum):
     STAND = 0  # 站定位
     MOVE = 1  # 移動到定點
     PASS = 2  # 傳球
-    # DRIBBLE = 3  # 反擊大暴射
+    ACCURATE_SHOOT = 3
     # SET_ANGLE = 4  # 喬角度
     SHOOT = 5  # 射門
     # SQUEEZE = 6  # 推擠（針對持球球員）
