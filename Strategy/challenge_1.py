@@ -1,11 +1,11 @@
 import math
-from Strategy import constant as CONST
+from Strategy import constant1 as CONST
 from enum import Enum
 import time
 
 # Parameter needed to adjust
-ID_IN_USE = [5, 3]
-PRINT = False
+ID_IN_USE = [4, 3]
+PRINT = True
 
 # Field Parameter
 CM_TO_PIX = 3.0
@@ -24,8 +24,12 @@ last_ball = []
 ball_in_move = []
 record_ball = False
 start_pass = False
-shoot_zone = 20 * CM_TO_PIX
-best_loc = [616, 492]
+job_done = False
+sec_pt = []
+shoot_zone = 0 * CM_TO_PIX
+best_loc = [0, 0]
+x_offst = 35*CM_TO_PIX
+y_offst = -35*CM_TO_PIX
 our_gate = []
 leave_at = []
 # CONST
@@ -129,11 +133,16 @@ def strategy():
     """
     # Your code
     global robots, last_ball, record_ball, ball_in_move, leave_at
-    # choose_mode() # as a defender or an atacker
+    # robots[1].job = Job.SHOOT
+    # robots[1].target, size = find_aim_point(ball.pos[0], ball.pos[1], GOAL)
+    # print('aim', robots[1].target, size/(GOAL[0][1]-GOAL[1][1]))
+
     if not record_ball:
         last_ball = ball.pos
         ball_in_move = ball.pos
         leave_at = [robots[0].pos[0]-SIDE*15*CM_TO_PIX, robots[0].pos[1]]
+        best_loc[0] = CENTER[0] + SIDE*x_offst
+        best_loc[1] = CENTER[1] + SIDE*y_offst
         record_ball = True
     assign_role(robots)
     assign_job(robots)
@@ -144,10 +153,10 @@ def strategy():
         except ZeroDivisionError:
             print('divide zero...')
             cmd[i] = 'N'
-        # except Exception as e:
-        #     print('Catch Error.....')
-        #     print(e)
-        #     cmd[i] = 'N'
+        except Exception as e:
+            print('Catch Error.....')
+            print(e)
+            cmd[i] = 'N'
     if PRINT:
         print(cmd)
     return cmd
@@ -172,19 +181,17 @@ def assign_role(robots):
     if PRINT:
         print('assign role')
     if robots[0].role == '':
-        if PRINT:
-            print('become sup')
+        # if PRINT:
+        #     print('become sup')
         robots[0].role = Role.SUP
         robots[1].role = Role.NONE
     elif robots[0].role == Role.SUP:
         if PRINT:
             print('ball move', _dist(ball.pos, last_ball))
-        if _dist(ball.pos, last_ball) > 11 * CM_TO_PIX:
-            # robots[0].role = Role.NONE
-            robots[1].role = Role.MAIN
-    else:
-        if PRINT:
-            print('else')
+        # if _dist(ball.pos, last_ball) > 11 * CM_TO_PIX:
+        #     robots[1].role = Role.MAIN
+    elif robots[0].role == Role.NONE:
+        robots[1].role = Role.MAIN
     if PRINT:
         print(robots[0].role, robots[1].role)
 
@@ -195,7 +202,7 @@ def assign_job(robots):
     '''
     for robo in robots:
         if robo.role == Role.SUP:
-            if _dist(last_ball, ball.pos) > 10*CM_TO_PIX:
+            if _dist(last_ball, ball.pos) > 12*CM_TO_PIX:
                 robo.job = Job.LEAVE
             else:
                 robo.job = Job.MOVE
@@ -205,21 +212,25 @@ def assign_job(robots):
             if (ball.pos[0] - (CENTER[0]+shoot_zone*SIDE))*SIDE > 0 :
                 robo.job = Job.SHOOT  # to goal
             else:
-                robo.job = Job.MOVE  # to three point line
+                robo.job = Job.PASS  # to three point line
 
 
 def execute_job(id):
     """
     Base on the robot's job, give an exact command
     """
-    global robots
+    global robots, sec_pt
     robo = robots[id]
     if robo.job == Job.MOVE:
         dirct = _unit_vector(ball.pos, best_loc)
-        init_pt = [b - d * 13 * CM_TO_PIX for b, d in zip(ball.pos, dirct)]
+        init_pt = [b - d * 15 * CM_TO_PIX for b, d in zip(ball.pos, dirct)]
+        # sec_pt = [b + d * 3 * CM_TO_PIX for b, d in zip(ball.pos, dirct)]
         # r_offst = _rotate(dirct, WAY_ANGLE('RIGHT'))
         global start_pass, ball_in_move
+        print('flag', start_pass)
         if not start_pass:
+            print('first pt')
+            print('original ball', ball_in_move)
             dist_err = 2*CM_TO_PIX
             ang_err = 15/180*math.pi
             ball_in_move = ball.pos
@@ -231,18 +242,27 @@ def execute_job(id):
             if movable and _dist(robo.pos, arrival) > dist_err and abs(_angle(direction, dirct)) > ang_err:
                 return rt_cmd
             else:
+                # print('toggle to True')
                 start_pass = True
         else:
-            arrival = [b + d * 15 * CM_TO_PIX for b, d in zip(ball.pos, dirct)]
+            # print('second pt')
+            # print('original ball', ball_in_move)
+            arrival = [b + d * 3 * CM_TO_PIX for b, d in zip(ball.pos, dirct)]
             robo.next = arrival
             move_ways = ['LEFT']
             movable, rt_cmd = move_special(robo, arrival, move_ways)
             if _dist(ball.pos, ball_in_move) > 3*CM_TO_PIX:
                 start_pass = False
+                # print('toggle to False')
+            else:
+                if PRINT:
+                    print('ball didnt move')
             if movable:
                 return rt_cmd
             else:
                 start_pass = False
+                if PRINT:
+                    print('toggle to False')
     elif robo.job == Job.PASS:
         if PRINT:
             print('role, job', robo.role, robo.job)
@@ -251,6 +271,7 @@ def execute_job(id):
             # segm = 4
             # robo.target, no_use, no_use = find_shooting_point(x_pos, segm, GOAL)
             robo.target = best_loc
+        check_boundary_ball(robo)
         # kick ball
         if PRINT:
             print(robo.target)
@@ -274,7 +295,14 @@ def execute_job(id):
             return rt_cmd
     elif robo.job == Job.SHOOT:
         robo.target, size = find_aim_point(ball.pos[0], ball.pos[1], GOAL)
-        print('size:', size/GOAL[0][1]-GOAL[1][1])
+        print('size:', size/(GOAL[0][1]-GOAL[1][1]))
+        check_boundary_ball(robo)
+        if not (size > 0):
+            if ball.pos[1] - CENTER[1] < 0:  # upper field
+                kick_dir = _rotate([0, -1], -1*SIDE*60/180*math.pi)
+            else:
+                kick_dir = _rotate([0, 1], -1*SIDE*60/180*math.pi)
+            robo.target = [b+d*10 for b, d in zip(ball.pos, kick_dir)]
         if robo.target[0] != -1:
             force = 'big'
             kickable_dist = 3*CM_TO_PIX  # the distance between arrival and the robot should be
@@ -286,6 +314,7 @@ def execute_job(id):
                                                               force)
             robo.next = arrival  #
             if kickable:
+                time.sleep(0.05)
                 robo.job = Job.NONE
                 robo.target = [-1, -1]
                 return rt_cmd
@@ -300,9 +329,10 @@ def execute_job(id):
     elif robo.job == Job.LEAVE:
         arrival = leave_at
         movable = False
-        movable, rt_cmd = move(robo, arrival, ['FORE', 'LEFT', 'RIGHT', 'BACK'])
+        accurate = False
+        movable, rt_cmd = move(robo, arrival, ['FORE', 'LEFT', 'RIGHT', 'BACK'], accurate)
         robo.next = arrival
-        if movable and _dist(arrival, robo.pos) > 3*CM_TO_PIX:
+        if movable and _dist(arrival, robo.pos) > 3*CM_TO_PIX and SIDE*(robo.pos[0]-arrival[0]) > 0:
             return rt_cmd
         else:
             robo.role = Role.NONE
@@ -467,7 +497,7 @@ def move_with_dir(robo, arrival, curr_dir, ideal_dir, fit_way='FORE', ways=['FOR
             if (not too_close) or move_way == 'BACK':
                 rt_cmd = robo.MOTION['MOVE'][move_way]['CMD'][0]
                 time.sleep(0.2)
-                return True, rt_cmd
+            return True, rt_cmd
         if len(robo.MOTION['MOVE'][move_way]['BOUND']) > 1:
             if product >= robo.MOTION['MOVE'][move_way]['BOUND'][1] * CM_TO_PIX:
                 rt_cmd = robo.MOTION['MOVE'][move_way]['CMD'][1]
@@ -475,7 +505,7 @@ def move_with_dir(robo, arrival, curr_dir, ideal_dir, fit_way='FORE', ways=['FOR
     return False, 'N'
 
 
-def move(robo, arrival, ways=['FORE', 'LEFT', 'RIGHT', 'BACK']):
+def move(robo, arrival, ways=['FORE', 'LEFT', 'RIGHT', 'BACK'], accurate=True):
     '''
        To move to assigned point and facing whatever direction
     '''
@@ -531,10 +561,10 @@ def move(robo, arrival, ways=['FORE', 'LEFT', 'RIGHT', 'BACK']):
             rt_cmd = robo.MOTION['TURN']['LEFT']['CMD'][1]
             return True, rt_cmd
     else:
-        if abs(angle) > robo.MOTION['TURN']['RIGHT']['BOUND'][0]:
+        if abs(angle) > robo.MOTION['TURN']['RIGHT']['BOUND'][0] and accurate:
             rt_cmd = robo.MOTION['TURN']['RIGHT']['CMD'][0]
             return True, rt_cmd
-        elif abs(angle) > robo.MOTION['TURN']['RIGHT']['BOUND'][1]:
+        elif abs(angle) > robo.MOTION['TURN']['RIGHT']['BOUND'][1] and accurate:
             rt_cmd = robo.MOTION['TURN']['RIGHT']['CMD'][1]
             return True, rt_cmd
     '''MOVE'''
@@ -561,10 +591,10 @@ def move(robo, arrival, ways=['FORE', 'LEFT', 'RIGHT', 'BACK']):
         too_close = is_close_ball(robo.pos, direction, robo.MOTION['MOVE'][move_way]['BOUND'][0] * CM_TO_PIX)
         if (not too_close) or move_way == 'BACK':
             rt_cmd = robo.MOTION['MOVE'][move_way]['CMD'][0]
-            time.sleep(0.2)
+            # time.sleep(0.2)
             return True, rt_cmd
     if len(robo.MOTION['MOVE'][move_way]['BOUND']) > 1:
-        if dist >= robo.MOTION['MOVE'][move_way]['BOUND'][1] * CM_TO_PIX:
+        if dist >= robo.MOTION['MOVE'][move_way]['BOUND'][1] * CM_TO_PIX and accurate:
             rt_cmd = robo.MOTION['MOVE'][move_way]['CMD'][1]
             return True, rt_cmd
     if PRINT:
@@ -689,6 +719,10 @@ def find_aim_point(x, y, goal):
         else:
             j += 1
     # Map non-blocked areas, and find the biggest area
+    if PRINT:
+        for h_t in head_tails:
+            print('ht', h_t)
+        print('goal:', goal)
     ava_range = []
     sizes = []
     dists = []
@@ -707,9 +741,9 @@ def find_aim_point(x, y, goal):
         points.append(point[:])
         ava_range.append([goal[0][1], head_tails[0][0]])
     for i in range(len(head_tails) - 1):
-        if head_tails[i + 1][0] - head_tails[i][0] > size:
-            sizes.append(head_tails[i + 1][0] - head_tails[i][0])
-            point[1] = (head_tails[i + 1][0] + head_tails[i][0]) / 2
+        if head_tails[i + 1][0] - head_tails[i][1] > size:
+            sizes.append(head_tails[i + 1][0] - head_tails[i][1])
+            point[1] = (head_tails[i + 1][0] + head_tails[i][1]) / 2
             points.append(point[:])
             dists.append(_dist([x, y], point))
             ava_range.append([head_tails[i][1], head_tails[i + 1][0]])
@@ -717,10 +751,14 @@ def find_aim_point(x, y, goal):
         sizes.append(goal[1][1] - head_tails[len(head_tails) - 1][1])
         point[1] = (goal[1][1] + head_tails[len(head_tails) - 1][1]) / 2
         points.append(point[:])
-        if PRINT:
-            print('pts', points)
+        # if PRINT:
+        #     print('pts', points)
         dists.append(_dist([x, y], point))
         ava_range.append([head_tails[len(head_tails) - 1][1], goal[1][1]])
+    # if PRINT:
+    #     for i in range(len(sizes)):
+    #         print('reange:', ava_range[i])
+    #         print('s, pt:,', sizes[i], point[i])
     if sizes:
         size_max = max(sizes)
         dist_max = max(dists)
@@ -769,11 +807,25 @@ def takeY(e):
 
 
 def is_close_ball(pos, direction, len):
-    safe_dist = (10 + ball.RADIUS) * CM_TO_PIX
+    safe_dist = (9 + ball.RADIUS) * CM_TO_PIX
     the_next = [p + d * len for p, d in zip(pos, direction)]
     if _dist(the_next, ball.pos) < safe_dist:
         return True
     return False
+
+
+def check_boundary_ball(robo):
+    bdry_rang = 12 * CM_TO_PIX
+    if ball.pos[1] < BOUNDARY[0][1] + bdry_rang:
+        if PRINT:
+            print('boundary ball')
+        robo.target[0] = ball.pos[0] + SIDE * 15
+        robo.target[1] = ball.pos[1] - 15
+    elif ball.pos[1] > BOUNDARY[7][1] - bdry_rang:
+        if PRINT:
+            print('boundary ball')
+        robo.target[0] = ball.pos[0] + SIDE * 15
+        robo.target[1] = ball.pos[1] + 15
 
 
 class Robot:

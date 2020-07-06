@@ -27,7 +27,7 @@ decision_done = False
 
 # ===========adjust==========================
 side = -1  # -1 for <- , 1 for -> (left is our field)
-challenge_num = 2
+challenge_num = 1
 # ===========================================
 
 crouch = [False, False, False]
@@ -97,7 +97,7 @@ def Strategy_thread(que):
             if challenge_num == 2:
                 time.sleep(0.7)
             elif challenge_num == 1:
-                time.sleep(0.5)
+                time.sleep(0.05)
             strategy.Update_Robo_Info(image.our_dir, image.our_data, image.enemy_data, image.ball_pos_now,
                                       image.ball_speed, image.ball_dir)
             # print('u_f in main b', image.update_frame)

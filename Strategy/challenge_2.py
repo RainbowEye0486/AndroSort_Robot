@@ -1,11 +1,11 @@
 import math
-from Strategy import constant as CONST
+from Strategy import constant2 as CONST
 from enum import Enum
 import cv2
 import time
 
 # Parameter needed to adjust
-PRINT = True
+PRINT = False
 ID_IN_USE = [3]
 
 # Field Parameter
@@ -207,8 +207,13 @@ def execute_job(id):
             force = 'big'
             kickable_dist = 4 * CM_TO_PIX  # the distance between arrival and the robot should be
             kickable_ang = 6 / 180 * math.pi  # acceptable angle error when kicking
-            # kick_ways = ['BACK']
             kick_ways = ['LEFT']
+            to_ball = [b-c for b, c in zip(ball.pos, CENTER)]
+            print(enemies)
+            if enemies:
+                if (abs(enemies[0][1] - CENTER[1]) < 5*CM_TO_PIX) and (_angle([SIDE, 0], to_ball) > 15/180*math.pi):
+                    kick_ways = ['RIGHT']
+            print('214:', kick_ways)
             move_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
             kick_dir = _unit_vector(ball.pos, robo.target)
             kickable, kick_way, rt_cmd, arrival = is_kickable(robo, kickable_dist, kickable_ang, kick_dir, kick_ways,
@@ -593,9 +598,9 @@ def find_aim_point(x, y, goal):
         points.append(point[:])
         ava_range.append([goal[0][1], head_tails[0][0]])
     for i in range(len(head_tails) - 1):
-        if head_tails[i + 1][0] - head_tails[i][0] > size:
-            sizes.append(head_tails[i + 1][0] - head_tails[i][0])
-            point[1] = (head_tails[i + 1][0] + head_tails[i][0]) / 2
+        if head_tails[i + 1][0] - head_tails[i][1] > size:
+            sizes.append(head_tails[i + 1][0] - head_tails[i][1])
+            point[1] = (head_tails[i + 1][0] + head_tails[i][1]) / 2
             points.append(point[:])
             dists.append(_dist([x, y], point))
             ava_range.append([head_tails[i][1], head_tails[i + 1][0]])
