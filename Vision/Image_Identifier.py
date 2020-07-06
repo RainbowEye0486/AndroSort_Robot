@@ -687,8 +687,6 @@ def image_func():
                     cv2.circle(show, our, 2, (252, 255, 255), -1)
                     dist = get_distance(our, color2)
                     try:
-                        our_dir[1] = [(our[0] - color2[0]) / dist, (our[1] - color2[1]) / dist]
-                    except ZeroDivisionError:
                         element = 0
                         accumulate = [0, 0]
                         vector2_buffer[vibration_counter % 5] = [(our[0] - color2[0]) / dist,
@@ -704,6 +702,8 @@ def image_func():
                             our_dir[1] = []
                         else:
                             our_dir[1] = [accumulate[0] / element, accumulate[1] / element]
+                    except ZeroDivisionError:
+                        our_dir[1] = [0, 0]
                     if error_open:
                         q = error_correct(our, Main.crouch[1])
                         cv2.circle(show, (q[0], q[1]), 3, (252, 255, 255), -1)
@@ -721,7 +721,7 @@ def image_func():
                         our_data[1] = []
                     else:
                         our_data[1] = [int(accumulate[0] / element), int(accumulate[1] / element)]
-
+        print(vector2_buffer)
         thread6.join()
         for our in our_pos:
             for color3 in color3_pos:
