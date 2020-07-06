@@ -417,6 +417,8 @@ def thread_our():
         box = np.int0(box)
         x = int(rect[0][0])
         y = int(rect[0][1])
+        if (x > field_pos[1][0]) | (x < field_pos[0][0]) | (y > field_pos[7][1]) | (y < field_pos[0][1]):
+            continue
         our_pos.add((x, y))
         cv2.circle(show, (x, y), 1, (252, 255, 255), 1)
         cv2.circle(show, (x, y), 30, (252, 255, 255), 1)  # patten range
@@ -439,6 +441,8 @@ def thread_enemy():
         box = np.int0(box)
         x = int(rect[0][0])
         y = int(rect[0][1])
+        if (x > field_pos[1][0]) | (x < field_pos[0][0]) | (y > field_pos[7][1]) | (y < field_pos[0][1]):
+            continue
         enemy_pos.add((x, y))
         cv2.circle(show, (x, y), 1, (252, 255, 255), 1)
         cv2.circle(show, (x, y), 30, (252, 255, 255), 1)  # patten range
@@ -462,6 +466,8 @@ def thread_color1():
         box = np.int0(box)
         x = int(rect[0][0])
         y = int(rect[0][1])
+        if (x > field_pos[1][0]) | (x < field_pos[0][0]) | (y > field_pos[7][1]) | (y < field_pos[0][1]):
+            continue
         color1_pos.add((x, y))
         cv2.circle(show, (x, y), 1, (56, 51, 207), 1)
         cv2.drawContours(show, [box], -1, (56, 51, 207), 1)
@@ -484,6 +490,8 @@ def thread_color2():
         box = np.int0(box)
         x = int(rect[0][0])
         y = int(rect[0][1])
+        if (x > field_pos[1][0]) | (x < field_pos[0][0]) | (y > field_pos[7][1]) | (y < field_pos[0][1]):
+            continue
         color2_pos.add((x, y))
         cv2.circle(show, (x, y), 1, (252, 255, 255), 1)
         cv2.drawContours(show, [box], -1, (150, 205, 0), 1)
@@ -506,6 +514,8 @@ def thread_color3():
         box = np.int0(box)
         x = int(rect[0][0])
         y = int(rect[0][1])
+        if (x > field_pos[1][0]) | (x < field_pos[0][0]) | (y > field_pos[7][1]) | (y < field_pos[0][1]):
+            continue
         color3_pos.add((x, y))
         cv2.circle(show, (x, y), 1, (252, 255, 255), 1)
         cv2.drawContours(show, [box], -1, (220, 50, 200), 1)

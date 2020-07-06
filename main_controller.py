@@ -29,7 +29,7 @@ decision_done = False
 # ===========adjust==========================
 side = 1  # -1 for <- , 1 for -> (left is our field)
 challenge_num = 3
-PK = True
+PK = False
 # ===========================================
 
 crouch = [False, False, False]
