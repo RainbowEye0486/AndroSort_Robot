@@ -50,11 +50,15 @@ if challenge_num == 4:
     image.challenge_bit = 0
 
 
-def start_func():
-    global go_strategy, rest_bit, start_bit
-    # go_strategy = True
-    rest_bit = False
+def ready_func():
+    global start_bit
     start_bit = True
+
+
+def start_func():
+    global go_strategy, rest_bit
+    go_strategy = True
+    rest_bit = False
 
 
 def pause_func():
@@ -147,7 +151,6 @@ def NRF_thread(device, que):
                 que.get()
                 que.put(['z', 'z', 'z'])
                 time.sleep(0.001)
-            go_strategy = True
         if rest_bit:
             rest_bit = False
             if que.empty():
@@ -200,6 +203,8 @@ if __name__ == '__main__':
     ball_button = tk.Button(pick_color_frame, text='ball', fg='Yellow', command=image.set_ball)
     ball_button.pack(side=tk.LEFT)
 
+    exit_button = tk.Button(instruction_frame, text='READY', fg='Black', command=ready_func)
+    exit_button.pack(side=tk.LEFT)
     exit_button = tk.Button(instruction_frame, text='START', fg='Black', command=start_func)
     exit_button.pack(side=tk.LEFT)
     exit_button = tk.Button(instruction_frame, text='PAUSE', fg='Black', command=pause_func)

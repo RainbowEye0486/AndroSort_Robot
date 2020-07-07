@@ -618,6 +618,7 @@ def _angle(a, b):
     """
        return angle from dir a to dir b, +(counterclocwise), from -180 to 180
     """
+    angle = 0
     for vec in [a, b]:
         length = math.hypot(vec[0], vec[1])
         try:
@@ -627,13 +628,19 @@ def _angle(a, b):
             vec[0] = 0
             vec[1] = 0
     cross = a[0] * b[1] - a[1] * b[0]
-    angle = math.asin(cross)
-    dot = _dot(a, b)
-    if dot < 0:
-        if angle > 0:
-            angle = math.acos(dot)
-        else:
-            angle = -math.acos(dot)
+    if -1 <= cross <= 1:
+        pass
+        angle = math.asin(cross)
+        dot = _dot(a, b)
+        if dot < 0:
+            if angle > 0:
+                angle = math.acos(dot)
+            else:
+                angle = -math.acos(dot)
+    elif cross > 1:
+        angle = math.pi / 2
+    else:
+        angle = -math.pi / 2
     return angle
 
 
@@ -1034,6 +1041,12 @@ def is_close_ball(pos, direction, len):
     if _dist(the_next, ball.pos) < safe_dist:
         return True
     return False
+
+
+def change_robots(newID):
+    global robots
+    for robo, ID in zip(robots, newID):
+        robo.MOTION = CONST.getMotion(ID)
 
 
 '''end'''
