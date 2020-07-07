@@ -26,8 +26,8 @@ image_buffer = list()
 decision_done = False
 # 需要調整參數
 # ===========adjust==========================
-side = 1  # -1 for <- , 1 for -> (left is our field)
-challenge_num = 2
+side = -1  # -1 for <- , 1 for -> (left is our field)
+challenge_num = 1
 PK = False
 # ===========================================
 
@@ -53,8 +53,6 @@ if challenge_num == 4:
 def start_func():
     global go_strategy, rest_bit, start_bit
     # go_strategy = True
-    if challenge_num == 1:
-        strategy.restart()
     rest_bit = False
     start_bit = True
 
@@ -62,6 +60,8 @@ def start_func():
 def pause_func():
     global go_strategy
     go_strategy = False
+    if challenge_num == 1:
+        strategy.restart()
 
 
 def expo_func(self):

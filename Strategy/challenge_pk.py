@@ -29,7 +29,7 @@ enemy_gate = []
 WAY_ANGLE = {'FORE': 0, 'LEFT': -math.pi / 2, 'RIGHT': math.pi / 2, 'BACK': math.pi}
 
 ball = None
-robots = None
+robots = []
 
 
 def strategy_update_field(side, boundary, center, penalty):
@@ -45,11 +45,10 @@ def strategy_update_field(side, boundary, center, penalty):
     else:
         our_gate = [boundary[5], BOUNDARY[2], PENALTY[2], PENALTY[1]]
         enemy_gate = [boundary[11], BOUNDARY[8], PENALTY[0], PENALTY[3]]
-    print("oooooooooooo")
-    print(SIDE)
-    print(BOUNDARY)
-    print(CENTER)
-    print(PENALTY)
+    print("SIDE", SIDE)
+    print("BOUNDARY", BOUNDARY)
+    print("CENTER", CENTER)
+    print("PENALTY", PENALTY)
 
 
 def Initialize():
@@ -61,16 +60,16 @@ def Initialize():
 def Update_Robo_Info(teamD, teamP, oppoP, ballP, ballS, ballD):
     global robots
     close_ball = [-1, 1000]  # first element is enemy index , second is distance to the ball
-    for i in range(3):
-        robots[i].miss = False
-        if not teamP[i]:
-            robots[i].miss = True
-        else:
-            # robots[i].pos = [simulator_adjust(teamP[i], False)[0], simulator_adjust(teamP[i], False)[1]]
-            robots[i].pos = teamP[i]
-            robots[i].dir = teamD[i]
-            robots[i].distance = get_distance(robots[i].pos, ball.pos)
-        robots[i].target = [0, 0]
+
+    robots[0].miss = False
+    if not teamP[2]:
+        robots[0].miss = True
+    else:
+        # robots[i].pos = [simulator_adjust(teamP[i], False)[0], simulator_adjust(teamP[i], False)[1]]
+        robots[0].pos = teamP[2]
+        robots[0].dir = teamD[2]
+        robots[0].distance = get_distance(robots[0].pos, ball.pos)
+    robots[0].target = [0, 0]
 
     # ball.pos = simulator_adjust(ballP, False)
     ball.pos = ballP
@@ -82,16 +81,15 @@ def strategy():
     global ball, robots
     assign_role()
     cmd = ['N', 'N', 'N']
-    for i in range(len(robots)):
-        try:
-            cmd[i] = execute_job(i)
-        except ZeroDivisionError:
-            print('divide zero...')
-            cmd[i] = 'N'
-        except Exception as e:
-            print('Catch Error.....')
-            print(e)
-            cmd[i] = 'N'
+    try:
+        cmd[2] = execute_job(0)
+    except ZeroDivisionError:
+        print('divide zero...')
+        cmd[2] = 'N'
+    except Exception as e:
+        print('Catch Error.....')
+        print(e)
+        cmd[2] = 'N'
     if PRINT:
         print(cmd)
         print()
@@ -103,9 +101,9 @@ def assign_role():
     Decide every robot's role and change robot's attribute: role
     """
     global ball, robots
-    if not robots[2].miss:
-        robots[2].role = Role.KEEPER
-        robots[2].keeper_assign()
+    if not robots[0].miss:
+        robots[0].role = Role.KEEPER
+        robots[0].keeper_assign()
     else:
         if PRINT:
             print("keeper miss")
@@ -124,17 +122,15 @@ def execute_job(id):
     #    else:
     #        return 'R'
     if robo.job == Job.DIVE:
-        if ball.speed > CONST.DANGER_SPEED:
-            x_dist = our_gate[0][0] - ball.pos[0]
-            if x_dist * ball.dir[0] > 0:
-                y_des = ball.pos[1] + x_dist / ball.dir[0] * ball.dir[1]
-                if our_gate[1][1] < y_des < our_gate[0][1] or our_gate[0][1] < y_des < our_gate[1][1]:
-                    if abs(robo.pos[1] - y_des) > robo.BODY['width'] * CM_TO_PIX / 2:
-                        block_dir = [our_gate[0][0] - robo.pos[0], y_des - robo.pos[1]]
-                        for orient in ['RIGHT', 'LEFT']:
-                            temp_dir = _rotate(robo.dir, WAY_ANGLE[orient])
-                            if _dot(temp_dir, block_dir) >= 0:
-                                return robo.MOTION['DEFENCE'][orient]['CMD'][0]
+        x_dist = our_gate[0][0] - ball.pos[0]
+        if x_dist * ball.dir[0] > 0:
+            y_des = ball.pos[1] + x_dist / ball.dir[0] * ball.dir[1]
+            if our_gate[1][1] < y_des < our_gate[0][1] or our_gate[0][1] < y_des < our_gate[1][1]:
+                if abs(robo.pos[1] - y_des) > robo.BODY['width'] * CM_TO_PIX / 2:
+                    if (robo.pos[1] - y_des) * SIDE > 0:
+                        return robo.MOTION['DEFENCE']['LEFT']['CMD'][0]
+                    else:
+                        return robo.MOTION['DEFENCE']['RIGHT']['CMD'][0]
     elif robo.job == Job.REST:
         return robo.MOTION['REST']['CMD'][0]
     return 'N'
@@ -251,15 +247,13 @@ class Robot:
         #      4球的速度降低後便會出來踢球（如果是最近的）
         #      5沒事多休息
         global ball
-        gate_center = [our_gate[0][0], int((our_gate[0][1] + our_gate[1][1]) / 2)]
-        angle_condition = abs(_angle(self.dir, [b - p for b, p in zip(ball.pos, self.pos)]))
 
-        self.face_ball = True
-        if ball.speed > CONST.DANGER_SPEED and ball.dir[0] * SIDE < 0:
+        if (ball.pos[0] - our_gate[0][0] - 50 * CM_TO_PIX) * SIDE < 0:
             self.job = Job.DIVE
             # print("ready to dive")
-        if PRINT:
-            print("keeper next", self.next)
+        else:
+            self.job = Job.REST
+        print(self.job)
 
 
 class Job(Enum):

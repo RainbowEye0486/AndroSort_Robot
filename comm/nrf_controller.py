@@ -368,7 +368,7 @@ def communicate(device, que, crouch):
         # Get input from queue
         input_data = que.get()
         for i, inpt in enumerate(input_data):
-            if inpt == 'r':
+            if inpt == 'r' or inpt == 'x':
                 crouch[i] = True
             elif not inpt == 'N':
                 crouch[i] = False

@@ -22,8 +22,8 @@ MOTION = {
         },
 
         'TURN': {
-            'LEFT': {'CMD': ['Q', 'q'], 'BOUND': [0.358, 0.196]},
-            'RIGHT': {'CMD': ['E', 'e'], 'BOUND': [0.358, 0.196]}
+            'LEFT': {'CMD': ['Q', 'q'], 'BOUND': [0.358, 0.072]},
+            'RIGHT': {'CMD': ['E', 'e'], 'BOUND': [0.358, 0.072]}
         },
 
         'KICK': {
@@ -164,7 +164,7 @@ MOTION = {
 
 BALL_RADIUS = 3.75  # Ball Size #diameter 6.5cm = 20 pixel
 DANGER_SPEED = 30
-TREATING_ZONE = 30
+TREATING_ZONE = 23
 
 
 def getMotion(roboID):
