@@ -15,9 +15,9 @@ MOTION = {
             # BOUND': [30, 15] for simulator [18, 8]
             'BACK': {'CMD': ['s'], 'BOUND': [2], 'OFFSET': [10, 6]},
             # BOUND': [15] ;[4]
-            'LEFT': {'CMD': ['A', 'a'], 'BOUND': [24, 1.9], 'OFFSET': [16]},
+            'LEFT': {'CMD': ['A', 'a'], 'BOUND': [24, 1.9], 'OFFSET': [15]},
             # BOUND': [75,15] ;[71, 3.1]
-            'RIGHT': {'CMD': ['D', 'd'], 'BOUND': [25.1, 2], 'OFFSET': [16]}
+            'RIGHT': {'CMD': ['D', 'd'], 'BOUND': [25.1, 2], 'OFFSET': [15]}
             #  [76, 2.22]
         },
 

@@ -646,7 +646,7 @@ def image_func():
                                 accumulate[1] += vec[1]
                                 element += 1
                         if element == 0:
-                            our_dir[0] = []
+                            our_dir[0] = [0, 0]
                         else:
                             our_dir[0] = [accumulate[0] / element, accumulate[1] / element]
                     except ZeroDivisionError:
@@ -689,7 +689,7 @@ def image_func():
                                 accumulate[1] += vec[1]
                                 element += 1
                         if element == 0:
-                            our_dir[1] = []
+                            our_dir[1] = [0, 0]
                         else:
                             our_dir[1] = [accumulate[0] / element, accumulate[1] / element]
                     except ZeroDivisionError:
@@ -711,7 +711,6 @@ def image_func():
                         our_data[1] = []
                     else:
                         our_data[1] = [int(accumulate[0] / element), int(accumulate[1] / element)]
-        # print(vector2_buffer)
         thread6.join()
         for our in our_pos:
             for color3 in color3_pos:
@@ -733,10 +732,10 @@ def image_func():
                                 accumulate[1] += vec[1]
                                 element += 1
                         if element == 0:
-                            our_dir[2] = []
+                            our_dir[2] = [0, 0]
                         else:
                             our_dir[2] = [accumulate[0] / element, accumulate[1] / element]
-
+                        # print(our_dir[2])
                     except ZeroDivisionError:
                         our_dir[2] = [0, 0]
                     if error_open:
@@ -753,7 +752,7 @@ def image_func():
                             accumulate[1] += vib[1]
                             element += 1
                     if element == 0:
-                        our_data[2] = []
+                        our_data[2] = [0, 0]
                     else:
                         our_data[2] = [int(accumulate[0] / element), int(accumulate[1] / element)]
 
@@ -832,7 +831,11 @@ def image_func():
         cv2.putText(show, Str, (ball_pos_now[0], ball_pos_now[1] - 30), font, 1, (150, 245, 245), 3)
 
         if (challenge_bit == 3) & (len(ch3.robots) == 3):
-
+            for i in range(3):
+                if not ch3.robots[i].target[0] == 0:
+                    cv2.circle(show, (ch3.robots[i].target[0], ch3.robots[i].target[1]), 5, (200, 200, 200), -3)
+                    cv2.line(show, (ch3.robots[i].target[0], ch3.robots[i].target[1]),
+                             (ch3.ball.pos[0], ch3.ball.pos[1]), (200, 200, 200), 2)
             for i in range(3):
                 if ch3.robots[i].job == ch3.Job.SHOOT:
                     cv2.putText(show, "SHOOT", (our_data[i][0], our_data[i][1] - 20), font, 0.6, (84, 83, 268), 2)
@@ -963,6 +966,7 @@ def pk_image():
     cap = WebcamVideoStream(src=camera_num).start()
     tStart = 0
     while True:
+        TS = time.time()
         if frame_counter == 0:
             tStart = time.time()
         frame_counter += 1
@@ -998,9 +1002,6 @@ def pk_image():
                         q = error_correct(our, Main.crouch[2])
                         cv2.circle(show, (q[0], q[1]), 3, (252, 255, 255), -1)
                         our_data[2] = [q[0], q[1]]
-        # print(our_data)
-        global enemy_data
-        enemy_data = [[], [], []]
         #  印出場地的點線
 
         if point_show:
@@ -1046,18 +1047,6 @@ def pk_image():
         our_pos.clear()
         color3_pos.clear()
         #  from strategy show
-        Str = str(int(ball_speed))
-        cv2.putText(show, Str, (ball_pos_now[0], ball_pos_now[1] - 30), font, 1, (150, 245, 245), 3)
-
-        if (challenge_bit == 3) & (len(ch3.robots) == 3):
-            for i in range(3):
-                if ch3.robots[i].job == ch3.Job.SHOOT:
-                    cv2.putText(show, "SHOOT", (our_data[i][0], our_data[i][1] - 20), font, 0.6, (84, 83, 268), 2)
-                if ch3.robots[i].job == ch3.Job.DIVE:
-                    cv2.putText(show, "DIVE", (our_data[i][0], our_data[i][1] - 20), font, 0.6, (84, 83, 268), 2)
-                if ch3.robots[i].job == ch3.Job.PASS:
-                    cv2.putText(show, "PASS", (our_data[i][0], our_data[i][1] - 20), font, 0.6, (84, 83, 268), 2)
-
         #  print("cost %f second" % (tEnd - tStart))  # 紀錄每一幀時間
         thread7.join()
 
@@ -1091,6 +1080,8 @@ def pk_image():
                 print("speed error")
             # print("ball speed:", ball_speed, ", ball speed vector:", ball_dir, ", time:", time_interval)
             frame_counter = 0
+        TE = time.time()
+        # print(TE-TS)
 
 
 if __name__ == '__main__':

@@ -793,9 +793,9 @@ def move(robo, arrival, ways=['', '', '', '']):
         ball_dir = _unit_vector(robo.pos, ball.pos)
         angle = abs(_angle(move_dir, ball_dir))
         if move_way == 'FORE' or move_way == 'BACK':
-            avoid_dist = robo.BODY['width'] / 2 * CM_TO_PIX
+            avoid_dist = robo.BODY['width'] * CM_TO_PIX
         else:
-            avoid_dist = robo.BODY['length'] / 2 * CM_TO_PIX
+            avoid_dist = robo.BODY['length'] * CM_TO_PIX
         safe_angle = math.atan(avoid_dist / dist_ball)
         if angle < safe_angle:
             # change arrival
@@ -1149,29 +1149,35 @@ class Robot:
             else:
                 if ball.in_zone == Zone.MIDDLE_DEFEND:
                     self.move_and_do(angle_condition, 10)
+                    self.job = Job.STAND
                     # print("come from middle , watch out!")
                 elif ball.in_zone == Zone.CENTER_AREA:
                     self.move_and_do(angle_condition, 10)
+                    self.job = Job.STAND
                     # print("come from middle , watch out!")
                 elif ball.in_zone == Zone.LEFT_DEFEND:
                     self.next = line_fraction(gate_center, our_gate[0], 0.4)
                     self.next[0] += 13 * CM_TO_PIX * SIDE
                     self.move_and_do(angle_condition, 12)
+                    self.job = Job.STAND
                     # print("come from left , watch out!")
                 elif ball.in_zone == Zone.FAR_LEFT_DEFEND:
                     self.next = line_fraction(gate_center, our_gate[0], 0.8)
                     self.next[0] += 13 * CM_TO_PIX * SIDE
                     self.move_and_do(angle_condition, 12)
+                    self.job = Job.STAND
                     # print("come from far left , watch out!")
                 elif ball.in_zone == Zone.RIGHT_DEFEND:
                     self.next = line_fraction(gate_center, our_gate[1], 0.4)
                     self.next[0] += 13 * CM_TO_PIX * SIDE
                     self.move_and_do(angle_condition, 12)
+                    self.job = Job.STAND
                 # print("come from right , watch out!")
                 elif ball.in_zone == Zone.FAR_RIGHT_DEFEND:
                     self.next = line_fraction(gate_center, our_gate[1], 0.8)
                     self.next[0] += 13 * CM_TO_PIX * SIDE
                     self.move_and_do(angle_condition, 12)
+                    self.job = Job.STAND
                     # print("come from far right , watch out!")
                 elif ball.in_zone == Zone.OUR_PENALTY:
                     target, size = find_aim_point(ball.pos[0], ball.pos[1], pass_point)
@@ -1263,14 +1269,14 @@ class Robot:
         # print(ball.in_zone)
         if ball.in_zone == Zone.CENTER_AREA:
             if self.half == 'left_side':
-                y = robots[other].next[1] - 45 * CM_TO_PIX * SIDE
+                y = robots[other].next[1] - 60 * CM_TO_PIX * SIDE
             else:
-                y = robots[other].next[1] + 45 * CM_TO_PIX * SIDE
+                y = robots[other].next[1] + 60 * CM_TO_PIX * SIDE
             if y < BOUNDARY[0][1] + 23 * CM_TO_PIX:  # over boundary, set in center
                 y = BOUNDARY[0][1] + 23 * CM_TO_PIX
             elif y > BOUNDARY[7][1] - 23 * CM_TO_PIX:
                 y = BOUNDARY[7][1] - 23 * CM_TO_PIX
-            self.next = [robots[other].next[0] - 35 * CM_TO_PIX * SIDE, y]  # 暫定距離
+            self.next = [robots[other].next[0] - 55 * CM_TO_PIX * SIDE, y]  # 暫定距離
             self.move_and_block()
         elif ball.in_zone == Zone.MIDDLE_OFFENCE:
             # print("middle")
@@ -1349,7 +1355,7 @@ class Robot:
                     print("inline\n")
             else:  # move to defend line
                 self.next = find_line_point(self.pos, our_gate[gate_side])
-                if (self.next[0] - ball.pos[0] + ball.radius * CM_TO_PIX) * SIDE > 0:
+                if (self.next[0] - ball.pos[0] - ball.radius * CM_TO_PIX) * SIDE > 0:
                     self.next = [ball.pos[0] - SIDE * 8 * CM_TO_PIX, ball.pos[1]]
                 # self.next[1] += int(SIDE * 8 * CM_TO_PIX)
                 self.job = Job.MOVE
@@ -1363,7 +1369,7 @@ class Robot:
                     print("inline\n")
             else:  # move to defend line
                 self.next = find_line_point(self.pos, our_gate[gate_side])
-                if (self.next[0] - ball.pos[0] + ball.radius * CM_TO_PIX) * SIDE > 0:
+                if (self.next[0] - ball.pos[0] - ball.radius * CM_TO_PIX) * SIDE > 0:
                     self.next = [ball.pos[0] - SIDE * 8 * CM_TO_PIX, ball.pos[1]]
                 # self.next[1] += int(SIDE * 8 * CM_TO_PIX)
                 self.job = Job.MOVE
@@ -1374,7 +1380,7 @@ class Robot:
                     print("inline\n")
             else:  # move to defend line
                 self.next = find_line_point(self.pos, our_gate[gate_side])
-                if (self.next[0] - ball.pos[0] + ball.radius * CM_TO_PIX) * SIDE > 0:
+                if (self.next[0] - ball.pos[0] - ball.radius * CM_TO_PIX) * SIDE > 0:
                     self.next = [ball.pos[0] - SIDE * 8 * CM_TO_PIX, ball.pos[1]]
                 # self.next[1] += int(SIDE * 8 * CM_TO_PIX)
                 self.job = Job.MOVE
@@ -1386,7 +1392,7 @@ class Robot:
                     print("inline\n")
             else:  # move to defend line
                 self.next = find_line_point(self.pos, our_gate[gate_side])
-                if (self.next[0] - ball.pos[0] + ball.radius * CM_TO_PIX) * SIDE > 0:
+                if (self.next[0] - ball.pos[0] - ball.radius * CM_TO_PIX) * SIDE > 0:
                     self.next = [ball.pos[0] - SIDE * 8 * CM_TO_PIX, ball.pos[1]]
                 # self.next[1] -= int(SIDE * 8 * CM_TO_PIX)
                 self.job = Job.MOVE
@@ -1414,14 +1420,14 @@ class Robot:
         self.target = [0, 0]
         if (ball.in_zone == Zone.CENTER_AREA) | ((robots[other].pos[0] - CENTER[0]) * SIDE > 0):
             if self.half == 'left_side':
-                y = robots[other].next[1] - 50 * CM_TO_PIX * SIDE
+                y = robots[other].next[1] - 60 * CM_TO_PIX * SIDE
             else:
-                y = robots[other].next[1] + 50 * CM_TO_PIX * SIDE
+                y = robots[other].next[1] + 60 * CM_TO_PIX * SIDE
             if y < BOUNDARY[0][1] + 23 * CM_TO_PIX:  # over boundary, set in center
                 y = BOUNDARY[0][1] + 23 * CM_TO_PIX
             elif y > BOUNDARY[7][1] - 23 * CM_TO_PIX:
                 y = BOUNDARY[7][1] - 23 * CM_TO_PIX
-            self.next = [robots[other].next[0] - 40 * CM_TO_PIX * SIDE, y]  # 暫定距離
+            self.next = [robots[other].next[0] - 55 * CM_TO_PIX * SIDE, y]  # 暫定距離
             self.move_and_block()
         elif ball.in_zone == Zone.MIDDLE_DEFEND:
             if self.half == 'left_side':

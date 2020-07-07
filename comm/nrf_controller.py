@@ -371,7 +371,7 @@ def communicate(device, que, crouch):
                 crouch[i] = True
             elif not inpt == 'N':
                 crouch[i] = False
-        RF_sendCmd_sys(input_data, device, 0.02, mode)
+        RF_sendCmd_sys(input_data, device, 0.2, mode)
     while time.time() - tstart < 1 / 30:
         # Read input
         data, length = device_read(device)
