@@ -2,6 +2,7 @@ import math
 from Strategy import constant1 as CONST
 from enum import Enum
 import time
+from threading import Timer
 
 # Parameter needed to adjust
 ID_IN_USE = [4, 3]
@@ -24,7 +25,8 @@ last_ball = []
 ball_in_move = []
 record_ball = False
 start_pass = False
-job_done = False
+job_done = False  # for sup
+job_start = False  # for main
 sec_pt = []
 shoot_zone = 0 * CM_TO_PIX
 best_loc = [0, 0]
@@ -190,19 +192,11 @@ def assign_role(robots):
     if PRINT:
         print('assign role')
     if robots[0].role == '':
-        # if PRINT:
-        #     print('become sup')
         robots[0].role = Role.SUP
         robots[1].role = Role.NONE
-    elif robots[0].role == Role.SUP:
-        if PRINT:
-            print('ball move', _dist(ball.pos, last_ball))
-        if _dist(ball.pos, last_ball) > 15 * CM_TO_PIX:
-            robots[1].role = Role.MAIN
-    elif robots[0].role == Role.NONE:
-        robots[1].role = Role.MAIN
-    if PRINT:
         print(robots[0].role, robots[1].role)
+    if job_start:
+        robots[1].role = Role.MAIN
 
 
 def assign_job(robots):
@@ -211,37 +205,32 @@ def assign_job(robots):
     '''
     for robo in robots:
         if robo.role == Role.SUP:
-            if _dist(last_ball, ball.pos) > 15 * CM_TO_PIX:
+            if job_done:
                 robo.job = Job.LEAVE
             else:
                 robo.job = Job.MOVE
-        elif robo.role == Role.NONE:
-            robo.job = Job.REST
         elif robo.role == Role.MAIN:
             if (ball.pos[0] - (CENTER[0] + shoot_zone * SIDE)) * SIDE > 0:
                 robo.job = Job.SHOOT  # to goal
             else:
                 robo.job = Job.PASS  # to three point line
-        # robots[0].job = Job.REST
-        # robots[1].job = Job.PASS
+        elif robo.role == Role.NONE:
+            robo.job = Job.REST
 
 
 def execute_job(id):
     """
     Base on the robot's job, give an exact command
     """
-    global robots, sec_pt
+    global robots, sec_pt, job_done
     robo = robots[id]
     if robo.job == Job.MOVE:
         dirct = _unit_vector(ball.pos, best_loc)
         init_pt = [b - d * 15 * CM_TO_PIX for b, d in zip(ball.pos, dirct)]
-        # sec_pt = [b + d * 3 * CM_TO_PIX for b, d in zip(ball.pos, dirct)]
-        # r_offst = _rotate(dirct, WAY_ANGLE('RIGHT'))
+        sec_pt = [b + d * 3 * CM_TO_PIX for b, d in zip(ball.pos, dirct)]
         global start_pass, ball_in_move
-        print('flag', start_pass)
+        # print('flag', start_pass)
         if not start_pass:
-            print('first pt')
-            print('original ball', ball_in_move)
             dist_err = 2*CM_TO_PIX
             ang_err = 15/180*math.pi
             ball_in_move = ball.pos
@@ -253,25 +242,24 @@ def execute_job(id):
             if movable and _dist(robo.pos, arrival) > dist_err and abs(_angle(direction, dirct)) > ang_err:
                 return rt_cmd
             else:
-                # print('toggle to True')
+                # if ball.speed < 10:
                 start_pass = True
         else:
-            # print('second pt')
-            # print('original ball', ball_in_move)
-            arrival = [b + d * 3 * CM_TO_PIX for b, d in zip(ball.pos, dirct)]
+            # for supporter
+            if robo.role == Role.SUP:
+                if _dist(ball.pos, last_ball):
+                    job_done = True
+                    t = Timer(2.0, startMain)
+                    t.start()
+            arrival = sec_pt
             robo.next = arrival
             move_ways = ['LEFT']
             movable, rt_cmd = move_special(robo, arrival, move_ways)
-            if _dist(ball.pos, ball_in_move) > 3*CM_TO_PIX:
-                start_pass = False
-                # print('toggle to False')
-            else:
-                if PRINT:
-                    print('ball didnt move')
             if movable:
                 return rt_cmd
             else:
                 start_pass = False
+                # sec_pt = [-1, -1]
                 if PRINT:
                     print('toggle to False')
     elif robo.job == Job.PASS:
@@ -852,6 +840,12 @@ def check_boundary_ball(robo):
             print('boundary ball')
         robo.target[0] = ball.pos[0] + SIDE * 15
         robo.target[1] = ball.pos[1] + 15
+
+
+def startMain(){
+    global job_start
+    job_start = True
+}
 
 
 class Robot:
