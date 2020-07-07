@@ -60,6 +60,8 @@ def start_func():
 def pause_func():
     global go_strategy
     go_strategy = False
+    if challenge_num == 1:
+        strategy.restart()
 
 
 def expo_func(self):

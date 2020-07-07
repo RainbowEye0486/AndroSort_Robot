@@ -15,7 +15,7 @@ import time
 PRINT = False
 
 # Parameter needed to adjust
-ID_IN_USE = [3, 4, 6]
+ID_IN_USE = [4, 4, 6]
 CM_TO_PIX = 3.0
 carrier_range = 18 * CM_TO_PIX  # range to judge if carry ball
 line_range = 7 * CM_TO_PIX  # when defend , we need to know how close is enough from defend line
@@ -429,7 +429,7 @@ def execute_job(id):
         # kick ball
         check_boundary_ball(robo)
         kickable_dist = 3 * CM_TO_PIX  # the distance between ball and the robot should be
-        kickable_ang = 7 / 180 * math.pi  # acceptable angle error when kicking
+        kickable_ang = 15 / 180 * math.pi  # acceptable angle error when kicking
         kick_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']  # restrict to FORE??
         move_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
         try:
@@ -457,7 +457,7 @@ def execute_job(id):
             check_boundary_ball(robo)
             force = 'big'
             kickable_dist = 3 * CM_TO_PIX  # the distance between arrival and the robot should be
-            kickable_ang = 7 / 180 * math.pi  # acceptable angle error when kicking
+            kickable_ang = 15 / 180 * math.pi  # acceptable angle error when kicking
             kick_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
             move_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
             kick_dir = _unit_vector(ball.pos, robo.target)
@@ -474,6 +474,8 @@ def execute_job(id):
                 return rt_cmd
             else:
                 print("踢個毛")
+    elif robo.job == Job.ACCURATE_SHOOT:
+        pass
     elif robo.job == Job.DIVE:
         if ball.speed > CONST.DANGER_SPEED:
             x_dist = our_gate[0][0] - ball.pos[0]
@@ -712,7 +714,8 @@ def is_kickable(robo, tol_dist, tol_angle, kick_dir, ways, force):
     return False, kick_way, 'N', arrival
 
 
-def move_with_dir(robo, arrival, curr_dir, ideal_dir, fit_way='FORE', ways=['FORE', 'LEFT', 'BACK', 'RIGHT']):
+def move_with_dir(robo, arrival, curr_dir, ideal_dir, fit_way='FORE', ways=['FORE', 'LEFT', 'BACK', 'RIGHT'],
+                  accurate=True):
     tol_dist = 10 * CM_TO_PIX  # start fitting the right direction
     safe_ball = 15 * CM_TO_PIX
     dist = _dist(robo.pos, arrival)
@@ -737,10 +740,10 @@ def move_with_dir(robo, arrival, curr_dir, ideal_dir, fit_way='FORE', ways=['FOR
             rt_cmd = robo.MOTION['TURN']['LEFT']['CMD'][1]
             return True, rt_cmd
     else:
-        if abs(angle) >= robo.MOTION['TURN']['RIGHT']['BOUND'][0]:
+        if abs(angle) >= robo.MOTION['TURN']['RIGHT']['BOUND'][0] and accurate:
             rt_cmd = robo.MOTION['TURN']['RIGHT']['CMD'][0]
             return True, rt_cmd
-        elif abs(angle) >= robo.MOTION['TURN']['RIGHT']['BOUND'][1]:
+        elif abs(angle) >= robo.MOTION['TURN']['RIGHT']['BOUND'][1] and accurate:
             rt_cmd = robo.MOTION['TURN']['RIGHT']['CMD'][1]
             return True, rt_cmd
     '''move slightly'''
@@ -881,6 +884,7 @@ def find_aim_point(x, y, goal):
         retva1: the best point to aim
         retval: the tolerant size
     """
+    size = 0
     if goal[0][1] > goal[1][1]:
         temp = goal[1]
         goal[1] = goal[0]
@@ -927,29 +931,60 @@ def find_aim_point(x, y, goal):
         else:
             j += 1
     # Map non-blocked areas, and find the biggest area
+    if PRINT:
+        for h_t in head_tails:
+            print('ht', h_t)
+        print('goal:', goal)
     ava_range = []
-    size = 0
+    sizes = []
+    dists = []
+    point = [goal[0][0], -1]
+    points = []
     if len(head_tails) == 0:
-        size = goal[1][1] - goal[0][1]
-        aim_point[1] = (goal[1][1] + goal[0][1]) / 2
+        sizes.append(goal[1][1] - goal[0][1])
+        point[1] = (goal[1][1] + goal[0][1]) / 2
+        points.append(point[:])
+        dists.append(_dist([x, y], point))
+        ava_range.append(goal)
     if len(head_tails) > 0 and head_tails[0][0] - goal[0][1] > size:
-        size = head_tails[0][0] - goal[0][1]
-        aim_point[1] = (head_tails[0][0] + goal[0][1]) / 2
+        sizes.append(head_tails[0][0] - goal[0][1])
+        point[1] = (head_tails[0][0] + goal[0][1]) / 2
+        dists.append(_dist([x, y], point))
+        points.append(point[:])
         ava_range.append([goal[0][1], head_tails[0][0]])
     for i in range(len(head_tails) - 1):
-        if head_tails[i + 1][0] - head_tails[i][0] > size:
-            size = head_tails[i + 1][0] - head_tails[i][0]
-            aim_point[1] = (head_tails[i + 1][0] + head_tails[i][0]) / 2
+        if head_tails[i + 1][0] - head_tails[i][1] > size:
+            sizes.append(head_tails[i + 1][0] - head_tails[i][1])
+            point[1] = (head_tails[i + 1][0] + head_tails[i][1]) / 2
+            points.append(point[:])
+            dists.append(_dist([x, y], point))
             ava_range.append([head_tails[i][1], head_tails[i + 1][0]])
     if len(head_tails) > 0 and goal[1][1] - head_tails[len(head_tails) - 1][1] > size:
-        size = goal[1][1] - head_tails[len(head_tails) - 1][1]
-        aim_point[1] = (goal[1][1] + head_tails[len(head_tails) - 1][1]) / 2
+        sizes.append(goal[1][1] - head_tails[len(head_tails) - 1][1])
+        point[1] = (goal[1][1] + head_tails[len(head_tails) - 1][1]) / 2
+        points.append(point[:])
+        # if PRINT:
+        #     print('pts', points)
+        dists.append(_dist([x, y], point))
         ava_range.append([head_tails[len(head_tails) - 1][1], goal[1][1]])
+    # if PRINT:
+    #     for i in range(len(sizes)):
+    #         print('reange:', ava_range[i])
+    #         print('s, pt:,', sizes[i], point[i])
+    if sizes:
+        size_max = max(sizes)
+        dist_max = max(dists)
+        comp = -1.1
+        for i in range(len(sizes)):
+            temp_comp = sizes[i] / size_max - dists[i] / dist_max
+            if temp_comp > comp:
+                comp = temp_comp
+                aim_point = points[i]
+                size = sizes[i]
     if PRINT:
         for pair in ava_range:
             print('available area:', pair[0], pair[1])
         print('(', aim_point[0], ',', aim_point[1], '):', size)
-    aim_point = [int(aim_point[0]), int(aim_point[1])]
     return aim_point, size
 
 
