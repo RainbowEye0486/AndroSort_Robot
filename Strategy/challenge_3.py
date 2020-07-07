@@ -1041,6 +1041,12 @@ def is_close_ball(pos, direction, len):
     return False
 
 
+def change_robots(newID):
+    global robots
+    for robo, ID in zip(robots, newID):
+        robo.MOTION = CONST.getMotion(ID)
+
+
 '''end'''
 
 

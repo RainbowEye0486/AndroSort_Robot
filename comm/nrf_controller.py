@@ -129,9 +129,8 @@ def device_read(device, delay=0):
     return "None", a
 
 
-def download_cfg(device):
+def download_cfg(device, mode_select=1):
     # for recieve
-    mode_select = input("Enter user mode(1:normal, 2:recieve) >>> ")
     for i in range(len(cfg["RESET"]) - 3):
         print(str(i + 1) + ' ' + str(cfg["RESET"]["default" + str(i + 1)]))
 
@@ -400,5 +399,6 @@ if __name__ == '__main__':
     read_config()
     state, device, baud = device_chose()
     if state == 1:
-        download_cfg(device)
+        mode_select = input("Enter user mode(1:normal, 2:recieve) >>> ")
+        download_cfg(device, mode_select)
         main_procedure(device)
