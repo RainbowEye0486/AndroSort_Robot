@@ -27,8 +27,8 @@ decision_done = False
 # 需要調整參數
 # ===========adjust==========================
 side = -1  # -1 for <- , 1 for -> (left is our field)
-challenge_num = 4
-PK = True
+challenge_num = 3
+PK = False
 # ===========================================
 
 crouch = [False, False, False]

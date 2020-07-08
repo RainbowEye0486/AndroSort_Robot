@@ -1334,6 +1334,7 @@ class Robot:
             if Target[1] == -1:
                 Target[1] = self.pos[1]
             self.move_and_kick(carry, Target)
+            print("u", self.next)
         elif ball.in_zone == Zone.MIDDLE_DEFEND:
             if in_line(ball.pos, [our_gate[0][0], (our_gate[0][1] + our_gate[1][1]) / 2], self.pos, False):
                 # on defend line , defend line is middle
@@ -1405,8 +1406,11 @@ class Robot:
             self.move_and_block()
         if robots[2].job == Job.DIVE or robots[2].job == Job.SHOOT:
             self.job = Job.NONE
-        if get_distance(self.next, robots[2].pos) > 28 * CM_TO_PIX:
+
+        if get_distance(self.next, robots[2].pos) < 28 * CM_TO_PIX:
+            print(get_distance(self.next, robots[2].pos))
             self.next = [self.next[0] + SIDE * 13 * CM_TO_PIX, self.next[1]]
+        print("iw", self.next)
 
     def interferer_assign(self, other):
         # 戰略：1如果是在中間（非對方進攻的位置），設定為跟隨模式，跟隨模式為一旦超出邊界，便會站到中央
@@ -1474,7 +1478,7 @@ class Robot:
 
         if robots[2].job == Job.DIVE or robots[2].job == Job.SHOOT:
             self.job = Job.NONE
-        if get_distance(self.next, robots[2].pos) > 28 * CM_TO_PIX:
+        if get_distance(self.next, robots[2].pos) < 28 * CM_TO_PIX:
             self.next = [self.next[0] + SIDE * 13 * CM_TO_PIX, self.next[1]]
 
     def roamer_assign(self):
