@@ -15,7 +15,7 @@ import time
 PRINT = False
 
 # Parameter needed to adjust
-ID_IN_USE = [4, 4, 6]
+ID_IN_USE = [3, 6, 4]
 CM_TO_PIX = 3.0
 carrier_range = 18 * CM_TO_PIX  # range to judge if carry ball
 line_range = 7 * CM_TO_PIX  # when defend , we need to know how close is enough from defend line
@@ -430,7 +430,7 @@ def execute_job(id):
         check_boundary_ball(robo)
         kickable_dist = 3 * CM_TO_PIX  # the distance between ball and the robot should be
         kickable_ang = 15 / 180 * math.pi  # acceptable angle error when kicking
-        kick_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']  # restrict to FORE??
+        kick_ways = ['FORE', 'LEFT', 'RIGHT']  # restrict to FORE??
         move_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
         try:
             kick_dir = _unit_vector(ball.pos, robo.target)
@@ -458,7 +458,7 @@ def execute_job(id):
             force = 'big'
             kickable_dist = 3 * CM_TO_PIX  # the distance between arrival and the robot should be
             kickable_ang = 15 / 180 * math.pi  # acceptable angle error when kicking
-            kick_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
+            kick_ways = ['FORE', 'LEFT', 'RIGHT']
             move_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
             kick_dir = _unit_vector(ball.pos, robo.target)
             kickable, kick_way, rt_cmd, arrival = is_kickable(robo, kickable_dist, kickable_ang, kick_dir, kick_ways,
@@ -554,35 +554,35 @@ def in_zone(pos):
     global SIDE, PENALTY
     ra_x = pos[0]
     ra_y = pos[1]
-    if ((ra_x - ratio(7 * SIDE / 17, 1)[0]) * SIDE > 0) & ((ra_x - ratio(-7 * SIDE / 17, 1)[0]) * SIDE < 0):  # center
+    if ((ra_x - ratio(7 * SIDE / 17, 1)[0]) * SIDE > 0) & ((ra_x - ratio(-5 * SIDE / 17, 1)[0]) * SIDE < 0):  # center
         return Zone.CENTER_AREA
     elif (ra_y - ratio(1, 6 * SIDE / 9)[1]) * SIDE < 0:  # far left
         if (ra_x - ratio(7 * SIDE / 17, 1)[0]) * SIDE < 0:
             return Zone.FAR_LEFT_DEFEND
-        elif (ra_x - ratio(-7 * SIDE / 17, 1)[0]) * SIDE > 0:
+        elif (ra_x - ratio(-5 * SIDE / 17, 1)[0]) * SIDE > 0:
             return Zone.FAR_LEFT_OFFEND
     elif (ra_y - ratio(1, -6 * SIDE / 9)[1]) * SIDE > 0:  # far right
         if (ra_x - ratio(7 * SIDE / 17, 1)[0]) * SIDE < 0:
             return Zone.FAR_RIGHT_DEFEND
-        elif (ra_x - ratio(-7 * SIDE / 17, 1)[0]) * SIDE > 0:
+        elif (ra_x - ratio(-5 * SIDE / 17, 1)[0]) * SIDE > 0:
             return Zone.FAR_RIGHT_OFFEND
-    elif (ra_y > PENALTY[0][1]) & (ra_y < PENALTY[3][1]) & (ra_x < PENALTY[0][0] + 45):
+    elif (ra_y > PENALTY[0][1]) & (ra_y < PENALTY[3][1]) & (ra_x < PENALTY[0][0] + 15 * CM_TO_PIX):
         return Zone.OUR_PENALTY if SIDE == 1 else Zone.ENEMY_PENALTY
-    elif (ra_y > PENALTY[0][1]) & (ra_y < PENALTY[3][1]) & (ra_x > PENALTY[1][0] - 45):
+    elif (ra_y > PENALTY[0][1]) & (ra_y < PENALTY[3][1]) & (ra_x > PENALTY[1][0] - 15 * CM_TO_PIX):
         return Zone.ENEMY_PENALTY if SIDE == 1 else Zone.OUR_PENALTY
     elif (ra_y - ratio(1, 2 * SIDE / 9)[1]) * SIDE < 0:  # left
         if (ra_x - ratio(7 * SIDE / 17, 1)[0]) * SIDE < 0:
             return Zone.LEFT_DEFEND
-        elif (ra_x - ratio(-7 * SIDE / 17, 1)[0]) * SIDE > 0:
+        elif (ra_x - ratio(-5 * SIDE / 17, 1)[0]) * SIDE > 0:
             return Zone.LEFT_OFFEND
     elif (ra_y - ratio(1, -2 * SIDE / 9)[1]) * SIDE > 0:  # right
         if (ra_x - ratio(7 * SIDE / 17, 1)[0]) * SIDE < 0:
             return Zone.RIGHT_DEFEND
-        elif (ra_x - ratio(-7 * SIDE / 17, 1)[0]) * SIDE > 0:
+        elif (ra_x - ratio(-5 * SIDE / 17, 1)[0]) * SIDE > 0:
             return Zone.RIGHT_OFFEND
     elif (ra_x - ratio(7 * SIDE / 17, 4 / 9)[0]) * SIDE < 0:
         return Zone.MIDDLE_DEFEND
-    elif (ra_x - ratio(-7 * SIDE / 17, 4 / 9)[0]) * SIDE > 0:
+    elif (ra_x - ratio(-5 * SIDE / 17, 4 / 9)[0]) * SIDE > 0:
         return Zone.MIDDLE_OFFENCE
 
 
@@ -740,35 +740,78 @@ def move_with_dir(robo, arrival, curr_dir, ideal_dir, fit_way='FORE', ways=['FOR
     if PRINT:
         print('move/angle diff:', angle)
     if angle > 0:  # should turn left
-        if angle >= robo.MOTION['TURN']['LEFT']['BOUND'][0]:
-            rt_cmd = robo.MOTION['TURN']['LEFT']['CMD'][0]
-            return True, rt_cmd
-        elif angle >= robo.MOTION['TURN']['LEFT']['BOUND'][1]:
-            rt_cmd = robo.MOTION['TURN']['LEFT']['CMD'][1]
-            return True, rt_cmd
-    else:
-        if abs(angle) >= robo.MOTION['TURN']['RIGHT']['BOUND'][0] and accurate:
-            rt_cmd = robo.MOTION['TURN']['RIGHT']['CMD'][0]
-            return True, rt_cmd
-        elif abs(angle) >= robo.MOTION['TURN']['RIGHT']['BOUND'][1] and accurate:
-            rt_cmd = robo.MOTION['TURN']['RIGHT']['CMD'][1]
-            return True, rt_cmd
-    '''move slightly'''
+        count = 0
+        motion = robo.MOTION['TURN']['LEFT']
+        # check big left turn
+        for i in range(1, 11):
+            if angle >= motion['BOUND'][0] and count != 9:
+                angle -= motion['BOUND'][0]
+                count += 1
+            elif count > 0:
+                rt_cmd = motion['CMD'][0] + str(count)
+                return True, rt_cmd
+        # check small left turn
+        for i in range(1, 11):
+            if angle >= motion['BOUND'][1] and accurate and count != 9:
+                angle -= motion['BOUND'][1]
+                count += 1
+            elif count > 0:
+                rt_cmd = motion['CMD'][1] + str(count)
+                return True, rt_cmd
+    else:  # should turn right
+        count = 0
+        motion = robo.MOTION['TURN']['RIGHT']
+        angle = abs(angle)
+        for i in range(1, 11):  # big right turn
+            if angle >= motion['BOUND'][0] and count != 9:
+                angle -= motion['BOUND'][0]
+                count += 1
+            elif count > 0:
+                rt_cmd = motion['CMD'][0] + str(count)
+                return True, rt_cmd
+        for i in range(1, 11):  # small right turn
+            if angle >= motion['BOUND'][1] and accurate and count != 9:
+                angle -= motion['BOUND'][1]
+                count += 1
+            elif count > 0:
+                rt_cmd = motion['CMD'][1] + str(count)
+                return True, rt_cmd
+    '''move slightly, check each direction '''
     WAYS = ['FORE', 'RIGHT', 'BACK', 'LEFT']
     for i in [1, 2, 3, 0]:
         move_way = WAYS[(WAYS.index(fit_way) + i) % 4]
         temp_dir = _rotate(curr_dir, math.pi / 2 * i)
         diff_vec = [k - p for k, p in zip(arrival, robo.pos)]
         product = _dot(temp_dir, diff_vec)
-        if product >= robo.MOTION['MOVE'][move_way]['BOUND'][0] * CM_TO_PIX:
-            too_close = is_close_ball(robo.pos, temp_dir, robo.MOTION['MOVE'][move_way]['BOUND'][0] * CM_TO_PIX)
-            if (not too_close) or move_way == 'BACK':
-                rt_cmd = robo.MOTION['MOVE'][move_way]['CMD'][0]
+        if PRINT:
+            print('lack', move_way, product / CM_TO_PIX)
+        motion = robo.MOTION['MOVE'][move_way]
+        if PRINT:
+            print('bound', motion['BOUND'][0]*CM_TO_PIX)
+        count = 0
+        for i in range(1, 11):
+            if product >= motion['BOUND'][0] * CM_TO_PIX and count != 9:
+                too_close = is_close_ball(robo.pos, temp_dir, motion['BOUND'][0] * CM_TO_PIX)
+                if (not too_close) or move_way == 'BACK':
+                    product -= motion['BOUND'][0]*CM_TO_PIX
+                    count += 1
+                elif count > 0:
+                    rt_cmd = motion['CMD'][0] + str(count)
+                    time.sleep(0.1)
+                    return True, rt_cmd
+            elif count > 0:
+                rt_cmd = motion['CMD'][0] + str(count)
+                time.sleep(0.1)
                 return True, rt_cmd
         if len(robo.MOTION['MOVE'][move_way]['BOUND']) > 1:
-            if product >= robo.MOTION['MOVE'][move_way]['BOUND'][1] * CM_TO_PIX:
-                rt_cmd = robo.MOTION['MOVE'][move_way]['CMD'][1]
-                return True, rt_cmd
+            count = 0
+            for i in range(1, 11):
+                if product >= motion['BOUND'][1] * CM_TO_PIX and count != 9:
+                    product -= motion['BOUND'][1] * CM_TO_PIX
+                    count += 1
+                elif count > 0:
+                    rt_cmd = motion['CMD'][1] + str(count)
+                    return True, rt_cmd
     return False, 'N'
 
 
@@ -820,22 +863,46 @@ def move(robo, arrival, ways=['', '', '', '']):
     # fix angle
     direction = _rotate(robo.dir, WAY_ANGLE[move_way])
     angle = _angle(move_dir, direction)
+    '''fix angle'''
     if PRINT:
-        print('ang diff:', angle * 180 / math.pi)
+        print('move/angle diff:', angle)
     if angle > 0:  # should turn left
-        if angle > robo.MOTION['TURN']['LEFT']['BOUND'][0]:
-            rt_cmd = robo.MOTION['TURN']['LEFT']['CMD'][0]
-            return True, rt_cmd
-        elif angle > robo.MOTION['TURN']['LEFT']['BOUND'][1]:
-            rt_cmd = robo.MOTION['TURN']['LEFT']['CMD'][1]
-            return True, rt_cmd
-    else:
-        if abs(angle) > robo.MOTION['TURN']['RIGHT']['BOUND'][0]:
-            rt_cmd = robo.MOTION['TURN']['RIGHT']['CMD'][0]
-            return True, rt_cmd
-        elif abs(angle) > robo.MOTION['TURN']['RIGHT']['BOUND'][1]:
-            rt_cmd = robo.MOTION['TURN']['RIGHT']['CMD'][1]
-            return True, rt_cmd
+        count = 0
+        motion = robo.MOTION['TURN']['LEFT']
+        # check big left turn
+        for i in range(1, 11):
+            if angle >= motion['BOUND'][0] and count != 9:
+                angle -= motion['BOUND'][0]
+                count += 1
+            elif count > 0:
+                rt_cmd = motion['CMD'][0] + str(count)
+                return True, rt_cmd
+        # check small left turn
+        for i in range(1, 11):
+            if angle >= motion['BOUND'][1] and accurate and count != 9:
+                angle -= motion['BOUND'][1]
+                count += 1
+            elif count > 0:
+                rt_cmd = motion['CMD'][1] + str(count)
+                return True, rt_cmd
+    else:  # should turn right
+        count = 0
+        motion = robo.MOTION['TURN']['RIGHT']
+        angle = abs(angle)
+        for i in range(1, 11):  # big right turn
+            if angle >= motion['BOUND'][0] and count != 9:
+                angle -= motion['BOUND'][0]
+                count += 1
+            elif count > 0:
+                rt_cmd = motion['CMD'][0] + str(count)
+                return True, rt_cmd
+        for i in range(1, 11):  # small right turn
+            if angle >= motion['BOUND'][1] and accurate and count != 9:
+                angle -= motion['BOUND'][1]
+                count += 1
+            elif count > 0:
+                rt_cmd = motion['CMD'][1] + str(count)
+                return True, rt_cmd
     '''MOVE'''
     # if the robot is supporter,
     # should give the way of main robot
@@ -858,15 +925,31 @@ def move(robo, arrival, ways=['', '', '', '']):
                         print('supporter pause for the main')
                     rt_cmd = 'N'
                     return True, rt_cmd
-    if dist >= robo.MOTION['MOVE'][move_way]['BOUND'][0] * CM_TO_PIX:
-        too_close = is_close_ball(robo.pos, direction, robo.MOTION['MOVE'][move_way]['BOUND'][0] * CM_TO_PIX)
-        if (not too_close) or move_way == 'BACK':
-            rt_cmd = robo.MOTION['MOVE'][move_way]['CMD'][0]
+    motion = robo.MOTION['MOVE'][move_way]
+    count = 0
+    for i in range(1, 11):
+        if dist >= motion['BOUND'][0] * CM_TO_PIX and count != 9:
+            too_close = is_close_ball(robo.pos, direction, robo.MOTION['MOVE'][move_way]['BOUND'][0] * CM_TO_PIX)
+            if (not too_close) or move_way == 'BACK':
+                dist -= motion['BOUND'][0] * CM_TO_PIX
+                count += 1
+            elif count > 0:
+                rt_cmd = motion['CMD'][0] + str(count)
+                time.sleep(0.1)
+                return True, rt_cmd
+        elif count > 0:
+            rt_cmd = motion['CMD'][0] + str(count)
+            time.sleep(0.1)
             return True, rt_cmd
-    if len(robo.MOTION['MOVE'][move_way]['BOUND']) > 1:
-        if dist >= robo.MOTION['MOVE'][move_way]['BOUND'][1] * CM_TO_PIX:
-            rt_cmd = robo.MOTION['MOVE'][move_way]['CMD'][1]
-            return True, rt_cmd
+    if len(motion['BOUND']) > 1:
+        count = 0
+        for i in range(1, 11):
+            if dist >= motion['BOUND'][1] * CM_TO_PIX and accurate and count != 9:
+                dist -= motion['BOUND'][1] * CM_TO_PIX
+                count += 1
+            elif count > 0:
+                rt_cmd = motion['CMD'][1] + str(count)
+                return True, rt_cmd
     if PRINT:
         print('Cant Find proper cmd.....')
     return False, 'N'
@@ -976,10 +1059,10 @@ def find_aim_point(x, y, goal):
         #     print('pts', points)
         dists.append(_dist([x, y], point))
         ava_range.append([head_tails[len(head_tails) - 1][1], goal[1][1]])
-    # if PRINT:
-    #     for i in range(len(sizes)):
-    #         print('reange:', ava_range[i])
-    #         print('s, pt:,', sizes[i], point[i])
+    if PRINT:
+        for i in range(len(sizes)):
+            print('reange:', ava_range[i])
+            print('s, pt:,', sizes[i], point[i])
     if sizes:
         size_max = max(sizes)
         dist_max = max(dists)
@@ -1206,15 +1289,14 @@ class Robot:
         global robots, ball, carrier_range
         carry = None
         pass_point = self.find_pass_point()
-        gate_center = [enemy_gate[0][0], (enemy_gate[0][1] + enemy_gate[1][1]) / 2]
-        self.next = [ball.pos[0] - SIDE * int(ball.radius * CM_TO_PIX + 15), ball.pos[1]]
+        self.next = [ball.pos[0] - SIDE * int(ball.radius * CM_TO_PIX + 2.5 * CM_TO_PIX), ball.pos[1]]
         tar, size = find_aim_point(ball.pos[0], ball.pos[1], [enemy_gate[0], enemy_gate[1]])
         if PRINT:
             print("ball in_zone:", ball.in_zone)
         for i in range(3):
             if enemies[i].carrier:
                 carry = i
-        if (ball.in_zone == Zone.CENTER_AREA) | ((self.pos[0] - CENTER[0]) * SIDE > 0):  # outside the attack region
+        if (ball.in_zone == Zone.CENTER_AREA) | ((self.pos[0] - CENTER[0]) * SIDE < 0):  # outside the attack region
             Target, size = find_aim_point(ball.pos[0], ball.pos[1], pass_point)
             if Target[1] == -1:
                 Target[1] = self.pos[1]
@@ -1238,7 +1320,7 @@ class Robot:
             # print("far_l")
             percent = size / abs((enemy_gate[1][1] - enemy_gate[0][1]) * SIDE)
             # print("percent", percent)
-            if (percent < 0.3) & (not robots[other].miss):
+            if (percent < 0.3) and (not robots[other].miss):
                 self.move_and_kick(carry, robots[other].next)
             else:
                 self.move_and_kick(carry, tar)
@@ -1283,10 +1365,14 @@ class Robot:
         elif ball.in_zone == Zone.MIDDLE_OFFENCE:
             # print("middle")
             if self.half == 'left_side':
-                self.next = [enemy_gate[0][0] - SIDE * 52 * CM_TO_PIX * SIDE,
-                             robots[other].next[1] - SIDE * 52 * CM_TO_PIX]
+                self.next = [enemy_gate[0][0] - SIDE * 70 * CM_TO_PIX,
+                             robots[other].next[1] - SIDE * 40 * CM_TO_PIX]
             else:
-                self.next = [enemy_gate[1][0] - 52 * CM_TO_PIX * SIDE, robots[other].next[1] - SIDE * 52 * CM_TO_PIX]
+                self.next = [enemy_gate[1][0] - 70 * CM_TO_PIX * SIDE, robots[other].next[1] + SIDE * 90 * CM_TO_PIX]
+            if self.next[1] > BOUNDARY[7][1] - 13 * CM_TO_PIX:
+                self.next[1] = self.next[1] > BOUNDARY[7][1] - 13 * CM_TO_PIX
+            elif self.next[1] < BOUNDARY[0][1] + 13 * CM_TO_PIX:
+                self.next[1] = self.next < BOUNDARY[0][1] + 13 * CM_TO_PIX
             self.move_and_block()
         elif ball.in_zone == Zone.FAR_RIGHT_OFFEND:
             # print("far_r")
@@ -1307,9 +1393,9 @@ class Robot:
         else:  # 其他直接站定點，先不管了
             # print("other")
             if robots[other].half == "right_side":
-                self.next = [enemy_gate[1][0] - 40 * CM_TO_PIX * SIDE, enemy_gate[1][1]]
+                self.next = [enemy_gate[1][0] - 90 * CM_TO_PIX * SIDE, enemy_gate[1][1]]
             elif robots[other].half == "left_side":
-                self.next = [enemy_gate[0][0] - 40 * CM_TO_PIX * SIDE, enemy_gate[0][1]]
+                self.next = [enemy_gate[0][0] - 90 * CM_TO_PIX * SIDE, enemy_gate[0][1]]
             self.move_and_block()
 
     def counter_assign(self):
@@ -1407,7 +1493,9 @@ class Robot:
             self.move_and_block()
         if robots[2].job == Job.DIVE or robots[2].job == Job.SHOOT:
             self.job = Job.NONE
-        if get_distance(self.next, robots[2].pos) > 28 * CM_TO_PIX:
+
+        if get_distance(self.next, robots[2].pos) < 28 * CM_TO_PIX:
+            print(get_distance(self.next, robots[2].pos))
             self.next = [self.next[0] + SIDE * 13 * CM_TO_PIX, self.next[1]]
 
     def interferer_assign(self, other):
@@ -1476,7 +1564,7 @@ class Robot:
 
         if robots[2].job == Job.DIVE or robots[2].job == Job.SHOOT:
             self.job = Job.NONE
-        if get_distance(self.next, robots[2].pos) > 28 * CM_TO_PIX:
+        if get_distance(self.next, robots[2].pos) < 28 * CM_TO_PIX:
             self.next = [self.next[0] + SIDE * 13 * CM_TO_PIX, self.next[1]]
 
     def roamer_assign(self):

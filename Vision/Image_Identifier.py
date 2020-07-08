@@ -842,7 +842,7 @@ def image_func():
                 cv2.putText(show, "(<-)", (66, 666), font, 1, (255, 255, 255), 3)
 
             for i in range(3):
-                if not ch3.robots[i].target[0] == 0:
+                if not ch3.robots[i].target[0] == 0 and not ch3.robots[i].target[0] == -1:
                     cv2.circle(show, (ch3.robots[i].target[0], ch3.robots[i].target[1]), 5, (200, 200, 200), -3)
                     cv2.line(show, (ch3.robots[i].target[0], ch3.robots[i].target[1]),
                              (ch3.ball.pos[0], ch3.ball.pos[1]), (200, 200, 200), 2)

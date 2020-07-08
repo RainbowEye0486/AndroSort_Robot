@@ -100,6 +100,10 @@ def print_func():
     strategy.PRINT = not strategy.PRINT
 
 
+def change_func():
+    print(from_string.get(), to_string.get())
+
+
 def Image_thread():
     if PK:
         image.pk_image()
@@ -124,6 +128,8 @@ def Strategy_thread(que):
             if challenge_num == 2:
                 time.sleep(1.0)
             elif challenge_num == 1:
+                time.sleep(0.5)
+            elif challenge_num == 3:
                 time.sleep(0.5)
             strategy.Update_Robo_Info(image.our_dir, image.our_data, image.enemy_data, image.ball_pos_now,
                                       image.ball_speed, image.ball_dir)
@@ -199,8 +205,34 @@ if __name__ == '__main__':
     s2.pack()
     pick_color_frame = tk.Frame(window)
     pick_color_frame.pack()
+    change_frame = tk.Frame(window)
+    change_frame.pack()
     instruction_frame = tk.Frame(window)
     instruction_frame.pack(side=tk.BOTTOM)
+
+    labelLand = tk.Label(change_frame,
+                         text="From")
+    labelLand.grid(column=0, row=0, sticky=tk.W)
+    labelCity = tk.Label(change_frame,
+                         text="To")
+    labelCity.grid(column=0, row=1, sticky=tk.W)
+
+    from_string = tk.StringVar()
+    to_string = tk.StringVar()
+    entryLand = tk.Entry(change_frame, width=20, textvariable=from_string)
+    entryCity = tk.Entry(change_frame, width=20, textvariable=to_string)
+
+    entryLand.grid(column=1, row=0, padx=10)
+    entryCity.grid(column=1, row=1, padx=10)
+
+    resultButton = tk.Button(change_frame, text='Get Result',
+                             command=change_func)
+
+    resultButton.grid(column=0, row=2, pady=10, sticky=tk.W)
+
+    resultString = tk.StringVar()
+    resultLabel = tk.Label(change_frame, textvariable=resultString)
+    resultLabel.grid(column=1, row=2, padx=10, sticky=tk.W)
 
     our_button = tk.Button(pick_color_frame, text='our', fg='Red', command=image.set_our)
     our_button.pack(side=tk.LEFT)
