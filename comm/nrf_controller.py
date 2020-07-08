@@ -186,7 +186,10 @@ def RF_sendCmd_sys(input_data, device, delay=0, mode=0):
     time.sleep(delay)
     current_time = datetime.now().strftime("%H-%M-%S-%f")
     if mode == 0:
-        send_data = '#'+input_data[0]+'1'+input_data[1]+'1'+input_data[2]+'1' +'$'
+        for i, cmd in enumerate(input_data):
+            if len(cmd) == 1:
+                input_data[i] = cmd + '1'
+        send_data = '#'+input_data[0]+input_data[1]+input_data[2] +'$'
         print(current_time + " Send=", send_data.encode())
         device.write(bytes(send_data, encoding='utf8'))
     else:

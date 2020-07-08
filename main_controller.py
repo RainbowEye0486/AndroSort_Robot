@@ -2,7 +2,7 @@ import time
 from threading import Thread
 import cv2
 from Vision import Image_Identifier as image
-from Strategy import ch1_2 as strategy1  # change this
+from Strategy import challenge_1 as strategy1  # change this
 from Strategy import challenge_2 as strategy2  # change this
 from Strategy import challenge_3 as strategy3  # change this
 from Strategy import challenge_pk as strategy_pk  # change this
@@ -27,7 +27,7 @@ decision_done = False
 # 需要調整參數
 # ===========adjust==========================
 side = -1  # -1 for <- , 1 for -> (left is our field)
-challenge_num = 2
+challenge_num = 1
 PK = False
 # ===========================================
 
@@ -122,9 +122,9 @@ def Strategy_thread(que):
             sys.exit()
         if go_strategy:
             if challenge_num == 2:
-                time.sleep(0.5)
+                time.sleep(1.0)
             elif challenge_num == 1:
-                time.sleep(0.05)
+                time.sleep(0.5)
             strategy.Update_Robo_Info(image.our_dir, image.our_data, image.enemy_data, image.ball_pos_now,
                                       image.ball_speed, image.ball_dir)
             # print('u_f in main b', image.update_frame)
