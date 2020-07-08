@@ -8,7 +8,7 @@ import os
 import main_controller as Main
 from Strategy import challenge_3 as ch3
 from Strategy import challenge_2 as ch2
-from Strategy import challenge_1 as ch1
+from Strategy import ch1_2 as ch1
 from Strategy import challenge_pk as ch4
 
 camera_switch = 0  # 哪一個相機

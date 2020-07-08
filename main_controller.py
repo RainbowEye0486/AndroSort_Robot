@@ -2,7 +2,7 @@ import time
 from threading import Thread
 import cv2
 from Vision import Image_Identifier as image
-from Strategy import challenge_1 as strategy1  # change this
+from Strategy import ch1_2 as strategy1  # change this
 from Strategy import challenge_2 as strategy2  # change this
 from Strategy import challenge_3 as strategy3  # change this
 from Strategy import challenge_pk as strategy_pk  # change this

@@ -15,7 +15,7 @@ import time
 PRINT = False
 
 # Parameter needed to adjust
-ID_IN_USE = [3, 6, 4]
+ID_IN_USE = [7, 3, 6]
 CM_TO_PIX = 3.0
 carrier_range = 18 * CM_TO_PIX  # range to judge if carry ball
 line_range = 7 * CM_TO_PIX  # when defend , we need to know how close is enough from defend line
@@ -815,7 +815,7 @@ def move_with_dir(robo, arrival, curr_dir, ideal_dir, fit_way='FORE', ways=['FOR
     return False, 'N'
 
 
-def move(robo, arrival, ways=['', '', '', '']):
+def move(robo, arrival, ways=['', '', '', ''], accurate=True):
     '''
        To move to assigned point and facing whatever direction
     '''
