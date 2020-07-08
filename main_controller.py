@@ -13,7 +13,7 @@ import tkinter as tk
 import sys
 
 
-PRINT = True
+PRINT = False
 
 if 'Linux' in platform.system():
     from getch import getch
@@ -26,9 +26,9 @@ image_buffer = list()
 decision_done = False
 # 需要調整參數
 # ===========adjust==========================
-side = 1  # -1 for <- , 1 for -> (left is our field)
-challenge_num = 3
-PK = False
+side = -1  # -1 for <- , 1 for -> (left is our field)
+challenge_num = 4
+PK = True
 # ===========================================
 
 crouch = [False, False, False]
@@ -66,6 +66,18 @@ def pause_func():
     go_strategy = False
     if challenge_num == 1:
         strategy.restart()
+
+
+def side_func():
+    global side
+    if side == 1:
+        side = -1
+        strategy.SIDE = -1
+        strategy.strategy_update_field(side, image.field_pos, image.middle, image.penalty_pos)
+    else:
+        side = 1
+        strategy.SIDE = 1
+        strategy.strategy_update_field(side, image.field_pos, image.middle, image.penalty_pos)
 
 
 def expo_func(self):
@@ -213,6 +225,8 @@ if __name__ == '__main__':
     rest_button.pack(side=tk.LEFT)
     field_button = tk.Button(instruction_frame, text='field', fg='Black', command=image.set_field)
     field_button.pack(side=tk.LEFT)
+    side_button = tk.Button(instruction_frame, text='side', fg='Black', command=side_func)
+    side_button.pack(side=tk.LEFT)
     correct_button = tk.Button(instruction_frame, text='projection', fg='Black', command=image.set_correct)
     correct_button.pack(side=tk.LEFT)
     mask_button = tk.Button(instruction_frame, text='mask', fg='Black', command=image.set_mask)
