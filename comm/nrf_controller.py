@@ -214,10 +214,10 @@ def RF_sendCmd(input_data, device, robotID, delay=0, mode=0):
         send_data = '#' + input_data + '1' + input_data + '2' + input_data + '9' + '$'
         # send_data = '#' + robotID + input_data + '1'+'$'
         # print('RF send:', send_data)
-        # print(current_time + " Send=", send_data.encode())
+        print(current_time + " Send=", send_data.encode())
         device.write(bytes(send_data, encoding='utf8'))
     else:
-        #print(current_time + " Send=", input_data.encode())
+        print(current_time + " Send=", input_data.encode())
         device.write(bytes(input_data, encoding='utf8'))
 
 

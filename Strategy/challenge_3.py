@@ -15,7 +15,7 @@ import time
 PRINT = False
 
 # Parameter needed to adjust
-ID_IN_USE = [4, 4, 6]
+ID_IN_USE = [3, 6, 4]
 CM_TO_PIX = 3.0
 carrier_range = 18 * CM_TO_PIX  # range to judge if carry ball
 line_range = 7 * CM_TO_PIX  # when defend , we need to know how close is enough from defend line
@@ -554,35 +554,35 @@ def in_zone(pos):
     global SIDE, PENALTY
     ra_x = pos[0]
     ra_y = pos[1]
-    if ((ra_x - ratio(7 * SIDE / 17, 1)[0]) * SIDE > 0) & ((ra_x - ratio(-7 * SIDE / 17, 1)[0]) * SIDE < 0):  # center
+    if ((ra_x - ratio(7 * SIDE / 17, 1)[0]) * SIDE > 0) & ((ra_x - ratio(-5 * SIDE / 17, 1)[0]) * SIDE < 0):  # center
         return Zone.CENTER_AREA
     elif (ra_y - ratio(1, 6 * SIDE / 9)[1]) * SIDE < 0:  # far left
         if (ra_x - ratio(7 * SIDE / 17, 1)[0]) * SIDE < 0:
             return Zone.FAR_LEFT_DEFEND
-        elif (ra_x - ratio(-7 * SIDE / 17, 1)[0]) * SIDE > 0:
+        elif (ra_x - ratio(-5 * SIDE / 17, 1)[0]) * SIDE > 0:
             return Zone.FAR_LEFT_OFFEND
     elif (ra_y - ratio(1, -6 * SIDE / 9)[1]) * SIDE > 0:  # far right
         if (ra_x - ratio(7 * SIDE / 17, 1)[0]) * SIDE < 0:
             return Zone.FAR_RIGHT_DEFEND
-        elif (ra_x - ratio(-7 * SIDE / 17, 1)[0]) * SIDE > 0:
+        elif (ra_x - ratio(-5 * SIDE / 17, 1)[0]) * SIDE > 0:
             return Zone.FAR_RIGHT_OFFEND
-    elif (ra_y > PENALTY[0][1]) & (ra_y < PENALTY[3][1]) & (ra_x < PENALTY[0][0] + 45):
+    elif (ra_y > PENALTY[0][1]) & (ra_y < PENALTY[3][1]) & (ra_x < PENALTY[0][0] + 15 * CM_TO_PIX):
         return Zone.OUR_PENALTY if SIDE == 1 else Zone.ENEMY_PENALTY
-    elif (ra_y > PENALTY[0][1]) & (ra_y < PENALTY[3][1]) & (ra_x > PENALTY[1][0] - 45):
+    elif (ra_y > PENALTY[0][1]) & (ra_y < PENALTY[3][1]) & (ra_x > PENALTY[1][0] - 15 * CM_TO_PIX):
         return Zone.ENEMY_PENALTY if SIDE == 1 else Zone.OUR_PENALTY
     elif (ra_y - ratio(1, 2 * SIDE / 9)[1]) * SIDE < 0:  # left
         if (ra_x - ratio(7 * SIDE / 17, 1)[0]) * SIDE < 0:
             return Zone.LEFT_DEFEND
-        elif (ra_x - ratio(-7 * SIDE / 17, 1)[0]) * SIDE > 0:
+        elif (ra_x - ratio(-5 * SIDE / 17, 1)[0]) * SIDE > 0:
             return Zone.LEFT_OFFEND
     elif (ra_y - ratio(1, -2 * SIDE / 9)[1]) * SIDE > 0:  # right
         if (ra_x - ratio(7 * SIDE / 17, 1)[0]) * SIDE < 0:
             return Zone.RIGHT_DEFEND
-        elif (ra_x - ratio(-7 * SIDE / 17, 1)[0]) * SIDE > 0:
+        elif (ra_x - ratio(-5 * SIDE / 17, 1)[0]) * SIDE > 0:
             return Zone.RIGHT_OFFEND
     elif (ra_x - ratio(7 * SIDE / 17, 4 / 9)[0]) * SIDE < 0:
         return Zone.MIDDLE_DEFEND
-    elif (ra_x - ratio(-7 * SIDE / 17, 4 / 9)[0]) * SIDE > 0:
+    elif (ra_x - ratio(-5 * SIDE / 17, 4 / 9)[0]) * SIDE > 0:
         return Zone.MIDDLE_OFFENCE
 
 
@@ -974,10 +974,10 @@ def find_aim_point(x, y, goal):
         #     print('pts', points)
         dists.append(_dist([x, y], point))
         ava_range.append([head_tails[len(head_tails) - 1][1], goal[1][1]])
-    # if PRINT:
-    #     for i in range(len(sizes)):
-    #         print('reange:', ava_range[i])
-    #         print('s, pt:,', sizes[i], point[i])
+    if PRINT:
+        for i in range(len(sizes)):
+            print('reange:', ava_range[i])
+            print('s, pt:,', sizes[i], point[i])
     if sizes:
         size_max = max(sizes)
         dist_max = max(dists)
@@ -1204,15 +1204,14 @@ class Robot:
         global robots, ball, carrier_range
         carry = None
         pass_point = self.find_pass_point()
-        gate_center = [enemy_gate[0][0], (enemy_gate[0][1] + enemy_gate[1][1]) / 2]
-        self.next = [ball.pos[0] - SIDE * int(ball.radius * CM_TO_PIX + 15), ball.pos[1]]
+        self.next = [ball.pos[0] - SIDE * int(ball.radius * CM_TO_PIX + 2.5 * CM_TO_PIX), ball.pos[1]]
         tar, size = find_aim_point(ball.pos[0], ball.pos[1], [enemy_gate[0], enemy_gate[1]])
         if PRINT:
             print("ball in_zone:", ball.in_zone)
         for i in range(3):
             if enemies[i].carrier:
                 carry = i
-        if (ball.in_zone == Zone.CENTER_AREA) | ((self.pos[0] - CENTER[0]) * SIDE > 0):  # outside the attack region
+        if (ball.in_zone == Zone.CENTER_AREA) | ((self.pos[0] - CENTER[0]) * SIDE < 0):  # outside the attack region
             Target, size = find_aim_point(ball.pos[0], ball.pos[1], pass_point)
             if Target[1] == -1:
                 Target[1] = self.pos[1]
@@ -1236,7 +1235,7 @@ class Robot:
             # print("far_l")
             percent = size / abs((enemy_gate[1][1] - enemy_gate[0][1]) * SIDE)
             # print("percent", percent)
-            if (percent < 0.3) & (not robots[other].miss):
+            if (percent < 0.3) and (not robots[other].miss):
                 self.move_and_kick(carry, robots[other].next)
             else:
                 self.move_and_kick(carry, tar)
@@ -1281,10 +1280,10 @@ class Robot:
         elif ball.in_zone == Zone.MIDDLE_OFFENCE:
             # print("middle")
             if self.half == 'left_side':
-                self.next = [enemy_gate[0][0] - SIDE * 52 * CM_TO_PIX * SIDE,
-                             robots[other].next[1] - SIDE * 52 * CM_TO_PIX]
+                self.next = [enemy_gate[0][0] - SIDE * 90 * CM_TO_PIX,
+                             robots[other].next[1] - SIDE * 90 * CM_TO_PIX]
             else:
-                self.next = [enemy_gate[1][0] - 52 * CM_TO_PIX * SIDE, robots[other].next[1] - SIDE * 52 * CM_TO_PIX]
+                self.next = [enemy_gate[1][0] - 90 * CM_TO_PIX * SIDE, robots[other].next[1] - SIDE * 90 * CM_TO_PIX]
             self.move_and_block()
         elif ball.in_zone == Zone.FAR_RIGHT_OFFEND:
             # print("far_r")
@@ -1305,9 +1304,9 @@ class Robot:
         else:  # 其他直接站定點，先不管了
             # print("other")
             if robots[other].half == "right_side":
-                self.next = [enemy_gate[1][0] - 40 * CM_TO_PIX * SIDE, enemy_gate[1][1]]
+                self.next = [enemy_gate[1][0] - 90 * CM_TO_PIX * SIDE, enemy_gate[1][1]]
             elif robots[other].half == "left_side":
-                self.next = [enemy_gate[0][0] - 40 * CM_TO_PIX * SIDE, enemy_gate[0][1]]
+                self.next = [enemy_gate[0][0] - 90 * CM_TO_PIX * SIDE, enemy_gate[0][1]]
             self.move_and_block()
 
     def counter_assign(self):
@@ -1334,7 +1333,6 @@ class Robot:
             if Target[1] == -1:
                 Target[1] = self.pos[1]
             self.move_and_kick(carry, Target)
-            print("u", self.next)
         elif ball.in_zone == Zone.MIDDLE_DEFEND:
             if in_line(ball.pos, [our_gate[0][0], (our_gate[0][1] + our_gate[1][1]) / 2], self.pos, False):
                 # on defend line , defend line is middle
@@ -1410,7 +1408,6 @@ class Robot:
         if get_distance(self.next, robots[2].pos) < 28 * CM_TO_PIX:
             print(get_distance(self.next, robots[2].pos))
             self.next = [self.next[0] + SIDE * 13 * CM_TO_PIX, self.next[1]]
-        print("iw", self.next)
 
     def interferer_assign(self, other):
         # 戰略：1如果是在中間（非對方進攻的位置），設定為跟隨模式，跟隨模式為一旦超出邊界，便會站到中央
