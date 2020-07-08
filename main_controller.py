@@ -68,6 +68,18 @@ def pause_func():
         strategy.restart()
 
 
+def side_func():
+    global side
+    if side == 1:
+        side = -1
+        strategy.SIDE = -1
+        strategy.strategy_update_field(side, image.field_pos, image.middle, image.penalty_pos)
+    else:
+        side = 1
+        strategy.SIDE = 1
+        strategy.strategy_update_field(side, image.field_pos, image.middle, image.penalty_pos)
+
+
 def expo_func(self):
     image.cap.stream.set(cv2.CAP_PROP_EXPOSURE, s2.get())
 
@@ -110,7 +122,7 @@ def Strategy_thread(que):
             sys.exit()
         if go_strategy:
             if challenge_num == 2:
-                time.sleep(0.7)
+                time.sleep(0.5)
             elif challenge_num == 1:
                 time.sleep(0.05)
             strategy.Update_Robo_Info(image.our_dir, image.our_data, image.enemy_data, image.ball_pos_now,
@@ -213,6 +225,8 @@ if __name__ == '__main__':
     rest_button.pack(side=tk.LEFT)
     field_button = tk.Button(instruction_frame, text='field', fg='Black', command=image.set_field)
     field_button.pack(side=tk.LEFT)
+    side_button = tk.Button(instruction_frame, text='side', fg='Black', command=side_func)
+    side_button.pack(side=tk.LEFT)
     correct_button = tk.Button(instruction_frame, text='projection', fg='Black', command=image.set_correct)
     correct_button.pack(side=tk.LEFT)
     mask_button = tk.Button(instruction_frame, text='mask', fg='Black', command=image.set_mask)

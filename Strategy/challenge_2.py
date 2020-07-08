@@ -344,7 +344,7 @@ def is_kickable(robo, tol_dist, tol_angle, kick_dir, ways, force):
         if abs(angle) < tol_angle:  # with right angle
             if PRINT:
                 print('======kicked!!!!')
-                time.sleep(3)
+                time.sleep(2)
             else:
                 time.sleep(0.2)
             # assign the right CMD according to the strength
@@ -549,8 +549,8 @@ def find_aim_point(x, y, goal):
         retva1: the best point to aim
         retval: the tolerant size
     """
-    # if PRINT:
-    #     print('====find aim===')
+    if PRINT:
+        print('====find aim===')
     aim_point = [goal[0][0], -1]
     size = 0
     enemies_pos = enemies[:]
@@ -560,8 +560,8 @@ def find_aim_point(x, y, goal):
     if enemies_pos:
         enemies_pos.sort(key=takeY)  # ??
     head_tails = []  # store the areas that are blocked
-    # if PRINT:
-    #     print('enenies_pos', enemies_pos)
+    if PRINT:
+        print('enenies_pos', enemies_pos)
     #     print('ball(', x, y, ')')
     #     print('goal:', goal)
     for enemy in enemies_pos:

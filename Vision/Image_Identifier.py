@@ -8,7 +8,8 @@ import os
 import main_controller as Main
 from Strategy import challenge_3 as ch3
 from Strategy import challenge_2 as ch2
-from Strategy import ch1_2 as ch1
+from Strategy import challenge_1 as ch1
+from Strategy import challenge_pk as ch4
 
 camera_switch = 0  # 哪一個相機
 #  紀錄參數用
@@ -560,6 +561,7 @@ class WebcamVideoStream:
         # initialize the variable used to indicate if the thread should
         # be stopped
         self.stopped = False
+        self.stream.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
         self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
         self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
         self.stream.set(cv2.CAP_PROP_BUFFERSIZE, 3)
@@ -567,7 +569,10 @@ class WebcamVideoStream:
         self.stream.set(cv2.CAP_PROP_BRIGHTNESS, 154)
         self.stream.set(cv2.CAP_PROP_GAIN, 106)
         self.stream.set(cv2.CAP_PROP_FOCUS, 0)
-        self.stream.set(cv2.CAP_PROP_BUFFERSIZE, 3)
+        self.stream.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+        self.stream.set(cv2.CAP_PROP_FPS, 30 / 1)
+        print("fps", self.stream.get(cv2.CAP_PROP_FPS))
+        print("fps", self.stream.get(cv2.CAP_PROP_BRIGHTNESS))
 
     def start(self):
         # start the thread to read frames from the video stream
@@ -831,6 +836,11 @@ def image_func():
         cv2.putText(show, Str, (ball_pos_now[0], ball_pos_now[1] - 30), font, 1, (150, 245, 245), 3)
 
         if (challenge_bit == 3) & (len(ch3.robots) == 3):
+            if ch3.SIDE == 1:
+                cv2.putText(show, "(->)", (66, 666), font, 1, (255, 255, 255), 3)
+            else:
+                cv2.putText(show, "(<-)", (66, 666), font, 1, (255, 255, 255), 3)
+
             for i in range(3):
                 if not ch3.robots[i].target[0] == 0:
                     cv2.circle(show, (ch3.robots[i].target[0], ch3.robots[i].target[1]), 5, (200, 200, 200), -3)
@@ -863,6 +873,11 @@ def image_func():
                 cv2.putText(show, "ROBO3_NEXT", (int(ch3.robots[2].next[0]), int(ch3.robots[2].next[1])), font, 0.5,
                             (220, 50, 200), 1)
         elif challenge_bit == 2 and len(ch2.robots) == 1:
+            if ch2.SIDE == 1:
+                cv2.putText(show, "(->)", (66, 666), font, 1, (255, 255, 255), 3)
+            else:
+                cv2.putText(show, "(<-)", (66, 666), font, 1, (255, 255, 255), 3)
+
             for i, robo in enumerate(ch2.robots):
                 if our_data[i]:
                     if robo.job == ch2.Job.SHOOT:
@@ -891,6 +906,11 @@ def image_func():
                 pass
                 # cv2.circle(show, (int(ch2.ball.kick[0]), int(ch2.ball.kick[1])), 5, (45, 165, 230), -3)
         elif challenge_bit == 1 and len(ch1.robots) == 2:
+            if ch1.SIDE == 1:
+                cv2.putText(show, "(->)", (66, 666), font, 1, (255, 255, 255), 3)
+            else:
+                cv2.putText(show, "(<-)", (66, 666), font, 1, (255, 255, 255), 3)
+
             for i, robo in enumerate(ch1.robots):
                 if our_data[i]:
                     if robo.job == ch1.Job.SHOOT:
@@ -924,6 +944,7 @@ def image_func():
                          (int(robo.next[0]), int(robo.next[1])), (150, 205, 0), 2)
                 cv2.putText(show, "ROBO2_NEXT", (int(robo.next[0]), int(robo.next[1])), font, 0.5,
                             (150, 205, 0), 1)
+
         #  print("cost %f second" % (tEnd - tStart))  # 紀錄每一幀時間
         thread7.join()
 
@@ -1050,12 +1071,6 @@ def pk_image():
         #  print("cost %f second" % (tEnd - tStart))  # 紀錄每一幀時間
         thread7.join()
 
-        # 顯示畫面
-        if mask & once_open_mask:
-            cv2.imshow(current_window, mask_frame)
-        cv2.imshow("camera_RGB", frame)  # 原本相機
-        cv2.imshow("camera", show)  # 有標註顏色過後的
-
         if exit_bit == 1:
             cv2.destroyAllWindows()
             break
@@ -1080,9 +1095,23 @@ def pk_image():
                 print("speed error")
             # print("ball speed:", ball_speed, ", ball speed vector:", ball_dir, ", time:", time_interval)
             frame_counter = 0
+
+        if ch4.SIDE == 1:
+            cv2.putText(show, "(->)", (66, 666), font, 1, (255, 255, 255), 3)
+        else:
+            cv2.putText(show, "(<-)", (66, 666), font, 1, (255, 255, 255), 3)
+        if ch4.robots[0].job == ch4.Job.DIVE:
+            cv2.putText(show, "DIVE", (150, 666), font, 1, (255, 255, 255), 3)
         TE = time.time()
-        # print(TE-TS)
+        fps = str(int(1 / (TE - TS)))
+        cv2.putText(show, fps, (1200, 666), font, 1, (255, 255, 255), 3)
+
+        # 顯示畫面
+        if mask & once_open_mask:
+            cv2.imshow(current_window, mask_frame)
+        cv2.imshow("camera_RGB", frame)  # 原本相機
+        cv2.imshow("camera", show)  # 有標註顏色過後的
 
 
 if __name__ == '__main__':
-    image_func()
+    pk_image()

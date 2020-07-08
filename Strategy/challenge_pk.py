@@ -80,6 +80,15 @@ def Update_Robo_Info(teamD, teamP, oppoP, ballP, ballS, ballD):
 def strategy():
     global ball, robots
     assign_role()
+
+    #    print(
+    #       "[ID{id}][pos{pos}][dir{dir}][role {role}][half {half}][job {job}]".format(id=robots[0].ID,
+    #                                                                                 pos=robots[0].pos,
+    #                                                                                dir=robots[0].dir,
+    #                                                                               role=robots[0].role,
+    #                                                                              half=robots[0].half,
+    #                                                                             job=robots[0].job))
+
     cmd = ['N', 'N', 'N']
     try:
         cmd[2] = execute_job(0)
@@ -248,9 +257,8 @@ class Robot:
         #      5沒事多休息
         global ball
 
-        if (ball.pos[0] - our_gate[0][0] - 50 * CM_TO_PIX) * SIDE < 0:
+        if (ball.pos[0] - our_gate[0][0] - 50 * CM_TO_PIX * SIDE) * SIDE < 0:
             self.job = Job.DIVE
-            # print("ready to dive")
         else:
             self.job = Job.REST
         print(self.job)
