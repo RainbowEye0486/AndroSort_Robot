@@ -8,7 +8,7 @@ import os
 import main_controller as Main
 from Strategy import challenge_3 as ch3
 from Strategy import challenge_2 as ch2
-from Strategy import challenge_1 as ch1
+from Strategy import ch1_2 as ch1
 
 camera_switch = 0  # 哪一個相機
 #  紀錄參數用
@@ -23,7 +23,7 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 cap = None
 #  需要調整參數
 challenge_bit = 1
-camera_num = 0
+camera_num = 1
 robot_height = 45
 robot_crouch = 32
 field_height = 268

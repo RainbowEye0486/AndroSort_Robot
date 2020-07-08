@@ -784,7 +784,7 @@ def move(robo, arrival, ways=['', '', '', '']):
     if PRINT:
         print()
         print('---->move w/o dir arr:', arrival)
-        print('dir:', move_dir)
+        print('move dir', move_dir)
         print('move way', move_way)
         print('dist', dist)
     # if the robot will pass the ball while moving
@@ -799,7 +799,9 @@ def move(robo, arrival, ways=['', '', '', '']):
         safe_angle = math.atan(avoid_dist / dist_ball)
         if angle < safe_angle:
             # change arrival
+            safe_angle = math.atan(avoid_dist+5*CM_TO_PIX / dist_ball)
             if PRINT:
+                print('safe angle:', safe_angle/math.pi*180)
                 print('change arrival because of the ball!!!!')
             product = -1
             re_dir = [0, 0]

@@ -123,9 +123,15 @@ def strategy():
     """
     # Your code
     global robots
-
-    if PRINT:
-        pass
+    # print('standard', _angle([1,0], [0,1]))
+    # to_ball = [b-c for b, c in zip(ball.pos, CENTER)]
+    # print('to ball', to_ball)
+    # face = [SIDE, 0]
+    # print('face', face)
+    # print('angle', _angle(face, to_ball)/math.pi*180)
+    # if PRINT:
+    #     pass
+    cmd = ['N', 'N', 'N']
     assign_role(robots)
     assign_job(robots)
     cmd = ['N', 'N', 'N']
@@ -211,7 +217,7 @@ def execute_job(id):
             to_ball = [b-c for b, c in zip(ball.pos, CENTER)]
             print(enemies)
             if enemies:
-                if (abs(enemies[0][1] - CENTER[1]) < 5*CM_TO_PIX) and (_angle([SIDE, 0], to_ball) > 15/180*math.pi):
+                if (abs(enemies[0][1] - CENTER[1]) < 5*CM_TO_PIX) and (_angle([SIDE, 0], to_ball) > 12/180*math.pi):
                     kick_ways = ['RIGHT']
             print('214:', kick_ways)
             move_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
@@ -263,7 +269,7 @@ def _dot(x, y):
 
 def _angle(a, b):
     """
-       return angle from dir a to dir b, +(counterclocwise), from -180 to 180
+       return angle from dir a to dir b, +(counterclocwise), from -pi to pi
     """
     angle = 0
     for vec in [a, b]:

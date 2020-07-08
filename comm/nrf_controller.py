@@ -357,6 +357,9 @@ def main_procedure(device):
             if length != 0:
                 current_time = datetime.now().strftime("%H-%M-%S-%f")
                 print(current_time + ' ' + data)
+                # if len(data) >= 6:
+                #     if data[5] == 'f' or data[5] == 'g':
+                #         print(data[5])
 
 
 def communicate(device, que, crouch):

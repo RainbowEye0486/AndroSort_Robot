@@ -5,7 +5,7 @@ import time
 from threading import Timer
 
 # Parameter needed to adjust
-ID_IN_USE = [4, 3]
+ID_IN_USE = [4, 1]
 PRINT = True
 
 # Field Parameter
@@ -213,7 +213,7 @@ def assign_job(robots):
             if (ball.pos[0] - (CENTER[0] + shoot_zone * SIDE)) * SIDE > 0:
                 robo.job = Job.SHOOT  # to goal
             else:
-                robo.job = Job.PASS  # to three point line
+                robo.job = Job.MOVE  # to three point line
         elif robo.role == Role.NONE:
             robo.job = Job.REST
 
@@ -227,10 +227,10 @@ def execute_job(id):
     if robo.job == Job.MOVE:
         dirct = _unit_vector(ball.pos, best_loc)
         init_pt = [b - d * 15 * CM_TO_PIX for b, d in zip(ball.pos, dirct)]
-        sec_pt = [b + d * 3 * CM_TO_PIX for b, d in zip(ball.pos, dirct)]
         global start_pass, ball_in_move
         # print('flag', start_pass)
         if not start_pass:
+            sec_pt = [b + d * 3 * CM_TO_PIX for b, d in zip(ball.pos, dirct)]
             dist_err = 2*CM_TO_PIX
             ang_err = 15/180*math.pi
             ball_in_move = ball.pos
@@ -239,7 +239,7 @@ def execute_job(id):
             move_ways = ['FORE', 'LEFT', 'RIGHT', 'BACK']
             direction = _rotate(robo.dir, WAY_ANGLE['LEFT'])
             movable, rt_cmd = move_with_dir(robo, arrival, direction, dirct, 'LEFT', move_ways)
-            if movable and _dist(robo.pos, arrival) > dist_err and abs(_angle(direction, dirct)) > ang_err:
+            if movable and (_dist(robo.pos, arrival) > dist_err or abs(_angle(direction, dirct)) > ang_err):
                 return rt_cmd
             else:
                 # if ball.speed < 10:
@@ -249,6 +249,8 @@ def execute_job(id):
             if robo.role == Role.SUP:
                 if _dist(ball.pos, last_ball) > 12*CM_TO_PIX:
                     job_done = True
+                    print(job_done)
+                    start_pass = False
                     t = Timer(2.0, startMain)
                     t.start()
             arrival = sec_pt
@@ -845,6 +847,7 @@ def check_boundary_ball(robo):
 def startMain():
     global job_start
     job_start = True
+
 
 
 class Robot:
