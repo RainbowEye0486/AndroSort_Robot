@@ -430,7 +430,7 @@ def execute_job(id):
         check_boundary_ball(robo)
         kickable_dist = 3 * CM_TO_PIX  # the distance between ball and the robot should be
         kickable_ang = 15 / 180 * math.pi  # acceptable angle error when kicking
-        kick_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']  # restrict to FORE??
+        kick_ways = ['FORE', 'LEFT', 'RIGHT']  # restrict to FORE??
         move_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
         try:
             kick_dir = _unit_vector(ball.pos, robo.target)
@@ -458,7 +458,7 @@ def execute_job(id):
             force = 'big'
             kickable_dist = 3 * CM_TO_PIX  # the distance between arrival and the robot should be
             kickable_ang = 15 / 180 * math.pi  # acceptable angle error when kicking
-            kick_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
+            kick_ways = ['FORE', 'LEFT', 'RIGHT']
             move_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
             kick_dir = _unit_vector(ball.pos, robo.target)
             kickable, kick_way, rt_cmd, arrival = is_kickable(robo, kickable_dist, kickable_ang, kick_dir, kick_ways,
@@ -1280,10 +1280,14 @@ class Robot:
         elif ball.in_zone == Zone.MIDDLE_OFFENCE:
             # print("middle")
             if self.half == 'left_side':
-                self.next = [enemy_gate[0][0] - SIDE * 90 * CM_TO_PIX,
-                             robots[other].next[1] - SIDE * 90 * CM_TO_PIX]
+                self.next = [enemy_gate[0][0] - SIDE * 70 * CM_TO_PIX,
+                             robots[other].next[1] - SIDE * 40 * CM_TO_PIX]
             else:
-                self.next = [enemy_gate[1][0] - 90 * CM_TO_PIX * SIDE, robots[other].next[1] - SIDE * 90 * CM_TO_PIX]
+                self.next = [enemy_gate[1][0] - 70 * CM_TO_PIX * SIDE, robots[other].next[1] + SIDE * 90 * CM_TO_PIX]
+            if self.next[1] > BOUNDARY[7][1] - 13 * CM_TO_PIX:
+                self.next[1] = self.next[1] > BOUNDARY[7][1] - 13 * CM_TO_PIX
+            elif self.next[1] < BOUNDARY[0][1] + 13 * CM_TO_PIX:
+                self.next[1] = self.next < BOUNDARY[0][1] + 13 * CM_TO_PIX
             self.move_and_block()
         elif ball.in_zone == Zone.FAR_RIGHT_OFFEND:
             # print("far_r")
