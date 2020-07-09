@@ -836,6 +836,10 @@ def image_func():
         cv2.putText(show, Str, (ball_pos_now[0], ball_pos_now[1] - 30), font, 1, (150, 245, 245), 3)
 
         if (challenge_bit == 3) & (len(ch3.robots) == 3):
+            if ch3.PK_bit:
+                cv2.putText(show, "PK", (1200, 50), font, 1, (200, 55, 55), 3)
+            else:
+                cv2.putText(show, "CH3", (1200, 50), font, 1, (200, 55, 55), 3)
             if Main.wait_flag:
                 duration = str(int(Main.time_E - Main.time_S))
                 cv2.putText(show, "Wait", (92, 57), font, 1, (255, 55, 255), 3)
@@ -878,6 +882,7 @@ def image_func():
                 cv2.putText(show, "ROBO3_NEXT", (int(ch3.robots[2].next[0]), int(ch3.robots[2].next[1])), font, 0.5,
                             (220, 50, 200), 1)
         elif challenge_bit == 2 and len(ch2.robots) == 1:
+            cv2.putText(show, "CH2", (1200, 50), font, 1, (200, 55, 55), 3)
             if ch2.SIDE == 1:
                 cv2.putText(show, "(->)", (66, 666), font, 1, (255, 255, 255), 3)
             else:
@@ -911,6 +916,7 @@ def image_func():
                 pass
                 # cv2.circle(show, (int(ch2.ball.kick[0]), int(ch2.ball.kick[1])), 5, (45, 165, 230), -3)
         elif challenge_bit == 1 and len(ch1.robots) == 2:
+            cv2.putText(show, "CH1", (1200, 50), font, 1, (200, 55, 55), 3)
             if ch1.SIDE == 1:
                 cv2.putText(show, "(->)", (66, 666), font, 1, (255, 255, 255), 3)
             else:
@@ -986,136 +992,5 @@ def image_func():
         # print('u_f in i', update_frame)
 
 
-def pk_image():
-    global frame_counter, ball_pos_last, show, frame, ball_speed, point_show, current_window, mask, ball_dir, cap
-    cap = WebcamVideoStream(src=camera_num).start()
-    tStart = 0
-    while True:
-        TS = time.time()
-        if frame_counter == 0:
-            tStart = time.time()
-        frame_counter += 1
-        ret, frame = (1, cap.read())
-        if not ret:
-            break
-        if len(frame) == 0:
-            continue
-        show = frame.copy()
-        # thread begin
-        thread2 = Thread(target=thread_our, name='T2', daemon=True)
-        thread6 = Thread(target=thread_color3, name='T6', daemon=True)
-        thread7 = Thread(target=thread_ball, name='T7', daemon=True)
-        thread2.start()
-        thread6.start()
-        thread7.start()
-        cv2.waitKey(1)
-        thread2.join()
-        thread6.join()
-
-        for our in our_pos:
-            for color3 in color3_pos:
-                if get_distance(our, color3) < 24:
-                    cv2.line(show, our, color3, (255, 255, 255), 1)
-                    cv2.putText(show, "ROBOT_3", our, font, 0.6, (255, 255, 255), 1)
-                    cv2.circle(show, our, 2, (252, 255, 255), -1)
-                    dist = get_distance(our, color3)
-                    try:
-                        our_dir[2] = [(our[0] - color3[0]) / dist, (our[1] - color3[1]) / dist]
-                    except ZeroDivisionError:
-                        our_dir[2] = [0, 0]
-                    if error_open:
-                        q = error_correct(our, Main.crouch[2])
-                        cv2.circle(show, (q[0], q[1]), 3, (252, 255, 255), -1)
-                        our_data[2] = [q[0], q[1]]
-        #  印出場地的點線
-
-        if point_show:
-            if len(field_pos) > 0:
-                temp_x = 0.0
-                temp_y = 0.0
-                field_pos_switch = False
-                first_x = field_pos[0][0]
-                first_y = field_pos[0][1]
-                for i in field_pos:
-                    x = i[0]
-                    y = i[1]
-                    if field_pos_switch:
-                        cv2.line(frame, (temp_x, temp_y), (x, y), 255, 3)
-                    temp_x = i[0]
-                    temp_y = i[1]
-                    cv2.circle(frame, (x, y), 5, 255, -3)
-                    field_pos_switch = True
-                if len(field_pos) == 12:
-                    cv2.line(frame, (first_x, first_y), (x, y), 255, 3)
-            for i in penalty_pos:
-                x = i[0]
-                y = i[1]
-                cv2.circle(frame, (x, y), 5, (2, 34, 59), -3)
-            for i in FK_pos:
-                x = i[0]
-                y = i[1]
-                cv2.circle(frame, (x, y), 5, (255, 34, 59), -3)
-            for i in PK_pos:
-                x = i[0]
-                y = i[1]
-                cv2.circle(frame, (x, y), 5, (155, 255, 255), -3)
-            for i in FB_pos:
-                x = i[0]
-                y = i[1]
-                cv2.circle(frame, (x, y), 5, (45, 155, 150), -3)
-            cv2.circle(frame, (middle[0], middle[1]), 5, (255, 255, 250), -3)
-            cv2.putText(show, "MIDDLE", (middle[0], middle[1]), font, 0.6, (255, 255, 255), 1)
-            cv2.circle(frame, (camera_project[0], camera_project[1]), 5, (255, 255, 250), -3)
-            cv2.putText(show, "CAMERA_PROJECTION", (camera_project[0], camera_project[1]), font, 0.6, (255, 255, 255),
-                        1)
-
-        our_pos.clear()
-        color3_pos.clear()
-        #  from strategy show
-        #  print("cost %f second" % (tEnd - tStart))  # 紀錄每一幀時間
-        thread7.join()
-
-        if exit_bit == 1:
-            cv2.destroyAllWindows()
-            break
-
-        if frame_counter >= 20:
-            move_distance = get_distance(ball_pos_last, ball_pos_now)
-            if move_distance == 0:
-                x = 0
-                y = 0
-            else:
-                x = (ball_pos_now[0] - ball_pos_last[0]) / move_distance
-                y = (ball_pos_now[1] - ball_pos_last[1]) / move_distance
-
-            ball_dir = [x, y]
-            ball_pos_last = ball_pos_now
-            tEnd = time.time()
-            time_interval = tEnd - tStart
-            try:
-                ball_speed = move_distance / time_interval
-            except ZeroDivisionError:
-                ball_speed = 0
-                print("speed error")
-            # print("ball speed:", ball_speed, ", ball speed vector:", ball_dir, ", time:", time_interval)
-            frame_counter = 0
-
-        if ch4.SIDE == 1:
-            cv2.putText(show, "(->)", (66, 666), font, 1, (255, 255, 255), 3)
-        else:
-            cv2.putText(show, "(<-)", (66, 666), font, 1, (255, 255, 255), 3)
-        if ch4.robots[0].job == ch4.Job.DIVE:
-            cv2.putText(show, "DIVE", (150, 666), font, 1, (255, 255, 255), 3)
-        TE = time.time()
-        fps = str(int(1 / (TE - TS)))
-        cv2.putText(show, fps, (1200, 666), font, 1, (255, 255, 255), 3)
-
-        # 顯示畫面
-        if mask & once_open_mask:
-            cv2.imshow(current_window, mask_frame)
-        cv2.imshow("camera_RGB", frame)  # 原本相機
-        cv2.imshow("camera", show)  # 有標註顏色過後的
-
-
 if __name__ == '__main__':
-    pk_image()
+    image_func()

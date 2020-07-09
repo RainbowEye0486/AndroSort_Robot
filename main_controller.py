@@ -74,6 +74,17 @@ def pause_func():
         strategy.restart()
 
 
+def PK_func():
+    global PK
+    if PK:
+        PK = False
+        strategy3.PK_bit = False
+    else:
+        PK = True
+        strategy3.PK_bit = True
+    print(PK)
+
+
 def side_func():
     global side
     if side == 1:
@@ -288,6 +299,8 @@ if __name__ == '__main__':
     side_button.pack(side=tk.LEFT)
     defend_button = tk.Button(instruction_frame, text='後攻', fg='Red', command=def_wait)
     defend_button.pack(side=tk.LEFT)
+    PK_button = tk.Button(instruction_frame, text='PK', fg='Red', command=PK_func)
+    PK_button.pack(side=tk.LEFT)
     correct_button = tk.Button(instruction_frame, text='projection', fg='Black', command=image.set_correct)
     correct_button.pack(side=tk.LEFT)
     mask_button = tk.Button(instruction_frame, text='mask', fg='Black', command=image.set_mask)
