@@ -74,6 +74,17 @@ def pause_func():
     wait_flag = False
 
 
+def PK_func():
+    global PK
+    if PK:
+        PK = False
+        strategy3.PK_bit = False
+    else:
+        PK = True
+        strategy3.PK_bit = True
+    print(PK)
+
+
 def side_func():
     global side
     if side == 1:
@@ -142,7 +153,10 @@ def Strategy_thread(que):
             elif challenge_num == 1:
                 time.sleep(0.5)
             elif challenge_num == 3:
-                time.sleep(0.4)
+                if strategy3.robots[2].job == strategy3.Job.DIVE:
+                    time.sleep(0.05)
+                else:
+                    time.sleep(0.4)
 
             strategy.Update_Robo_Info(image.our_dir, image.our_data, image.enemy_data, image.ball_pos_now,
                                       image.ball_speed, image.ball_dir)
@@ -288,6 +302,8 @@ if __name__ == '__main__':
     side_button.pack(side=tk.LEFT)
     defend_button = tk.Button(instruction_frame, text='後攻', fg='Red', command=def_wait)
     defend_button.pack(side=tk.LEFT)
+    PK_button = tk.Button(instruction_frame, text='PK', fg='Red', command=PK_func)
+    PK_button.pack(side=tk.LEFT)
     correct_button = tk.Button(instruction_frame, text='projection', fg='Black', command=image.set_correct)
     correct_button.pack(side=tk.LEFT)
     mask_button = tk.Button(instruction_frame, text='mask', fg='Black', command=image.set_mask)
