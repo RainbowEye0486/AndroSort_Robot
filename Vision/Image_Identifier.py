@@ -24,7 +24,7 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 cap = None
 #  需要調整參數
 challenge_bit = 1
-camera_num = 1
+camera_num = 0
 robot_height = 45
 robot_crouch = 32
 field_height = 268
@@ -836,6 +836,11 @@ def image_func():
         cv2.putText(show, Str, (ball_pos_now[0], ball_pos_now[1] - 30), font, 1, (150, 245, 245), 3)
 
         if (challenge_bit == 3) & (len(ch3.robots) == 3):
+            if Main.wait_flag:
+                duration = str(int(Main.time_E - Main.time_S))
+                cv2.putText(show, "Wait", (92, 57), font, 1, (255, 55, 255), 3)
+                cv2.putText(show, duration, (136, 57), font, 1, (255, 55, 255), 3)
+
             if ch3.SIDE == 1:
                 cv2.putText(show, "(->)", (66, 666), font, 1, (255, 255, 255), 3)
             else:
@@ -978,7 +983,6 @@ def image_func():
                 print("speed error")
             # print("ball speed:", ball_speed, ", ball speed vector:", ball_dir, ", time:", time_interval)
             frame_counter = 0
-        global update_frame
         # print('u_f in i', update_frame)
 
 

@@ -29,7 +29,7 @@ enemy_gate = []
 WAY_ANGLE = {'FORE': 0, 'LEFT': -math.pi / 2, 'RIGHT': math.pi / 2, 'BACK': math.pi}
 
 ball = None
-robots = []
+robots = [[], [], []]
 
 
 def strategy_update_field(side, boundary, center, penalty):
@@ -60,16 +60,17 @@ def Initialize():
 def Update_Robo_Info(teamD, teamP, oppoP, ballP, ballS, ballD):
     global robots
     close_ball = [-1, 1000]  # first element is enemy index , second is distance to the ball
+    for i in range(3):
+        robots[i].miss = False
+        if not teamP[i]:
+            robots[i].miss = True
+        else:
+            # robots[i].pos = [simulator_adjust(teamP[i], False)[0], simulator_adjust(teamP[i], False)[1]]
 
-    robots[0].miss = False
-    if not teamP[2]:
-        robots[0].miss = True
-    else:
-        # robots[i].pos = [simulator_adjust(teamP[i], False)[0], simulator_adjust(teamP[i], False)[1]]
-        robots[0].pos = teamP[2]
-        robots[0].dir = teamD[2]
-        robots[0].distance = get_distance(robots[0].pos, ball.pos)
-    robots[0].target = [0, 0]
+            robots[i].pos = teamP[i]
+            robots[i].dir = teamD[i]
+            robots[i].distance = get_distance(robots[i].pos, ball.pos)
+        robots[i].target = [0, 0]
 
     # ball.pos = simulator_adjust(ballP, False)
     ball.pos = ballP
@@ -110,9 +111,12 @@ def assign_role():
     Decide every robot's role and change robot's attribute: role
     """
     global ball, robots
+    if not robots[2].miss:
+        robots[2].role = Role.KEEPER
+        robots[2].keeper_assign()
     if not robots[0].miss:
-        robots[0].role = Role.KEEPER
-        robots[0].keeper_assign()
+        robots[0].role = Role.STRIKER
+        robots[0].striker_assign()
     else:
         if PRINT:
             print("keeper miss")

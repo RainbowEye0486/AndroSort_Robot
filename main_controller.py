@@ -24,17 +24,21 @@ else:
 
 image_buffer = list()
 decision_done = False
+wait_flag = False
 # 需要調整參數
 # ===========adjust==========================
-side = -1  # -1 for <- , 1 for -> (left is our field)
-challenge_num = 1
-PK = False
+side = 1  # -1 for <- , 1 for -> (left is our field)
+challenge_num = 4
+PK = True
 # ===========================================
 
 crouch = [False, False, False]
 go_strategy = False
 rest_bit = False
 start_bit = False
+time_S = 0
+time_E = 0
+wait_initial = [0, 0]
 
 if challenge_num == 1:
     strategy = strategy1
@@ -56,14 +60,16 @@ def ready_func():
 
 
 def start_func():
-    global go_strategy, rest_bit
+    global go_strategy, rest_bit, wait_flag, time_S
     go_strategy = True
     rest_bit = False
+    time_S = time.time()
 
 
 def pause_func():
-    global go_strategy
+    global go_strategy, wait_flag
     go_strategy = False
+    wait_flag = False
     if challenge_num == 1:
         strategy.restart()
 
@@ -80,6 +86,11 @@ def side_func():
         strategy.strategy_update_field(side, image.field_pos, image.middle, image.penalty_pos)
 
 
+def def_wait():
+    global wait_flag
+    wait_flag = True
+
+
 def expo_func(self):
     image.cap.stream.set(cv2.CAP_PROP_EXPOSURE, s2.get())
 
@@ -91,8 +102,9 @@ def exit_func():
 
 
 def rest_func():
-    global go_strategy, rest_bit
+    global go_strategy, rest_bit, wait_flag
     go_strategy = False
+    wait_flag = False
     rest_bit = True
 
 
@@ -105,15 +117,13 @@ def change_func():
 
 
 def Image_thread():
-    if PK:
-        image.pk_image()
-    else:
-        image.image_func()
+    image.image_func()
 
 
 def Strategy_thread(que):
     #  first set field coordinate
-    global go_strategy
+    global go_strategy, wait_flag
+    record = False
     strategy.Initialize()
     strategy.strategy_update_field(side, image.field_pos, image.middle, image.penalty_pos)
     while True:
@@ -122,18 +132,35 @@ def Strategy_thread(que):
         print("enemy position", image.enemy_data)
         print("ball position", image.ball_pos_now)"""
         # print("enemy position", image.enemy_data)
+        global time_E, wait_initial
         if image.exit_bit != 0:
             sys.exit()
         if go_strategy:
+
             if challenge_num == 2:
                 time.sleep(1.0)
             elif challenge_num == 1:
                 time.sleep(0.5)
             elif challenge_num == 3:
-                time.sleep(0.5)
+                time.sleep(0.4)
+
             strategy.Update_Robo_Info(image.our_dir, image.our_data, image.enemy_data, image.ball_pos_now,
                                       image.ball_speed, image.ball_dir)
             # print('u_f in main b', image.update_frame)
+            if challenge_num == 3:
+                if wait_flag:
+                    if not record:
+                        wait_initial = strategy.ball.pos
+                        record = True
+                    time_E = time.time()
+                    print((time_E - time_S), strategy.get_distance(wait_initial, strategy.ball.pos))
+                    if (time_E - time_S) > 10 or strategy.get_distance(wait_initial,
+                                                                       strategy.ball.pos) > 3 * strategy.CM_TO_PIX:
+                        wait_flag = False
+                        record = False
+                        pass
+                    else:
+                        continue
             cmd = strategy.strategy()
             try:
                 input_data = cmd
@@ -259,6 +286,8 @@ if __name__ == '__main__':
     field_button.pack(side=tk.LEFT)
     side_button = tk.Button(instruction_frame, text='side', fg='Black', command=side_func)
     side_button.pack(side=tk.LEFT)
+    defend_button = tk.Button(instruction_frame, text='後攻', fg='Red', command=def_wait)
+    defend_button.pack(side=tk.LEFT)
     correct_button = tk.Button(instruction_frame, text='projection', fg='Black', command=image.set_correct)
     correct_button.pack(side=tk.LEFT)
     mask_button = tk.Button(instruction_frame, text='mask', fg='Black', command=image.set_mask)

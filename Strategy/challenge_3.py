@@ -11,11 +11,12 @@ import math
 import cv2
 from Strategy import constant as CONST
 import time
+import main_controller as Main
 
 PRINT = False
 
 # Parameter needed to adjust
-ID_IN_USE = [3, 6, 4]
+ID_IN_USE = [1, 4, 6]
 CM_TO_PIX = 3.0
 carrier_range = 18 * CM_TO_PIX  # range to judge if carry ball
 line_range = 7 * CM_TO_PIX  # when defend , we need to know how close is enough from defend line
@@ -27,6 +28,7 @@ robots = []
 enemies = []
 ball = None
 assist_block = False  # 只有到達當前位置的時候才會執行下一個目標點
+
 
 # Field Parameter
 BOUNDARY = []
@@ -815,7 +817,7 @@ def move_with_dir(robo, arrival, curr_dir, ideal_dir, fit_way='FORE', ways=['FOR
     return False, 'N'
 
 
-def move(robo, arrival, ways=['', '', '', '']):
+def move(robo, arrival, ways=['', '', '', ''], accurate=True):
     '''
        To move to assigned point and facing whatever direction
     '''
@@ -1372,7 +1374,7 @@ class Robot:
             if self.next[1] > BOUNDARY[7][1] - 13 * CM_TO_PIX:
                 self.next[1] = self.next[1] > BOUNDARY[7][1] - 13 * CM_TO_PIX
             elif self.next[1] < BOUNDARY[0][1] + 13 * CM_TO_PIX:
-                self.next[1] = self.next < BOUNDARY[0][1] + 13 * CM_TO_PIX
+                self.next[1] = self.next[1] < BOUNDARY[0][1] + 13 * CM_TO_PIX
             self.move_and_block()
         elif ball.in_zone == Zone.FAR_RIGHT_OFFEND:
             # print("far_r")
