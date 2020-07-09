@@ -1130,10 +1130,16 @@ def is_close_ball(pos, direction, len):
     return False
 
 
-def change_robots(newID):
+def change_robots(oldID, newID):
     global robots
-    for robo, ID in zip(robots, newID):
-        robo.MOTION = CONST.getMotion(ID)
+    for robo in robots:
+        if robo.ID == int(oldID):
+            robo.ID = int(newID)
+            robo.MOTION = CONST.getMotion(int(newID))
+            print('change robot', oldID, 'to robot', newID)
+            return
+    print('Cannot find robot', oldID)
+    return
 
 
 '''end'''

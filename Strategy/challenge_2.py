@@ -777,6 +777,18 @@ def is_close_ball(pos, direction, len):
     return False
 
 
+def change_robots(oldID, newID):
+    global robots
+    for robo in robots:
+        if robo.ID == int(oldID):
+            robo.ID = int(newID)
+            robo.MOTION = CONST.getMotion(int(newID))
+            print('change robot', oldID, 'to robot', newID)
+            return
+    print('Cannot find robot', oldID)
+    return
+
+
 class Robot:
     """
     Attributes:
