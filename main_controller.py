@@ -28,8 +28,8 @@ wait_flag = False
 # 需要調整參數
 # ===========adjust==========================
 side = 1  # -1 for <- , 1 for -> (left is our field)
-challenge_num = 1
-PK = True
+challenge_num = 3
+PK = False
 # ===========================================
 
 crouch = [False, False, False]
@@ -153,7 +153,10 @@ def Strategy_thread(que):
             elif challenge_num == 1:
                 time.sleep(0.5)
             elif challenge_num == 3:
-                time.sleep(0.4)
+                if strategy3.robots[2].job == strategy3.Job.DIVE:
+                    time.sleep(0.05)
+                else:
+                    time.sleep(0.4)
 
             strategy.Update_Robo_Info(image.our_dir, image.our_data, image.enemy_data, image.ball_pos_now,
                                       image.ball_speed, image.ball_dir)

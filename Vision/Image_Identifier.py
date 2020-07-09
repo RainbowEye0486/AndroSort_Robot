@@ -24,7 +24,7 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 cap = None
 #  需要調整參數
 challenge_bit = 1
-camera_num = 1
+camera_num = 0
 robot_height = 45
 robot_crouch = 32
 field_height = 268
@@ -862,6 +862,8 @@ def image_func():
                     cv2.putText(show, "DIVE", (our_data[i][0], our_data[i][1] - 20), font, 0.6, (84, 83, 268), 2)
                 if ch3.robots[i].job == ch3.Job.PASS:
                     cv2.putText(show, "PASS", (our_data[i][0], our_data[i][1] - 20), font, 0.6, (84, 83, 268), 2)
+                if ch3.robots[i].job == ch3.Job.ACCURATE_SHOOT:
+                    cv2.putText(show, "ACCURATE", (our_data[i][0], our_data[i][1] - 20), font, 0.6, (84, 83, 268), 2)
 
             if not ch3.robots[0].next[0] == 0:
                 cv2.circle(show, (int(ch3.robots[0].next[0]), int(ch3.robots[0].next[1])), 5, (45, 165, 230), -2)

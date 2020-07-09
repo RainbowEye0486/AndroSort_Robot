@@ -1345,17 +1345,17 @@ class Robot:
         elif ball.in_zone == Zone.MIDDLE_OFFENCE:
             self.move_and_kick(carry, tar)
             if self.job == Job.PASS:
-                self.job = Job.SHOOT  # 可能需要被 override 掉
+                self.job = Job.ACCURATE_SHOOT  # 可能需要被 override 掉
         elif ball.in_zone == Zone.LEFT_OFFEND:
             # print("left")
             self.move_and_kick(carry, tar)
             if self.job == Job.PASS:
-                self.job = Job.SHOOT  # 可能需要被 override 掉
+                self.job = Job.ACCURATE_SHOOT  # 可能需要被 override 掉
         elif ball.in_zone == Zone.RIGHT_OFFEND:
             # print("right")
             self.move_and_kick(carry, tar)
             if self.job == Job.PASS:
-                self.job = Job.SHOOT  # 可能需要被 override 掉
+                self.job = Job.ACCURATE_SHOOT  # 可能需要被 override 掉
             # print(self.target, size, ball.pos[0], ball.pos[1], [enemy_gate[0], enemy_gate[1]])
         elif ball.in_zone == Zone.FAR_LEFT_OFFEND:
             # print("far_l")
