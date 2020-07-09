@@ -1,90 +1,5 @@
 {
-  "version": "whatever 1.0",
-  "color_patch": {
-    "ball_upper": [
-      123,
-      227,
-      217
-    ],
-    "color3_upper": [
-      200,
-      72,
-      114
-    ],
-    "our_upper": [
-      63,
-      54,
-      228
-    ],
-    "color1_upper": [
-      204,
-      61,
-      247
-    ],
-    "our_lower": [
-      11,
-      8,
-      133
-    ],
-    "color3_lower": [
-      119,
-      19,
-      24
-    ],
-    "color2_upper": [
-      110,
-      179,
-      68
-    ],
-    "enemy_lower": [
-      148,
-      45,
-      7
-    ],
-    "ball_lower": [
-      57,
-      166,
-      156
-    ],
-    "color2_lower": [
-      30,
-      65,
-      15
-    ],
-    "color1_lower": [
-      104,
-      18,
-      202
-    ],
-    "enemy_upper": [
-      245,
-      140,
-      60
-    ]
-  },
   "special_point": {
-    "middle": [
-      613,
-      340
-    ],
-    "penalty_pos": [
-      [
-        185,
-        217
-      ],
-      [
-        1038,
-        210
-      ],
-      [
-        1050,
-        459
-      ],
-      [
-        178,
-        467
-      ]
-    ],
     "field_pos": [
       [
         142,
@@ -135,9 +50,94 @@
         230
       ]
     ],
+    "penalty_pos": [
+      [
+        185,
+        217
+      ],
+      [
+        1038,
+        210
+      ],
+      [
+        1050,
+        459
+      ],
+      [
+        178,
+        467
+      ]
+    ],
+    "middle": [
+      613,
+      340
+    ],
     "camera_project": [
       618,
       420
+    ]
+  },
+  "version": "whatever 1.0",
+  "color_patch": {
+    "our_upper": [
+      55,
+      55,
+      229
+    ],
+    "color3_upper": [
+      237,
+      126,
+      56
+    ],
+    "color2_lower": [
+      122,
+      16,
+      48
+    ],
+    "enemy_lower": [
+      147,
+      47,
+      10
+    ],
+    "ball_upper": [
+      151,
+      257,
+      264
+    ],
+    "color1_upper": [
+      210,
+      59,
+      245
+    ],
+    "ball_lower": [
+      82,
+      197,
+      200
+    ],
+    "color2_upper": [
+      206,
+      78,
+      143
+    ],
+    "enemy_upper": [
+      224,
+      116,
+      56
+    ],
+    "color3_lower": [
+      196,
+      85,
+      15
+    ],
+    "color1_lower": [
+      102,
+      14,
+      200
+    ],
+    "our_lower": [
+      14,
+      11,
+      163
     ]
   },
   "name": "parameter file"
