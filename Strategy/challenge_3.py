@@ -28,7 +28,7 @@ robots = []
 enemies = []
 ball = None
 assist_block = False  # 只有到達當前位置的時候才會執行下一個目標點
-
+PK_bit = False
 
 # Field Parameter
 BOUNDARY = []
@@ -87,17 +87,6 @@ def strategy_update_field(side, boundary, center, penalty):
     else:
         our_gate = [boundary[5], BOUNDARY[2], PENALTY[2], PENALTY[1]]
         enemy_gate = [boundary[11], BOUNDARY[8], PENALTY[0], PENALTY[3]]
-    if PRINT:
-        pass
-        # print(SIDE)
-        # print(BOUNDARY)
-        # print(CENTER)
-        # print(PENALTY)
-        # print(FB_x)
-        # print(FB_y)
-        # print(GA_x)
-        # print(GA_y)
-    print("oooooooooooo")
     print(SIDE)
     print(BOUNDARY)
     print(CENTER)
@@ -358,7 +347,6 @@ def assign_role(mode):
     global ball, robots
 
     if not robots[2].miss:
-        distance_keeper = get_distance(robots[2].pos, ball.pos)
         robots[2].role = Role.KEEPER
         robots[2].keeper_assign(mode)
 
@@ -477,19 +465,52 @@ def execute_job(id):
             else:
                 print("踢個毛")
     elif robo.job == Job.ACCURATE_SHOOT:
-        pass
+        if robo.target[0] == -1:
+            if PRINT:
+                print('no target')
+        if robo.target[0] != -1:
+            check_boundary_ball(robo)
+            force = 'big'
+            kickable_dist = 3 * CM_TO_PIX  # the distance between arrival and the robot should be
+            kickable_ang = 7 / 180 * math.pi  # acceptable angle error when kicking
+            kick_ways = ['FORE', 'LEFT', 'RIGHT']
+            move_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
+            kick_dir = _unit_vector(ball.pos, robo.target)
+            kickable, kick_way, rt_cmd, arrival = is_kickable(robo, kickable_dist, kickable_ang, kick_dir, kick_ways,
+                                                              force)
+            robo.next = arrival  #
+            if kickable:
+                robo.job = Job.NONE
+                robo.target = [-1, -1]
+                return rt_cmd
+            movable, rt_cmd = move_with_dir(robo, arrival, _rotate(robo.dir, WAY_ANGLE[kick_way]), kick_dir, kick_way,
+                                            move_ways)
+            if movable:
+                return rt_cmd
+            else:
+                print("踢個毛")
     elif robo.job == Job.DIVE:
-        if ball.speed > CONST.DANGER_SPEED:
-            x_dist = our_gate[0][0] - ball.pos[0]
+        x_dist = our_gate[0][0] - ball.pos[0]
+        if PK_bit:
             if x_dist * ball.dir[0] > 0:
                 y_des = ball.pos[1] + x_dist / ball.dir[0] * ball.dir[1]
                 if our_gate[1][1] < y_des < our_gate[0][1] or our_gate[0][1] < y_des < our_gate[1][1]:
                     if abs(robo.pos[1] - y_des) > robo.BODY['width'] * CM_TO_PIX / 2:
-                        block_dir = [our_gate[0][0] - robo.pos[0], y_des - robo.pos[1]]
-                        for orient in ['RIGHT', 'LEFT']:
-                            temp_dir = _rotate(robo.dir, WAY_ANGLE[orient])
-                            if _dot(temp_dir, block_dir) >= 0:
-                                return robo.MOTION['DEFENCE'][orient]['CMD'][0]
+                        if (robo.pos[1] - y_des) * SIDE > 0:
+                            return robo.MOTION['DEFENCE']['LEFT']['CMD'][0]
+                        else:
+                            return robo.MOTION['DEFENCE']['RIGHT']['CMD'][0]
+        else:
+            if ball.speed > CONST.DANGER_SPEED:
+                if x_dist * ball.dir[0] > 0:
+                    y_des = ball.pos[1] + x_dist / ball.dir[0] * ball.dir[1]
+                    if our_gate[1][1] < y_des < our_gate[0][1] or our_gate[0][1] < y_des < our_gate[1][1]:
+                        if abs(robo.pos[1] - y_des) > robo.BODY['width'] * CM_TO_PIX / 2:
+                            block_dir = [our_gate[0][0] - robo.pos[0], y_des - robo.pos[1]]
+                            for orient in ['RIGHT', 'LEFT']:
+                                temp_dir = _rotate(robo.dir, WAY_ANGLE[orient])
+                                if _dot(temp_dir, block_dir) >= 0:
+                                    return robo.MOTION['DEFENCE'][orient]['CMD'][0]
     elif robo.job == Job.REST:
         return robo.MOTION['REST']['CMD'][0]
     return 'N'
@@ -873,7 +894,8 @@ def move(robo, arrival, ways=['', '', '', ''], accurate=True):
         motion = robo.MOTION['TURN']['LEFT']
         # check big left turn
         for i in range(1, 11):
-            if angle >= motion['BOUND'][0] and count != 9:
+            if abs(angle-motion['BOUND'][0]) < abs(angle) and count != 9:
+            # if angle >= motion['BOUND'][0] and count != 9:
                 angle -= motion['BOUND'][0]
                 count += 1
             elif count > 0:
@@ -881,7 +903,8 @@ def move(robo, arrival, ways=['', '', '', ''], accurate=True):
                 return True, rt_cmd
         # check small left turn
         for i in range(1, 11):
-            if angle >= motion['BOUND'][1] and accurate and count != 9:
+            if abs(angle-motion['BOUND'][1]) < abs(angle) and accurate and count != 9:
+            # if angle >= motion['BOUND'][1] and accurate and count != 9:
                 angle -= motion['BOUND'][1]
                 count += 1
             elif count > 0:
@@ -892,14 +915,16 @@ def move(robo, arrival, ways=['', '', '', ''], accurate=True):
         motion = robo.MOTION['TURN']['RIGHT']
         angle = abs(angle)
         for i in range(1, 11):  # big right turn
-            if angle >= motion['BOUND'][0] and count != 9:
+            if abs(angle-motion['BOUND'][0]) < abs(angle) and count != 9:
+            # if angle >= motion['BOUND'][0] and count != 9:
                 angle -= motion['BOUND'][0]
                 count += 1
             elif count > 0:
                 rt_cmd = motion['CMD'][0] + str(count)
                 return True, rt_cmd
         for i in range(1, 11):  # small right turn
-            if angle >= motion['BOUND'][1] and accurate and count != 9:
+            if abs(angle-motion['BOUND'][1]) < abs(angle) and accurate and count != 9:
+            # if angle >= motion['BOUND'][1] and accurate and count != 9:
                 angle -= motion['BOUND'][1]
                 count += 1
             elif count > 0:
@@ -1181,6 +1206,8 @@ class Robot:
         else:
             self.job = Job.PASS  # pass toward
             self.target = [int(target[0]), int(target[1])]  # pass toward
+        if PK_bit:
+            self.job = Job.ACCURATE_SHOOT
 
     def find_pass_point(self):
         pass_point = [[self.pos[0] + 75 * CM_TO_PIX * SIDE, ball.pos[1] + 45 * CM_TO_PIX],
@@ -1236,56 +1263,62 @@ class Robot:
             # print("i can have rest woooo")
             self.move_and_do(angle_condition, 15)
         elif mode == Mode.DEFENSE:
-            if ball.speed > CONST.DANGER_SPEED and ball.dir[0] * SIDE < 0:
-                self.job = Job.DIVE
-                print("ready to dive")
-            else:
-                if ball.in_zone == Zone.MIDDLE_DEFEND:
-                    self.move_and_do(angle_condition, 10)
-                    self.job = Job.STAND
-                    # print("come from middle , watch out!")
-                elif ball.in_zone == Zone.CENTER_AREA:
-                    self.move_and_do(angle_condition, 10)
-                    self.job = Job.STAND
-                    # print("come from middle , watch out!")
-                elif ball.in_zone == Zone.LEFT_DEFEND:
-                    self.next = line_fraction(gate_center, our_gate[0], 0.4)
-                    self.next[0] += 13 * CM_TO_PIX * SIDE
-                    self.move_and_do(angle_condition, 12)
-                    self.job = Job.STAND
-                    # print("come from left , watch out!")
-                elif ball.in_zone == Zone.FAR_LEFT_DEFEND:
-                    self.next = line_fraction(gate_center, our_gate[0], 0.8)
-                    self.next[0] += 13 * CM_TO_PIX * SIDE
-                    self.move_and_do(angle_condition, 12)
-                    self.job = Job.STAND
-                    # print("come from far left , watch out!")
-                elif ball.in_zone == Zone.RIGHT_DEFEND:
-                    self.next = line_fraction(gate_center, our_gate[1], 0.4)
-                    self.next[0] += 13 * CM_TO_PIX * SIDE
-                    self.move_and_do(angle_condition, 12)
-                    self.job = Job.STAND
-                # print("come from right , watch out!")
-                elif ball.in_zone == Zone.FAR_RIGHT_DEFEND:
-                    self.next = line_fraction(gate_center, our_gate[1], 0.8)
-                    self.next[0] += 13 * CM_TO_PIX * SIDE
-                    self.move_and_do(angle_condition, 12)
-                    self.job = Job.STAND
-                    # print("come from far right , watch out!")
-                elif ball.in_zone == Zone.OUR_PENALTY:
-                    target, size = find_aim_point(ball.pos[0], ball.pos[1], pass_point)
-                    if target[1] == -1:
-                        target[1] = self.pos[1]
-                    self.move_and_kick(carry, target)
-                    self.target = target
-                    self.job = Job.SHOOT
-                    # print("in penalty zone!!!")
-                    pass
+            if PK_bit:
+                if (ball.pos[0] - our_gate[0][0] - 50 * CM_TO_PIX * SIDE) * SIDE < 0:
+                    self.job = Job.DIVE
                 else:
-                    self.job = Job.STAND
-                if carry:
-                    self.job = Job.STAND
-                    print("ready for battle")
+                    self.job = Job.REST
+            else:
+                if ball.speed > CONST.DANGER_SPEED and ball.dir[0] * SIDE < 0:
+                    self.job = Job.DIVE
+                    print("ready to dive")
+                else:
+                    if ball.in_zone == Zone.MIDDLE_DEFEND:
+                        self.move_and_do(angle_condition, 10)
+                        self.job = Job.STAND
+                        # print("come from middle , watch out!")
+                    elif ball.in_zone == Zone.CENTER_AREA:
+                        self.move_and_do(angle_condition, 10)
+                        self.job = Job.STAND
+                        # print("come from middle , watch out!")
+                    elif ball.in_zone == Zone.LEFT_DEFEND:
+                        self.next = line_fraction(gate_center, our_gate[0], 0.4)
+                        self.next[0] += 13 * CM_TO_PIX * SIDE
+                        self.move_and_do(angle_condition, 12)
+                        self.job = Job.STAND
+                        # print("come from left , watch out!")
+                    elif ball.in_zone == Zone.FAR_LEFT_DEFEND:
+                        self.next = line_fraction(gate_center, our_gate[0], 0.8)
+                        self.next[0] += 13 * CM_TO_PIX * SIDE
+                        self.move_and_do(angle_condition, 12)
+                        self.job = Job.STAND
+                        # print("come from far left , watch out!")
+                    elif ball.in_zone == Zone.RIGHT_DEFEND:
+                        self.next = line_fraction(gate_center, our_gate[1], 0.4)
+                        self.next[0] += 13 * CM_TO_PIX * SIDE
+                        self.move_and_do(angle_condition, 12)
+                        self.job = Job.STAND
+                    # print("come from right , watch out!")
+                    elif ball.in_zone == Zone.FAR_RIGHT_DEFEND:
+                        self.next = line_fraction(gate_center, our_gate[1], 0.8)
+                        self.next[0] += 13 * CM_TO_PIX * SIDE
+                        self.move_and_do(angle_condition, 12)
+                        self.job = Job.STAND
+                        # print("come from far right , watch out!")
+                    elif ball.in_zone == Zone.OUR_PENALTY:
+                        target, size = find_aim_point(ball.pos[0], ball.pos[1], pass_point)
+                        if target[1] == -1:
+                            target[1] = self.pos[1]
+                        self.move_and_kick(carry, target)
+                        self.target = target
+                        self.job = Job.SHOOT
+                        # print("in penalty zone!!!")
+                        pass
+                    else:
+                        self.job = Job.STAND
+                    if carry:
+                        self.job = Job.STAND
+                        print("ready for battle")
         if PRINT:
             print("keeper next", self.next)
 
