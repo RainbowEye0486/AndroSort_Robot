@@ -20,7 +20,8 @@ GOAL = []
 robots = []
 enemies = []
 ball = None
-ROB_RANG = 40  # 12cm = 40pixel
+ROB_RANG = 11 * CM_TO_PIX  # 12cm = 40pixel
+#  修改 敵方機器人半徑
 # CONST
 WAY_ANGLE = {'FORE': 0, 'LEFT': -math.pi / 2, 'RIGHT': math.pi / 2, 'BACK': math.pi}
 
@@ -192,6 +193,7 @@ def execute_job(id):
             print('job == pass')
         kickable_dist = 2 * CM_TO_PIX  # the distance between ball and the robot should be
         kickable_ang = 7 / 180 * math.pi  # acceptable angle error when kicking
+        #  修改 可以街受的誤差
         # kick_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
         kick_ways = ['FORE']
         move_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
@@ -213,6 +215,7 @@ def execute_job(id):
             force = 'big'
             kickable_dist = 4 * CM_TO_PIX  # the distance between arrival and the robot should be
             kickable_ang = 6 / 180 * math.pi  # acceptable angle error when kicking
+            #  修改 射門可以街受的誤差
             kick_ways = ['LEFT']
             to_ball = [b-c for b, c in zip(ball.pos, CENTER)]
             print(enemies)
@@ -347,6 +350,7 @@ def is_kickable(robo, tol_dist, tol_angle, kick_dir, ways, force):
                 time.sleep(0.5)
             else:
                 time.sleep(0.2)
+                # 修改 踢球前的延遲時間
             # assign the right CMD according to the strength
             if kick_way == 'FORE':
                 if force == 'big':
@@ -455,6 +459,7 @@ def move_with_dir(robo, arrival, curr_dir, ideal_dir, fit_way='FORE', ways=['FOR
                 elif count > 0:
                     rt_cmd = motion['CMD'][0] + str(count)
                     time.sleep(0.1)
+                    #  修改 大部走得延遲時間
                     return True, rt_cmd
             elif count > 0:
                 rt_cmd = motion['CMD'][0] + str(count)
@@ -771,6 +776,7 @@ def check_boundary_ball(robo):
 
 def is_close_ball(pos, direction, len):
     safe_dist = (15 + ball.RADIUS) * CM_TO_PIX
+    # 修改 進入後小步走
     the_next = [p + d * len for p, d in zip(pos, direction)]
     if _dist(the_next, ball.pos) < safe_dist:
         if PRINT:

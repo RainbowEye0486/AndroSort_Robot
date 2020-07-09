@@ -2,7 +2,7 @@ import time
 from threading import Thread
 import cv2
 from Vision import Image_Identifier as image
-from Strategy import ch1_2 as strategy1  # change this
+from Strategy import challenge_1 as strategy1  # change this
 from Strategy import challenge_2 as strategy2  # change this
 from Strategy import challenge_3 as strategy3  # change this
 from Strategy import challenge_pk as strategy_pk  # change this
@@ -152,6 +152,7 @@ def Strategy_thread(que):
                 time.sleep(1.0)
             elif challenge_num == 1:
                 time.sleep(0.5)
+                #  修改 發送延遲時間
             elif challenge_num == 3:
                 if strategy3.robots[2].job == strategy3.Job.DIVE:
                     time.sleep(0.05)
