@@ -465,7 +465,30 @@ def execute_job(id):
             else:
                 print("踢個毛")
     elif robo.job == Job.ACCURATE_SHOOT:
-        pass
+        if robo.target[0] == -1:
+            if PRINT:
+                print('no target')
+        if robo.target[0] != -1:
+            check_boundary_ball(robo)
+            force = 'big'
+            kickable_dist = 3 * CM_TO_PIX  # the distance between arrival and the robot should be
+            kickable_ang = 7 / 180 * math.pi  # acceptable angle error when kicking
+            kick_ways = ['FORE', 'LEFT', 'RIGHT']
+            move_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
+            kick_dir = _unit_vector(ball.pos, robo.target)
+            kickable, kick_way, rt_cmd, arrival = is_kickable(robo, kickable_dist, kickable_ang, kick_dir, kick_ways,
+                                                              force)
+            robo.next = arrival  #
+            if kickable:
+                robo.job = Job.NONE
+                robo.target = [-1, -1]
+                return rt_cmd
+            movable, rt_cmd = move_with_dir(robo, arrival, _rotate(robo.dir, WAY_ANGLE[kick_way]), kick_dir, kick_way,
+                                            move_ways)
+            if movable:
+                return rt_cmd
+            else:
+                print("踢個毛")
     elif robo.job == Job.DIVE:
         x_dist = our_gate[0][0] - ball.pos[0]
         if PK_bit:
@@ -871,7 +894,8 @@ def move(robo, arrival, ways=['', '', '', ''], accurate=True):
         motion = robo.MOTION['TURN']['LEFT']
         # check big left turn
         for i in range(1, 11):
-            if angle >= motion['BOUND'][0] and count != 9:
+            if abs(angle - motion['BOUND'][0]) < abs(angle) and count != 9:
+                # if angle >= motion['BOUND'][0] and count != 9:
                 angle -= motion['BOUND'][0]
                 count += 1
             elif count > 0:
@@ -879,7 +903,8 @@ def move(robo, arrival, ways=['', '', '', ''], accurate=True):
                 return True, rt_cmd
         # check small left turn
         for i in range(1, 11):
-            if angle >= motion['BOUND'][1] and accurate and count != 9:
+            if abs(angle - motion['BOUND'][1]) < abs(angle) and accurate and count != 9:
+                # if angle >= motion['BOUND'][1] and accurate and count != 9:
                 angle -= motion['BOUND'][1]
                 count += 1
             elif count > 0:
@@ -890,14 +915,16 @@ def move(robo, arrival, ways=['', '', '', ''], accurate=True):
         motion = robo.MOTION['TURN']['RIGHT']
         angle = abs(angle)
         for i in range(1, 11):  # big right turn
-            if angle >= motion['BOUND'][0] and count != 9:
+            if abs(angle - motion['BOUND'][0]) < abs(angle) and count != 9:
+                # if angle >= motion['BOUND'][0] and count != 9:
                 angle -= motion['BOUND'][0]
                 count += 1
             elif count > 0:
                 rt_cmd = motion['CMD'][0] + str(count)
                 return True, rt_cmd
         for i in range(1, 11):  # small right turn
-            if angle >= motion['BOUND'][1] and accurate and count != 9:
+            if abs(angle - motion['BOUND'][1]) < abs(angle) and accurate and count != 9:
+                # if angle >= motion['BOUND'][1] and accurate and count != 9:
                 angle -= motion['BOUND'][1]
                 count += 1
             elif count > 0:
@@ -1128,10 +1155,16 @@ def is_close_ball(pos, direction, len):
     return False
 
 
-def change_robots(newID):
+def change_robots(oldID, newID):
     global robots
-    for robo, ID in zip(robots, newID):
-        robo.MOTION = CONST.getMotion(ID)
+    for robo in robots:
+        if robo.ID == int(oldID):
+            robo.ID = int(newID)
+            robo.MOTION = CONST.getMotion(int(newID))
+            print('change robot', oldID, 'to robot', newID)
+            return
+    print('Cannot find robot', oldID)
+    return
 
 
 '''end'''

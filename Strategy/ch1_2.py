@@ -566,7 +566,8 @@ def move_with_dir(robo, arrival, curr_dir, ideal_dir, fit_way='FORE', ways=['FOR
         motion = robo.MOTION['TURN']['LEFT']
         # check big left turn
         for i in range(1, 11):
-            if angle >= motion['BOUND'][0] and count != 9:
+            # if angle >= motion['BOUND'][0] and count != 9:
+            if abs(angle - motion['BOUND'][0]) < abs(angle) and count != 9:
                 angle -= motion['BOUND'][0]
                 count += 1
             elif count > 0:
@@ -574,7 +575,8 @@ def move_with_dir(robo, arrival, curr_dir, ideal_dir, fit_way='FORE', ways=['FOR
                 return True, rt_cmd
         # check small left turn
         for i in range(1, 11):
-            if angle >= motion['BOUND'][1] and accurate and count != 9:
+            # if angle >= motion['BOUND'][1] and accurate and count != 9:
+            if abs(angle - motion['BOUND'][1]) < abs(angle) and accurate and count != 9:
                 angle -= motion['BOUND'][1]
                 count += 1
             elif count > 0:
@@ -585,14 +587,16 @@ def move_with_dir(robo, arrival, curr_dir, ideal_dir, fit_way='FORE', ways=['FOR
         motion = robo.MOTION['TURN']['RIGHT']
         angle = abs(angle)
         for i in range(1, 11):  # big right turn
-            if angle >= motion['BOUND'][0] and count != 9:
+            # if angle >= motion['BOUND'][0] and count != 9:
+            if abs(angle - motion['BOUND'][0]) < abs(angle) and count != 9:
                 angle -= motion['BOUND'][0]
                 count += 1
             elif count > 0:
                 rt_cmd = motion['CMD'][0] + str(count)
                 return True, rt_cmd
         for i in range(1, 11):  # small right turn
-            if angle >= motion['BOUND'][1] and accurate and count != 9:
+            if abs(angle - motion['BOUND'][1]) < abs(angle) and accurate and count != 9:
+                # if angle >= motion['BOUND'][1] and accurate and count != 9:
                 angle -= motion['BOUND'][1]
                 count += 1
             elif count > 0:
@@ -1032,6 +1036,17 @@ def startMain():
     global job_start
     job_start = True
 
+
+def change_robots(oldID, newID):
+    global robots
+    for robo in robots:
+        if robo.ID == int(oldID):
+            robo.ID = int(newID)
+            robo.MOTION = CONST.getMotion(int(newID))
+            print('change robot', oldID, 'to robot', newID)
+            return
+    print('Cannot find robot', oldID)
+    return
 
 
 class Robot:

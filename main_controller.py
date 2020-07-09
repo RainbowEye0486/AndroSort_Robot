@@ -28,8 +28,8 @@ wait_flag = False
 # 需要調整參數
 # ===========adjust==========================
 side = 1  # -1 for <- , 1 for -> (left is our field)
-challenge_num = 3
-PK = False
+challenge_num = 1
+PK = True
 # ===========================================
 
 crouch = [False, False, False]
@@ -124,7 +124,7 @@ def print_func():
 
 
 def change_func():
-    print(from_string.get(), to_string.get())
+    strategy.change_robots(from_string.get(), to_string.get())
 
 
 def Image_thread():
