@@ -27,7 +27,7 @@ decision_done = False
 wait_flag = False
 # 需要調整參數
 # ===========adjust==========================
-side = 1  # -1 for <- , 1 for -> (left is our field)
+side = -1  # -1 for <- , 1 for -> (left is our field)
 challenge_num = 1
 PK = True
 # ===========================================
@@ -57,6 +57,8 @@ if challenge_num == 4:
 def ready_func():
     global start_bit
     start_bit = True
+    if challenge_num == 1:
+        strategy.restart()
 
 
 def start_func():
@@ -70,8 +72,6 @@ def pause_func():
     global go_strategy, wait_flag
     go_strategy = False
     wait_flag = False
-    if challenge_num == 1:
-        strategy.restart()
 
 
 def side_func():

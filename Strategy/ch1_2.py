@@ -6,7 +6,7 @@ from threading import Timer
 
 # Parameter needed to adjust
 ID_IN_USE = [3, 1]
-PRINT = False
+PRINT = True
 
 # Field Parameter
 CM_TO_PIX = 3.0
@@ -431,71 +431,9 @@ def is_kickable(robo, tol_dist, tol_angle, kick_dir, ways, force):
     hor_offst = [0, 0]
     if kick_way == 'FORE' or kick_way == 'BACK':
         angle = _angle(robo.dir, [ball - pos for ball, pos in zip(ball.pos, robo.pos)])
-        foot = 'RIGHT' if angle > 0 and force == 'big' else 'LEFT'
+        foot = 'RIGHT' if (angle > 0) and (force == 'big') else 'LEFT'
         direction = _rotate(kick_dir, WAY_ANGLE[foot])
-        offst = -robo.MOTION['MOVE'][kick_way]['OFFSET'][1]*CM_TO_PIX if kick_way=='FORE' else  robo.MOTION['MOVE'][kick_way]['OFFSET'][1]*CM_TO_PIX
-        hor_offst = [direct * offst for direct in direction]
-        if PRINT:
-            print('foot:', foot)
-    arrival = [arr + hor + ver for arr, hor, ver in zip(arrival, hor_offst, ver_offst)]
-    if PRINT:
-        print('arr changed:', arrival)
-        print('kick-dist:', _dist(arrival, robo.pos))
-    if _dist(arrival, robo.pos) < tol_dist:  # can reach the ball
-        direction = _rotate(robo.dir, WAY_ANGLE[kick_way])
-        angle = _angle(kick_dir, direction)
-        if PRINT:
-            print('kick-angle:', angle)
-        if abs(angle) < tol_angle:  # with right angle
-            if PRINT:
-                print('======kicked!!!!')
-                time.sleep(0.1)
-            else:
-                time.sleep(0.1)
-            # assign the right CMD according to the strength
-            if kick_way == 'FORE':
-                if force == 'big':
-                    if foot == 'LEFT':
-                        rt_cmd = robo.MOTION['KICK']['FSHOOT']['CMD'][0]
-                    else:
-                        rt_cmd = robo.MOTION['KICK']['FSHOOT']['CMD'][1]
-                else:
-                    if foot == 'LEFT':
-                        rt_cmd = robo.MOTION['KICK']['PASS']['CMD'][0]
-                    else:
-                        rt_cmd = robo.MOTION['KICK']['PASS']['CMD'][1]
-            elif kick_way == 'LEFT':
-                rt_cmd = robo.MOTION['KICK']['SSHOOT']['CMD'][0]
-            elif kick_way == 'RIGHT':
-                rt_cmd = robo.MOTION['KICK']['SSHOOT']['CMD'][1]
-            elif kick_way == 'BACK':
-                if foot == 'LEFT':
-                    rt_cmd = robo.MOTION['KICK']['BSHOOT']['CMD'][0]
-                else:
-                    rt_cmd = robo.MOTION['KICK']['BSHOOT']['CMD'][1]
-            if PRINT:
-                print('kicked cmd, arr', rt_cmd, arrival)
-            return True, kick_way, rt_cmd, arrival
-    return False, kick_way, 'N', arrival
-
-
-def is_kickable(robo, tol_dist, tol_angle, kick_dir, ways, force):
-    # Find kick way(R,L,F,B)
-    kick_way = find_way(robo, kick_dir, ways)
-    if PRINT:
-        print()
-        print('====in kickable===')
-        print('robo, kick_dir', robo.dir, kick_dir)
-        print('kick way:', kick_way)
-    arrival = [b - un_dir * ball.RADIUS * CM_TO_PIX for b, un_dir in zip(ball.pos, kick_dir)]
-    ver_offst = [direct * -robo.MOTION['MOVE'][kick_way]['OFFSET'][0] * CM_TO_PIX for direct in kick_dir]
-    hor_offst = [0, 0]
-    if kick_way == 'FORE' or kick_way == 'BACK':
-        angle = _angle(robo.dir, [ball - pos for ball, pos in zip(ball.pos, robo.pos)])
-        foot = 'RIGHT' if angle > 0 and force == 'big' else 'LEFT'
-        direction = _rotate(kick_dir, WAY_ANGLE[foot])
-        offst = -robo.MOTION['MOVE'][kick_way]['OFFSET'][1] * CM_TO_PIX if kick_way == 'FORE' else \
-        robo.MOTION['MOVE'][kick_way]['OFFSET'][1] * CM_TO_PIX
+        offst = -robo.MOTION['MOVE'][kick_way]['OFFSET'][1]*CM_TO_PIX if kick_way=='FORE' else robo.MOTION['MOVE'][kick_way]['OFFSET'][1]*CM_TO_PIX
         hor_offst = [direct * offst for direct in direction]
         if PRINT:
             print('foot:', foot)
@@ -566,8 +504,8 @@ def move_with_dir(robo, arrival, curr_dir, ideal_dir, fit_way='FORE', ways=['FOR
         motion = robo.MOTION['TURN']['LEFT']
         # check big left turn
         for i in range(1, 11):
-            # if angle >= motion['BOUND'][0] and count != 9:
-            if abs(angle-motion['BOUND'][0]) < abs(angle) and count != 9:
+            if angle >= motion['BOUND'][0] and count != 9:
+            # if abs(angle-motion['BOUND'][0]) < abs(angle) and count != 9:
                 angle -= motion['BOUND'][0]
                 count += 1
             elif count > 0:
@@ -575,8 +513,8 @@ def move_with_dir(robo, arrival, curr_dir, ideal_dir, fit_way='FORE', ways=['FOR
                 return True, rt_cmd
         # check small left turn
         for i in range(1, 11):
-            # if angle >= motion['BOUND'][1] and accurate and count != 9:
-            if abs(angle-motion['BOUND'][1]) < abs(angle) and accurate and count != 9:
+            if angle >= motion['BOUND'][1] and accurate and count != 9:
+            # if abs(angle-motion['BOUND'][1]) < abs(angle) and accurate and count != 9:
                 angle -= motion['BOUND'][1]
                 count += 1
             elif count > 0:
@@ -587,16 +525,16 @@ def move_with_dir(robo, arrival, curr_dir, ideal_dir, fit_way='FORE', ways=['FOR
         motion = robo.MOTION['TURN']['RIGHT']
         angle = abs(angle)
         for i in range(1, 11):  # big right turn
-            # if angle >= motion['BOUND'][0] and count != 9:
-            if abs(angle-motion['BOUND'][0]) < abs(angle) and count != 9:
+            if angle >= motion['BOUND'][0] and count != 9:
+            # if abs(angle-motion['BOUND'][0]) < abs(angle) and count != 9:
                 angle -= motion['BOUND'][0]
                 count += 1
             elif count > 0:
                 rt_cmd = motion['CMD'][0] + str(count)
                 return True, rt_cmd
         for i in range(1, 11):  # small right turn
-            if abs(angle-motion['BOUND'][1]) < abs(angle) and accurate and count != 9:
-            # if angle >= motion['BOUND'][1] and accurate and count != 9:
+            # if abs(angle-motion['BOUND'][1]) < abs(angle) and accurate and count != 9:
+            if angle >= motion['BOUND'][1] and accurate and count != 9:
                 angle -= motion['BOUND'][1]
                 count += 1
             elif count > 0:
