@@ -27,10 +27,10 @@ MOTION = {
         },
 
         'KICK': {
-            'PASS': {'CMD': ['o', 'p'], 'BOUND': []},#5.5 12  # [kick way, another]
-            'FSHOOT': {'CMD': ['u', 'i'], 'BOUND': [, 3.25]},#5.5- 17
-            'SSHOOT': {'CMD': ['h', 'j'], 'BOUND': [, 5.5]},# 9-17
-            'BSHOOT': {'CMD': ['b', 'n'], 'BOUND': [, ]}
+            'PASS': {'CMD': ['o', 'p'], 'BOUND': []},  # 5.5 12  # [kick way, another]
+            'FSHOOT': {'CMD': ['u', 'i'], 'BOUND': [1, 3.25]},  # 5.5- 17
+            'SSHOOT': {'CMD': ['h', 'j'], 'BOUND': [1, 5.5]},  # 9-17
+            'BSHOOT': {'CMD': ['b', 'n'], 'BOUND': [1, ]}
         },
         'DEFENCE': {
             'FORE': {'CMD': ['Y']},

@@ -11,7 +11,8 @@ from Strategy import challenge_2 as ch2
 from Strategy import challenge_1 as ch1
 from Strategy import challenge_pk as ch4
 
-camera_switch = 1  # 哪一個相機 1是有標籤的
+camera_switch = 0  # 哪一個相機 1是有標籤的
+camera_num = 2
 #  紀錄參數用
 if camera_switch == 0:
     fpath = os.path.join(os.path.dirname(__file__), 'param.json')
@@ -24,11 +25,10 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 cap = None
 #  需要調整參數
 challenge_bit = 1
-camera_num = 0
 robot_height = 45
 robot_crouch = 32
 field_height = 335
-CM_TO_PIX = 2.36
+CM_TO_PIX = 2.33
 color_upper_clipper = 500  # 調整面積的讀取區間
 color_lower_clipper = 50
 #  遮色片參數
@@ -622,8 +622,8 @@ def image_func():
         frame_counter += 1
         ret, frame = (1, cap.read())
         # black half
-        roi = frame[0:720, 686:1270]
-        roi[:] = 0  # 将roi区域内的全部像素设置为0，0表示黑色
+        # roi = frame[0:720, 686:1270]
+        # roi[:] = 0  # 将roi区域内的全部像素设置为0，0表示黑色
         # black half
         if not ret:
             break

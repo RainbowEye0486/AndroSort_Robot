@@ -17,11 +17,11 @@ PRINT = True
 
 # Parameter needed to adjust
 ID_IN_USE = [3, 6, 3]
-CM_TO_PIX = 3.0
+CM_TO_PIX = 2.3
 carrier_range = 18 * CM_TO_PIX  # range to judge if carry ball
 line_range = 7 * CM_TO_PIX  # when defend , we need to know how close is enough from defend line
 SIDE = -1  # -1 for <- , 1 for ->
-ROB_RANG = 35  # enemy's half width
+ROB_RANG = 11 * CM_TO_PIX  # enemy's half width
 
 # global value of movable objects
 robots = []
@@ -327,15 +327,15 @@ def strategy():
         cmd[0] = 'N'
         cmd[1] = 'N'
     # if pk needed
-    if PK_bit:
-        if pk_last_cmd == 'g' and not cmd[2] == 'g':
-            cmd[2] = 'N'
-        elif pk_last_cmd == 'f' and not cmd[2] == 'f':
-            cmd[2] = 'N'
-        elif pk_last_cmd == 'r' and cmd[2] == 'N':
-            cmd[2] = 'r'
-        else:
-            pk_last_cmd = cmd[2]
+    # if PK_bit:
+    #     if pk_last_cmd == 'g' and not cmd[2] == 'g':
+    #         cmd[2] = 'N'
+    #     elif pk_last_cmd == 'f' and not cmd[2] == 'f':
+    #         cmd[2] = 'N'
+    #     elif pk_last_cmd == 'r' and cmd[2] == 'N':
+    #         cmd[2] = 'r'
+    #     else:
+    #         pk_last_cmd = cmd[2]
     print(cmd)
     return cmd
 
@@ -746,7 +746,7 @@ def is_kickable(robo, tol_dist, tol_angle, kick_dir, ways, force):
             kick_type = 'FSHOOT'
         else:
             kick_type = 'PASS'
-    elif kick_way == 'LEFT' or kick_way == 'RIGHT' :
+    elif kick_way == 'LEFT' or kick_way == 'RIGHT':
         kick_type == 'SSHOOT'
     else:
         kick_type == 'BSHOOT'
@@ -768,7 +768,7 @@ def is_kickable(robo, tol_dist, tol_angle, kick_dir, ways, force):
                 if foot == 'LEFT':
                     rt_cmd = motion['CMD'][0]
                 else:
-                    rt_cmd = motiom['CMD'][1]
+                    rt_cmd = motion['CMD'][1]
             else:
                 if kick_way == 'LEFT':
                     rt_cmd = motion['CMD'][0]
