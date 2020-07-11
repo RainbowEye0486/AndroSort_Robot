@@ -372,7 +372,7 @@ def is_kickable(robo, tol_dist, tol_angle, kick_dir, ways, force):
                 if foot == 'LEFT':
                     rt_cmd = motion['CMD'][0]
                 else:
-                    rt_cmd = motiom['CMD'][1]
+                    rt_cmd = motion['CMD'][1]
             else:
                 if kick_way == 'LEFT':
                     rt_cmd = motion['CMD'][0]
