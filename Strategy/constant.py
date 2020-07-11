@@ -27,10 +27,10 @@ MOTION = {
         },
 
         'KICK': {
-            'PASS': {'CMD': ['o', 'p'], 'BOUND': []},  # [left, right]
-            'FSHOOT': {'CMD': ['u', 'i'], 'BOUND': []},
-            'SSHOOT': {'CMD': ['h', 'j'], 'BOUND': []},
-            'BSHOOT': {'CMD': ['b', 'n'], 'BOUND': []}
+            'PASS': {'CMD': ['o', 'p'], 'BOUND': []},#5.5 12  # [kick way, another]
+            'FSHOOT': {'CMD': ['u', 'i'], 'BOUND': [, 3.25]},#5.5- 17
+            'SSHOOT': {'CMD': ['h', 'j'], 'BOUND': [, 5.5]},# 9-17
+            'BSHOOT': {'CMD': ['b', 'n'], 'BOUND': [, ]}
         },
         'DEFENCE': {
             'FORE': {'CMD': ['Y']},
@@ -41,13 +41,13 @@ MOTION = {
     },
     3: {
         'MOVE': {  # offset[verticle(, horizon)]
-            'FORE': {'CMD': ['W', 'w'], 'BOUND': [7.3, 1], 'OFFSET': [12, 5]},
+            'FORE': {'CMD': ['W', 'w'], 'BOUND': [7.3, 1], 'OFFSET': [11.25, 5, 8.75]}, # the third is for pass
             # BOUND': [30, 15] for simulator [18, 8]
-            'BACK': {'CMD': ['s'], 'BOUND': [1], 'OFFSET': [15, 6]},
+            'BACK': {'CMD': ['s'], 'BOUND': [1], 'OFFSET': [11.25, 5]},
             # BOUND': [15] ;[4]
-            'LEFT': {'CMD': ['A', 'a'], 'BOUND': [17, 0.8], 'OFFSET': [17]},
+            'LEFT': {'CMD': ['A', 'a'], 'BOUND': [17, 0.8], 'OFFSET': [13]},
             # BOUND': [75,15] ;[71, 3.1]
-            'RIGHT': {'CMD': ['D', 'd'], 'BOUND': [16, 1.3], 'OFFSET': [17]}
+            'RIGHT': {'CMD': ['D', 'd'], 'BOUND': [16, 1.3], 'OFFSET': [13]}
             #  [76, 2.22]
         },
 
@@ -57,10 +57,10 @@ MOTION = {
         },
 
         'KICK': {
-            'PASS': {'CMD': ['o', 'p'], 'BOUND': []},  # [left, right]
-            'FSHOOT': {'CMD': ['u', 'i'], 'BOUND': []},
-            'SSHOOT': {'CMD': ['h', 'j'], 'BOUND': []},
-            'BSHOOT': {'CMD': ['b', 'n'], 'BOUND': []}
+            'PASS': {'CMD': ['o', 'p'], 'BOUND': [3.25, 3.25]},  # [left, right]
+            'FSHOOT': {'CMD': ['u', 'i'], 'BOUND': [5.75, 3.25]},
+            'SSHOOT': {'CMD': ['h', 'j'], 'BOUND': [6, 5.5]},
+            'BSHOOT': {'CMD': ['b', 'n'], 'BOUND': [5.75, 3.25]}
         },
         'DEFENCE': {
             'FORE': {'CMD': ['Y']},
@@ -117,8 +117,8 @@ MOTION = {
         },
 
         'KICK': {
-            'PASS': {'CMD': ['o', 'p'], 'BOUND': []},  # [left, right]
-            'FSHOOT': {'CMD': ['u', 'i'], 'BOUND': []},
+            'PASS': {'CMD': ['o', 'p'], 'BOUND': [3.25, 3.25]},  # [left, right]
+            'FSHOOT': {'CMD': ['u', 'i'], 'BOUND': [3.25, 3.25]},
             'SSHOOT': {'CMD': ['h', 'j'], 'BOUND': []},
             'BSHOOT': {'CMD': ['b', 'n'], 'BOUND': []}
         },
@@ -131,13 +131,13 @@ MOTION = {
     },
     6: {
         'MOVE': {  # offset[verticle(, horizon)]
-            'FORE': {'CMD': ['W', 'w'], 'BOUND': [7, 3], 'OFFSET': [11, 6]},
+            'FORE': {'CMD': ['W', 'w'], 'BOUND': [7, 1], 'OFFSET': [11.25, 5, 8.75]},# 5.5 
             # BOUND': [30, 15] for simulator [18, 8]
-            'BACK': {'CMD': ['s'], 'BOUND': [1], 'OFFSET': [16, 6]},
+            'BACK': {'CMD': ['s'], 'BOUND': [2], 'OFFSET': [11.25, 5]},
             # BOUND': [15] ;[4]
-            'LEFT': {'CMD': ['A', 'a'], 'BOUND': [20.1, 1], 'OFFSET': [17]},
+            'LEFT': {'CMD': ['A', 'a'], 'BOUND': [18, 2], 'OFFSET': [13]},
             # BOUND': [75,15] ;[71, 3.1]
-            'RIGHT': {'CMD': ['D', 'd'], 'BOUND': [20.3, 2.3], 'OFFSET': [17]}
+            'RIGHT': {'CMD': ['D', 'd'], 'BOUND': [15, 2], 'OFFSET': [13]}
             #  [76, 2.22]
         },
 
@@ -147,10 +147,10 @@ MOTION = {
         },
 
         'KICK': {
-            'PASS': {'CMD': ['o', 'p'], 'BOUND': []},  # [left, right]
-            'FSHOOT': {'CMD': ['u', 'i'], 'BOUND': []},
-            'SSHOOT': {'CMD': ['h', 'j'], 'BOUND': []},
-            'BSHOOT': {'CMD': ['b', 'n'], 'BOUND': []}
+            'PASS': {'CMD': ['o', 'p'], 'BOUND': [3.25, 3.25]},  # [left, right]
+            'FSHOOT': {'CMD': ['u', 'i'], 'BOUND': [5.75, 3.25]},
+            'SSHOOT': {'CMD': ['h', 'j'], 'BOUND': [6, 5.5]},
+            'BSHOOT': {'CMD': ['b', 'n'], 'BOUND': [5.75, 3.25]}
         },
         'DEFENCE': {
             'FORE': {'CMD': ['Y']},
