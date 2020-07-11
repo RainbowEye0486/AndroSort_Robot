@@ -1,5 +1,5 @@
 import math
-from Strategy import constant2 as CONST
+from Strategy import constant_3 as CONST
 from enum import Enum
 import cv2
 import time
@@ -322,7 +322,10 @@ def is_kickable(robo, tol_dist, tol_angle, kick_dir, ways, force):
     # arrival = [b - un_dir*ball.RADIUS*CM_TO_PIX for b, un_dir in zip(ball.pos, kick_dir)]
     arrival = ball.pos[:]
     ball.kick = arrival
-    ver_offst = [direct * -robo.MOTION['MOVE'][kick_way]['OFFSET'][0] * CM_TO_PIX for direct in kick_dir]
+    if kick_way == 'FORE' and force == 'small':
+        ver_offst = [direct * -robo.MOTION['MOVE'][kick_way]['OFFSET'][3] * CM_TO_PIX for direct in kick_dir]
+    else:
+        ver_offst = [direct * -robo.MOTION['MOVE'][kick_way]['OFFSET'][0] * CM_TO_PIX for direct in kick_dir]
     hor_offst = [0, 0]
     if kick_way == 'FORE' or kick_way == 'BACK':
         angle = _angle(robo.dir, [ball - pos for ball, pos in zip(ball.pos, robo.pos)])
@@ -337,7 +340,46 @@ def is_kickable(robo, tol_dist, tol_angle, kick_dir, ways, force):
     if PRINT:
         # print('arr changed:', arrival)
         print('kick-dist:', _dist(arrival, robo.pos))
-    print('kick-dist:', _dist(arrival, robo.pos))
+        # print('kick-dist:', _dist(arrival, robo.pos))
+        tol_err = [arr - p for arr, p in zip(arrival, robo.pos)]
+    kick_way_err = _dot(tol_err, kick_dir)
+    ver_err = math.sqrt(tol_err[0]**2 + tol_err[1]**2 - kick_way_err**2)
+    if kick_way == 'FORE':
+        if force == 'big':
+            kick_type = 'FSHOOT'
+        else:
+            kick_type = 'PASS'
+    elif kick_way == 'LEFT' or kick_way == 'RIGHT' :
+        kick_type == 'SSHOOT'
+    else:
+        kick_type == 'BSHOOT'
+    motion = robo.MOTION['KICK'][kick_type]
+    if PRINT:
+        print('kick type', kick_type)
+        print('k-w err, ver err', kick_way_err, ver_err)
+        print('const', motion['BOUND'])
+    if abs(kick_way_err) < motion['BOUND'][0] and ver_err < motion['BOUND'][1]:
+        direction = _rotate(robo.dir, WAY_ANGLE[kick_way])
+        angle = _angle(kick_dir, direction)
+        if PRINT:
+            print('kick-angle:', angle)
+        if abs(angle) < tol_angle:  # with right angle
+            if PRINT:
+                print('======kicked!!!!')
+                time.sleep(0.1)
+            # assign the right CMD
+            if kick_way == 'FORE' or kick_way == 'BACK':
+                if foot == 'LEFT':
+                    rt_cmd = motion['CMD'][0]
+                else:
+                    rt_cmd = motiom['CMD'][1]
+            else:
+                if kick_way == 'LEFT':
+                    rt_cmd = motion['CMD'][0]
+                else:
+                    rt_cmd = motion['CMD'][1]
+            return True, rt_cmd
+    '''
     if _dist(arrival, robo.pos) < tol_dist:  # can reach the ball
         direction = _rotate(robo.dir, WAY_ANGLE[kick_way])
         angle = _angle(kick_dir, direction)
@@ -375,6 +417,7 @@ def is_kickable(robo, tol_dist, tol_angle, kick_dir, ways, force):
             # if PRINT:
             #     print('kicked cmd, arr', rt_cmd, arrival)
             return True, kick_way, rt_cmd, arrival
+    '''
     return False, kick_way, 'N', arrival
 
 
