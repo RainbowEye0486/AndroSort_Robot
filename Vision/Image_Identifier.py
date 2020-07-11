@@ -24,7 +24,7 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 cap = None
 #  需要調整參數
 challenge_bit = 1
-camera_num = 2
+camera_num = 0
 robot_height = 45
 robot_crouch = 32
 field_height = 335
@@ -622,7 +622,7 @@ def image_func():
         frame_counter += 1
         ret, frame = (1, cap.read())
         # black half
-        roi = frame[0:720, 0:600]
+        roi = frame[0:720, 686:1270]
         roi[:] = 0  # 将roi区域内的全部像素设置为0，0表示黑色
         # black half
         if not ret:

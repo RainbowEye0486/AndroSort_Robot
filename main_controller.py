@@ -27,7 +27,7 @@ decision_done = False
 wait_flag = False
 # 需要調整參數
 # ===========adjust==========================
-side = 1  # -1 for <- , 1 for -> (left is our field)
+side = -1  # -1 for <- , 1 for -> (left is our field)
 challenge_num = 2
 PK = False
 # ===========================================

@@ -6,10 +6,10 @@ import time
 
 # Parameter needed to adjust
 PRINT = False
-ID_IN_USE = [4]
+ID_IN_USE = [3]
 
 # Field Parameter
-CM_TO_PIX = 2.33
+CM_TO_PIX = 2.4
 BOUNDARY = []
 CENTER = [0, 0]
 PENALTY = 0
