@@ -5,11 +5,11 @@ import time
 from threading import Timer
 
 # Parameter needed to adjust
-ID_IN_USE = [3, 1]
+ID_IN_USE = [3, 4]
 PRINT = True
 
 # Field Parameter
-CM_TO_PIX = 2.33
+CM_TO_PIX = 2.0
 BOUNDARY = []
 CENTER = [0, 0]
 PENALTY = 0  # not using
@@ -33,7 +33,7 @@ shoot_zone = 20 * CM_TO_PIX
 best_loc = [0, 0]
 
 x_offst = 35 * CM_TO_PIX
-y_offst = -35 * CM_TO_PIX
+y_offst = 35 * CM_TO_PIX
 # 修改 最好的點相對中間的值
 our_gate = []
 leave_at = []
@@ -219,9 +219,8 @@ def assign_job(robots):
                 robo.job = Job.PASS
         elif robo.role == Role.MAIN:
             robo.target, size = find_aim_point(ball.pos[0], ball.pos[1], GOAL)
-            chance = size / abs(GOAL[1][1] - GOAL[0][1])  # how much chance to goal
-            if (ball.pos[0] - CENTER[0]) * SIDE > 0:  # 修改 球不夠力
-                # if (ball.pos[0] - CENTER[0] - shoot_zone) * SIDE > 0:  # pass half field
+            chance = size / abs(GOAL[1][1] - GOAL[0][1])
+            if (ball.pos[0] - CENTER[0]) * SIDE > 0:  # pass half field
                 if chance > 0:
                     robo.job = Job.SHOOT  # to goal
                 else:  # kick to end
@@ -326,13 +325,13 @@ def execute_job(id):
         if movable:
             return rt_cmd
     elif robo.job == Job.SHOOT:
-        kick_ways = ['LEFT', 'RIGHT', 'FORE']
+        kick_ways = ['LEFT', 'RIGHT']
         # 修改 踢的方式
         check_boundary_ball(robo)
         if robo.target[0] != -1:
             force = 'big'
-            kickable_dist = 3 * CM_TO_PIX  # the distance between arrival and the robot should be
-            kickable_ang = 7 / 180 * math.pi  # acceptable angle error when kicking
+            kickable_dist = 4.4 * CM_TO_PIX  # the distance between arrival and the robot should be
+            kickable_ang = 7.5 / 180 * math.pi  # acceptable angle error when kicking
             # 修改 可以接受射門的誤差角度
             move_ways = ['FORE', 'LEFT', 'BACK', 'RIGHT']
             kick_dir = _unit_vector(ball.pos, robo.target)
@@ -719,7 +718,7 @@ def move(robo, arrival, ways=['FORE', 'LEFT', 'RIGHT', 'BACK'], accurate=True):
                 count += 1
             elif count > 0:
                 rt_cmd = motion['CMD'][0] + str(count)
-                time.sleep(0.1)
+                time.sleep(0.15)
                 #  修改 大步走得延遲時間
                 return True, rt_cmd
         elif count > 0:

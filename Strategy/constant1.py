@@ -1,6 +1,6 @@
 
 ########## Robot #################
-cm_px = 2.33
+cm_px = 2.0
 BODY = {
     'width': 17,  # cm full length
     'length': 11,  # cm foot length   
@@ -41,7 +41,7 @@ MOTION = {
     },
     3: {
         'MOVE': {  # offset[verticle(, horizon)]
-            'FORE': {'CMD': ['W', 'w'], 'BOUND': [7.3, 1], 'OFFSET': [12, 5]},
+            'FORE': {'CMD': ['W', 'w'], 'BOUND': [7.3, 1], 'OFFSET': [11, 5]},
             # BOUND': [30, 15] for simulator [18, 8]
             'BACK': {'CMD': ['s'], 'BOUND': [1], 'OFFSET': [15, 6]},
             # BOUND': [15] ;[4]
@@ -71,7 +71,7 @@ MOTION = {
     },
     4: {
         'MOVE': {  # offset[verticle(, horizon)]
-            'FORE': {'CMD': ['W', 'w'], 'BOUND': [7.5, 1.0], 'OFFSET': [12, 5.5]},
+            'FORE': {'CMD': ['W', 'w'], 'BOUND': [6, 1.0], 'OFFSET': [12, 5.5]},
             # BOUND': [30, 15] for simulator [18, 8]
             'BACK': {'CMD': ['s'], 'BOUND': [1.5], 'OFFSET': [15, 6]},
             # BOUND': [15] ;[4]

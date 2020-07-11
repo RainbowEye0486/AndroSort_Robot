@@ -24,13 +24,13 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 cap = None
 #  需要調整參數
 challenge_bit = 1
-camera_num = 0
+camera_num = 2
 robot_height = 45
 robot_crouch = 32
 field_height = 335
 CM_TO_PIX = 2.36
-color_upper_clipper = 1000  # 調整面積的讀取區間
-color_lower_clipper = 10
+color_upper_clipper = 500  # 調整面積的讀取區間
+color_lower_clipper = 50
 #  遮色片參數
 mask = False
 once_open_mask = False
@@ -429,7 +429,7 @@ def thread_our():
         x = int(rect[0][0])
         y = int(rect[0][1])
         if (x > field_pos[1][0] + 30 * CM_TO_PIX) | (x < field_pos[0][0] - 30 * CM_TO_PIX) | (
-                y > field_pos[7][1] + 20 * CM_TO_PIX) | (y < field_pos[0][1] - CM_TO_PIX):
+                y > field_pos[7][1] + 25 * CM_TO_PIX) | (y < field_pos[0][1] - 25 * CM_TO_PIX):
             continue
         our_pos.add((x, y))
         cv2.circle(show, (x, y), 1, (252, 255, 255), 1)
@@ -480,7 +480,7 @@ def thread_color1():
         x = int(rect[0][0])
         y = int(rect[0][1])
         if (x > field_pos[1][0] + 30 * CM_TO_PIX) | (x < field_pos[0][0] - 30 * CM_TO_PIX) | (
-                y > field_pos[7][1] + 20 * CM_TO_PIX) | (y < field_pos[0][1] - CM_TO_PIX):
+                y > field_pos[7][1] + 25 * CM_TO_PIX) | (y < field_pos[0][1] - 25 * CM_TO_PIX):
             continue
         color1_pos.add((x, y))
         cv2.circle(show, (x, y), 1, (56, 51, 207), 1)
@@ -505,7 +505,7 @@ def thread_color2():
         x = int(rect[0][0])
         y = int(rect[0][1])
         if (x > field_pos[1][0] + 30 * CM_TO_PIX) | (x < field_pos[0][0] - 30 * CM_TO_PIX) | (
-                y > field_pos[7][1] + 20 * CM_TO_PIX) | (y < field_pos[0][1] - CM_TO_PIX):
+                y > field_pos[7][1] + 25 * CM_TO_PIX) | (y < field_pos[0][1] - 25 * CM_TO_PIX):
             continue
         color2_pos.add((x, y))
         cv2.circle(show, (x, y), 1, (252, 255, 255), 1)
@@ -621,6 +621,10 @@ def image_func():
             tStart = time.time()
         frame_counter += 1
         ret, frame = (1, cap.read())
+        # black half
+        roi = frame[0:720, 0:600]
+        roi[:] = 0  # 将roi区域内的全部像素设置为0，0表示黑色
+        # black half
         if not ret:
             break
         if len(frame) == 0:
