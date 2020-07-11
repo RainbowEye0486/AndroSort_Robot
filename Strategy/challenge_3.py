@@ -17,11 +17,12 @@ PRINT = True
 
 # Parameter needed to adjust
 ID_IN_USE = [3, 6, 3]
-CM_TO_PIX = 2.3
+CM_TO_PIX = 2.33
 carrier_range = 18 * CM_TO_PIX  # range to judge if carry ball
 line_range = 7 * CM_TO_PIX  # when defend , we need to know how close is enough from defend line
 SIDE = -1  # -1 for <- , 1 for ->
 ROB_RANG = 11 * CM_TO_PIX  # enemy's half width
+MAX_STEPS = 3
 
 # global value of movable objects
 robots = []
@@ -719,7 +720,8 @@ def is_kickable(robo, tol_dist, tol_angle, kick_dir, ways, force):
         print('====in kickable===')
         print('robo, kick_dir', robo.dir, kick_dir)
         print('kick way:', kick_way)
-    arrival = [b - un_dir * ball.radius * CM_TO_PIX for b, un_dir in zip(ball.pos, kick_dir)]
+    # arrival = [b - un_dir * ball.radius * CM_TO_PIX for b, un_dir in zip(ball.pos, kick_dir)]
+    arrival = ball.pos[:]
     if kick_way == 'FORE' and force == 'small':
         ver_offst = [direct * -robo.MOTION['MOVE'][kick_way]['OFFSET'][3] * CM_TO_PIX for direct in kick_dir]
     else:
@@ -747,14 +749,14 @@ def is_kickable(robo, tol_dist, tol_angle, kick_dir, ways, force):
         else:
             kick_type = 'PASS'
     elif kick_way == 'LEFT' or kick_way == 'RIGHT':
-        kick_type == 'SSHOOT'
+        kick_type = 'SSHOOT'
     else:
-        kick_type == 'BSHOOT'
+        kick_type = 'BSHOOT'
     motion = robo.MOTION['KICK'][kick_type]
     if PRINT:
-        print('k-w err, ver err', kick_way_err, ver_err)
-        print('const', motion['BOUND'])
-    if abs(kick_way_err) < motion['BOUND'][0] and ver_err < motion['BOUND'][1]:
+        print('k-w err, ver err(cm)', kick_way_err / CM_TO_PIX, ver_err / CM_TO_PIX)
+        print('const(cm)', motion['BOUND'])
+    if abs(kick_way_err) < motion['BOUND'][0] * CM_TO_PIX and ver_err < motion['BOUND'][1] * CM_TO_PIX:
         direction = _rotate(robo.dir, WAY_ANGLE[kick_way])
         angle = _angle(kick_dir, direction)
         if PRINT:
@@ -882,9 +884,10 @@ def move_with_dir(robo, arrival, curr_dir, ideal_dir, fit_way='FORE', ways=['FOR
         if PRINT:
             print('bound', motion['BOUND'][0] * CM_TO_PIX)
         count = 0
-        for i in range(1, 11):
-            if product >= motion['BOUND'][0] * CM_TO_PIX and count != 9:
-                too_close = is_close_ball(robo.pos, temp_dir, motion['BOUND'][0] * CM_TO_PIX)
+        position = robo.pos
+        for i in range(1, MAX_STEPS + 2):
+            if product >= motion['BOUND'][0] * CM_TO_PIX and count != MAX_STEPS:
+                too_close, position = is_close_ball(position, temp_dir, motion['BOUND'][0] * CM_TO_PIX)
                 if (not too_close) or move_way == 'BACK':
                     product -= motion['BOUND'][0] * CM_TO_PIX
                     count += 1
@@ -899,8 +902,8 @@ def move_with_dir(robo, arrival, curr_dir, ideal_dir, fit_way='FORE', ways=['FOR
         if len(robo.MOTION['MOVE'][move_way]['BOUND']) > 1:
             count = 0
             print("initial product", product)
-            for i in range(1, 11):
-                if product >= motion['BOUND'][1] * CM_TO_PIX and count != 9:
+            for i in range(1, MAX_STEPS + 2):
+                if product >= motion['BOUND'][1] * CM_TO_PIX and count != MAX_STEPS:
                     product -= motion['BOUND'][1] * CM_TO_PIX
                     count += 1
                 elif count > 0:
@@ -985,7 +988,7 @@ def move(robo, arrival, ways=['', '', '', ''], accurate=True):
         count = 0
         motion = robo.MOTION['TURN']['RIGHT']
         angle = abs(angle)
-        for i in range(1, 11):  # big right turn
+        for i in range(1, MAX_STEPS):  # big right turn
             if abs(angle - motion['BOUND'][0]) < abs(angle) and count != 9:
                 # if angle >= motion['BOUND'][0] and count != 9:
                 angle -= motion['BOUND'][0]
@@ -993,7 +996,7 @@ def move(robo, arrival, ways=['', '', '', ''], accurate=True):
             elif count > 0:
                 rt_cmd = motion['CMD'][0] + str(count)
                 return True, rt_cmd
-        for i in range(1, 11):  # small right turn
+        for i in range(1, MAX_STEPS + 2):  # small right turn
             if abs(angle - motion['BOUND'][1]) < abs(angle) and accurate and count != 9:
                 # if angle >= motion['BOUND'][1] and accurate and count != 9:
                 angle -= motion['BOUND'][1]
@@ -1025,9 +1028,11 @@ def move(robo, arrival, ways=['', '', '', ''], accurate=True):
                     return True, rt_cmd
     motion = robo.MOTION['MOVE'][move_way]
     count = 0
+    position = robo.pos
     for i in range(1, 11):
-        if dist >= motion['BOUND'][0] * CM_TO_PIX and count != 9:
-            too_close = is_close_ball(robo.pos, direction, robo.MOTION['MOVE'][move_way]['BOUND'][0] * CM_TO_PIX)
+        if dist >= motion['BOUND'][0] * CM_TO_PIX and count != MAX_STEPS:
+            too_close, position = is_close_ball(position, direction,
+                                                robo.MOTION['MOVE'][move_way]['BOUND'][0] * CM_TO_PIX)
             if (not too_close) or move_way == 'BACK':
                 dist -= motion['BOUND'][0] * CM_TO_PIX
                 count += 1
@@ -1042,7 +1047,7 @@ def move(robo, arrival, ways=['', '', '', ''], accurate=True):
     if len(motion['BOUND']) > 1:
         count = 0
         for i in range(1, 11):
-            if dist >= motion['BOUND'][1] * CM_TO_PIX and accurate and count != 9:
+            if dist >= motion['BOUND'][1] * CM_TO_PIX and accurate and count != MAX_STEPS:
                 dist -= motion['BOUND'][1] * CM_TO_PIX
                 count += 1
             elif count > 0:
@@ -1226,8 +1231,8 @@ def is_close_ball(pos, direction, len):
     safe_dist = (10 + ball.radius) * CM_TO_PIX
     the_next = [p + d * len for p, d in zip(pos, direction)]
     if _dist(the_next, ball.pos) < safe_dist:
-        return True
-    return False
+        return True, the_next
+    return False, pos
 
 
 def change_robots(oldID, newID):
