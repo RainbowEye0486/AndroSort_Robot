@@ -27,9 +27,9 @@ decision_done = False
 wait_flag = False
 # 需要調整參數
 # ===========adjust==========================
-side = -1  # -1 for <- , 1 for -> (left is our field)
-challenge_num = 1
-PK = True
+side = 1  # -1 for <- , 1 for -> (left is our field)
+challenge_num = 2
+PK = False
 # ===========================================
 
 crouch = [False, False, False]
@@ -82,7 +82,7 @@ def PK_func():
     else:
         PK = True
         strategy3.PK_bit = True
-    print(PK)
+    print(strategy3.PK_bit)
 
 
 def side_func():
@@ -95,6 +95,21 @@ def side_func():
         side = 1
         strategy.SIDE = 1
         strategy.strategy_update_field(side, image.field_pos, image.middle, image.penalty_pos)
+
+
+def penal_o():
+    strategy.penalty_offense = True
+
+
+def penal_d():
+    global PK
+    strategy.penalty_defense = True
+    PK = True
+    strategy3.PK_bit = True
+
+
+def goal_k():
+    strategy.goal_kick = True
 
 
 def def_wait():
@@ -143,13 +158,13 @@ def Strategy_thread(que):
         print("enemy position", image.enemy_data)
         print("ball position", image.ball_pos_now)"""
         # print("enemy position", image.enemy_data)
-        global time_E, wait_initial
+        global time_E, wait_initial, PK
         if image.exit_bit != 0:
             sys.exit()
         if go_strategy:
 
             if challenge_num == 2:
-                time.sleep(1.0)
+                time.sleep(1)
             elif challenge_num == 1:
                 time.sleep(0.5)
                 #  修改 發送延遲時間
@@ -176,6 +191,35 @@ def Strategy_thread(que):
                         pass
                     else:
                         continue
+                if strategy3.goal_kick:
+                    if strategy3.ball.pos[0] - strategy3.our_gate[0][0] + strategy3.SIDE * 60 * strategy3.CM_TO_PIX:
+                        strategy3.goal_kick = False
+                if strategy3.penalty_offense:
+                    if not record:
+                        wait_initial = strategy.ball.pos
+                        record = True
+                    time_E = time.time()
+                    print((time_E - time_S), strategy.get_distance(wait_initial, strategy.ball.pos))
+                    if (time_E - time_S) > 10 or strategy.get_distance(wait_initial,
+                                                                       strategy.ball.pos) > 3 * strategy.CM_TO_PIX:
+                        strategy3.penalty_offense = False
+                        record = False
+                        pass
+
+                if strategy3.penalty_defense:
+                    if not record:
+                        wait_initial = strategy.ball.pos
+                        record = True
+                    time_E = time.time()
+                    print((time_E - time_S), strategy.get_distance(wait_initial, strategy.ball.pos))
+                    if (time_E - time_S) > 10 or strategy.get_distance(wait_initial,
+                                                                       strategy.ball.pos) > 3 * strategy.CM_TO_PIX:
+                        strategy3.penalty_defense = False
+                        record = False
+                        PK = False
+                        strategy3.PK_bit = False
+                        pass
+
             cmd = strategy.strategy()
             try:
                 input_data = cmd
@@ -251,6 +295,8 @@ if __name__ == '__main__':
     change_frame.pack()
     instruction_frame = tk.Frame(window)
     instruction_frame.pack(side=tk.BOTTOM)
+    ball_frame = tk.Frame(window)
+    ball_frame.pack()
 
     labelLand = tk.Label(change_frame,
                          text="From")
@@ -301,8 +347,6 @@ if __name__ == '__main__':
     field_button.pack(side=tk.LEFT)
     side_button = tk.Button(instruction_frame, text='side', fg='Black', command=side_func)
     side_button.pack(side=tk.LEFT)
-    defend_button = tk.Button(instruction_frame, text='後攻', fg='Red', command=def_wait)
-    defend_button.pack(side=tk.LEFT)
     PK_button = tk.Button(instruction_frame, text='PK', fg='Red', command=PK_func)
     PK_button.pack(side=tk.LEFT)
     correct_button = tk.Button(instruction_frame, text='projection', fg='Black', command=image.set_correct)
@@ -313,5 +357,13 @@ if __name__ == '__main__':
     print_button.pack(side=tk.LEFT)
     exit_button = tk.Button(instruction_frame, text='exit', fg='Black', command=exit_func)
     exit_button.pack(side=tk.LEFT)
+    defend_button = tk.Button(ball_frame, text='free defend', fg='Red', command=def_wait)
+    defend_button.pack(side=tk.LEFT)
+    penalty_o_button = tk.Button(ball_frame, text='penal_o', fg='Red', command=penal_o)
+    penalty_o_button.pack(side=tk.LEFT)
+    penalty_d_button = tk.Button(ball_frame, text='penal_d', fg='Red', command=penal_d)
+    penalty_d_button.pack(side=tk.LEFT)
+    goal_k_button = tk.Button(ball_frame, text='goal_k', fg='Red', command=goal_k)
+    goal_k_button.pack(side=tk.LEFT)
 
     window.mainloop()

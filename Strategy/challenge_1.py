@@ -9,10 +9,10 @@ ID_IN_USE = [3, 1]
 PRINT = True
 
 # Field Parameter
-CM_TO_PIX = 3.0
+CM_TO_PIX = 2.33
 BOUNDARY = []
 CENTER = [0, 0]
-PENALTY = 0
+PENALTY = 0  # not using
 SIDE = 1  # left is our field
 FB_X = 0
 GOAL = []
@@ -20,7 +20,7 @@ GOAL = []
 robots = []
 enemies = []
 ball = None
-ROB_RANG = 40  # 12cm = 40pixel
+ROB_RANG = 12 * CM_TO_PIX  # 12cm = 40pixel
 # 修改 防守機器人的防守半徑
 last_ball = []
 ball_in_move = []
@@ -156,7 +156,7 @@ def strategy():
     if not record_ball:
         last_ball = ball.pos
         ball_in_move = ball.pos
-        leave_at = [robots[0].pos[0] - SIDE * 22 * CM_TO_PIX, robots[0].pos[1]]
+        leave_at = [robots[0].pos[0] - SIDE * 26 * CM_TO_PIX, robots[0].pos[1]]
         # 修改 往後離開的距離
         best_loc[0] = CENTER[0] + SIDE * x_offst
         best_loc[1] = CENTER[1] + SIDE * y_offst
@@ -219,8 +219,9 @@ def assign_job(robots):
                 robo.job = Job.PASS
         elif robo.role == Role.MAIN:
             robo.target, size = find_aim_point(ball.pos[0], ball.pos[1], GOAL)
-            chance = size / abs(GOAL[1][1] - GOAL[0][1])
-            if (ball.pos[0] - CENTER[0]) * SIDE > 0:  # pass half field
+            chance = size / abs(GOAL[1][1] - GOAL[0][1])  # how much chance to goal
+            if (ball.pos[0] - CENTER[0]) * SIDE > 0:  # 修改 球不夠力
+                # if (ball.pos[0] - CENTER[0] - shoot_zone) * SIDE > 0:  # pass half field
                 if chance > 0:
                     robo.job = Job.SHOOT  # to goal
                 else:  # kick to end
@@ -229,10 +230,10 @@ def assign_job(robots):
                     else:
                         kick_dir = _rotate([0, 1], -1 * SIDE * 60 / 180 * math.pi)
                     robo.target = [b + d * 10 for b, d in zip(ball.pos, kick_dir)]
-            else:
+            else:  # if not passing half field
                 if PRINT:
                     print('chance', chance)
-                if chance > 0.1:
+                if chance > 0.15:
                     #  修改 進球機率
                     robo.job = Job.SHOOT
                 else:
@@ -274,7 +275,7 @@ def execute_job(id):
                     print(job_done)
                     start_pass = False
                     t = Timer(2.0, startMain)
-                    t.start()
+                    t.start()  # another robot move
             arrival = sec_pt
             robo.next = arrival
             move_ways = ['LEFT']
@@ -290,7 +291,7 @@ def execute_job(id):
         if PRINT:
             print('role, job', robo.role, robo.job)
         if robo.role == Role.SUP:
-            if _dist(ball.pos, last_ball) > 12 * CM_TO_PIX:
+            if _dist(ball.pos, last_ball) > 13 * CM_TO_PIX:
                 #  修改 踢出少距離退出
                 job_done = True
                 print(job_done)
@@ -325,7 +326,7 @@ def execute_job(id):
         if movable:
             return rt_cmd
     elif robo.job == Job.SHOOT:
-        kick_ways = ['LEFT', 'RIGHT']
+        kick_ways = ['LEFT', 'RIGHT', 'FORE']
         # 修改 踢的方式
         check_boundary_ball(robo)
         if robo.target[0] != -1:
@@ -613,7 +614,7 @@ def move(robo, arrival, ways=['FORE', 'LEFT', 'RIGHT', 'BACK'], accurate=True):
     '''Deal passing ball problem'''
     # if the robot will pass the ball while moving
     dist_ball = _dist(robo.pos, ball.pos)
-    if dist > dist_ball:
+    if dist > dist_ball:  #
         ball_dir = _unit_vector(robo.pos, ball.pos)
         angle = abs(_angle(move_dir, ball_dir))
         if move_way == 'FORE' or move_way == 'BACK':

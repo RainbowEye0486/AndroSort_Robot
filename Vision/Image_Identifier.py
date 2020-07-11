@@ -11,7 +11,7 @@ from Strategy import challenge_2 as ch2
 from Strategy import challenge_1 as ch1
 from Strategy import challenge_pk as ch4
 
-camera_switch = 0  # 哪一個相機
+camera_switch = 1  # 哪一個相機 1是有標籤的
 #  紀錄參數用
 if camera_switch == 0:
     fpath = os.path.join(os.path.dirname(__file__), 'param.json')
@@ -27,9 +27,10 @@ challenge_bit = 1
 camera_num = 0
 robot_height = 45
 robot_crouch = 32
-field_height = 268
-color_upper_clipper = 600  # 調整面積的讀取區間
-color_lower_clipper = 100
+field_height = 335
+CM_TO_PIX = 2.36
+color_upper_clipper = 1000  # 調整面積的讀取區間
+color_lower_clipper = 10
 #  遮色片參數
 mask = False
 once_open_mask = False
@@ -427,6 +428,9 @@ def thread_our():
         box = np.int0(box)
         x = int(rect[0][0])
         y = int(rect[0][1])
+        if (x > field_pos[1][0] + 30 * CM_TO_PIX) | (x < field_pos[0][0] - 30 * CM_TO_PIX) | (
+                y > field_pos[7][1] + 20 * CM_TO_PIX) | (y < field_pos[0][1] - CM_TO_PIX):
+            continue
         our_pos.add((x, y))
         cv2.circle(show, (x, y), 1, (252, 255, 255), 1)
         cv2.circle(show, (x, y), 30, (252, 255, 255), 1)  # patten range
@@ -449,6 +453,9 @@ def thread_enemy():
         box = np.int0(box)
         x = int(rect[0][0])
         y = int(rect[0][1])
+        if (x > field_pos[1][0] + 30 * CM_TO_PIX) | (x < field_pos[0][0] - 30 * CM_TO_PIX) | (
+                y > field_pos[7][1] + 15 * CM_TO_PIX) | (y < field_pos[0][1] - 15 * CM_TO_PIX):
+            continue
         enemy_pos.add((x, y))
         cv2.circle(show, (x, y), 1, (252, 255, 255), 1)
         cv2.circle(show, (x, y), 30, (252, 255, 255), 1)  # patten range
@@ -472,6 +479,9 @@ def thread_color1():
         box = np.int0(box)
         x = int(rect[0][0])
         y = int(rect[0][1])
+        if (x > field_pos[1][0] + 30 * CM_TO_PIX) | (x < field_pos[0][0] - 30 * CM_TO_PIX) | (
+                y > field_pos[7][1] + 20 * CM_TO_PIX) | (y < field_pos[0][1] - CM_TO_PIX):
+            continue
         color1_pos.add((x, y))
         cv2.circle(show, (x, y), 1, (56, 51, 207), 1)
         cv2.drawContours(show, [box], -1, (56, 51, 207), 1)
@@ -494,6 +504,9 @@ def thread_color2():
         box = np.int0(box)
         x = int(rect[0][0])
         y = int(rect[0][1])
+        if (x > field_pos[1][0] + 30 * CM_TO_PIX) | (x < field_pos[0][0] - 30 * CM_TO_PIX) | (
+                y > field_pos[7][1] + 20 * CM_TO_PIX) | (y < field_pos[0][1] - CM_TO_PIX):
+            continue
         color2_pos.add((x, y))
         cv2.circle(show, (x, y), 1, (252, 255, 255), 1)
         cv2.drawContours(show, [box], -1, (150, 205, 0), 1)
@@ -516,6 +529,9 @@ def thread_color3():
         box = np.int0(box)
         x = int(rect[0][0])
         y = int(rect[0][1])
+        if (x > field_pos[1][0] + 30 * CM_TO_PIX) | (x < field_pos[0][0] - 30 * CM_TO_PIX) | (
+                y > field_pos[7][1] + 20 * CM_TO_PIX) | (y < field_pos[0][1] - CM_TO_PIX):
+            continue
         color3_pos.add((x, y))
         cv2.circle(show, (x, y), 1, (252, 255, 255), 1)
         cv2.drawContours(show, [box], -1, (220, 50, 200), 1)
@@ -538,7 +554,8 @@ def thread_ball():
         box = np.int0(box)
         x = int(rect[0][0])
         y = int(rect[0][1])
-        if (x > field_pos[1][0]) | (x < field_pos[0][0]):
+        if (x > field_pos[1][0] + 30 * CM_TO_PIX) | (x < field_pos[0][0] - 30 * CM_TO_PIX) | (y > field_pos[7][1]) | (
+                y < field_pos[0][1]):
             continue
         cv2.circle(show, (x, y), 1, (252, 255, 255), 1)
         #  speed of ball
@@ -565,11 +582,7 @@ class WebcamVideoStream:
         self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
         self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
         self.stream.set(cv2.CAP_PROP_BUFFERSIZE, 3)
-        self.stream.set(cv2.CAP_PROP_EXPOSURE, 77)
-        self.stream.set(cv2.CAP_PROP_BRIGHTNESS, 154)
-        self.stream.set(cv2.CAP_PROP_GAIN, 106)
         self.stream.set(cv2.CAP_PROP_FOCUS, 0)
-        self.stream.set(cv2.CAP_PROP_BUFFERSIZE, 1)
         self.stream.set(cv2.CAP_PROP_FPS, 30 / 1)
         print("fps", self.stream.get(cv2.CAP_PROP_FPS))
         print("fps", self.stream.get(cv2.CAP_PROP_BRIGHTNESS))
@@ -838,17 +851,21 @@ def image_func():
         if (challenge_bit == 3) & (len(ch3.robots) == 3):
             if ch3.PK_bit:
                 cv2.putText(show, "PK", (1200, 50), font, 1, (200, 55, 55), 3)
+            elif ch3.goal_kick:
+                cv2.putText(show, "GK", (1200, 50), font, 1, (200, 55, 55), 3)
+            elif ch3.penalty_offense:
+                cv2.putText(show, "PO", (1200, 50), font, 1, (200, 55, 55), 3)
+            elif ch3.penalty_defense:
+                cv2.putText(show, "PD", (1200, 50), font, 1, (200, 55, 55), 3)
+            elif Main.wait_flag:
+                cv2.putText(show, "FD", (1200, 50), font, 1, (200, 55, 55), 3)
             else:
                 cv2.putText(show, "CH3", (1200, 50), font, 1, (200, 55, 55), 3)
-            if Main.wait_flag:
-                duration = str(int(Main.time_E - Main.time_S))
-                cv2.putText(show, "Wait", (92, 57), font, 1, (255, 55, 255), 3)
-                cv2.putText(show, duration, (136, 57), font, 1, (255, 55, 255), 3)
 
             if ch3.SIDE == 1:
-                cv2.putText(show, "(->)", (66, 666), font, 1, (255, 255, 255), 3)
+                cv2.putText(show, "(->)", (621, 529), font, 1, (255, 255, 255), 3)
             else:
-                cv2.putText(show, "(<-)", (66, 666), font, 1, (255, 255, 255), 3)
+                cv2.putText(show, "(<-)", (621, 529), font, 1, (255, 255, 255), 3)
 
             for i in range(3):
                 if not ch3.robots[i].target[0] == 0 and not ch3.robots[i].target[0] == -1:
@@ -886,9 +903,9 @@ def image_func():
         elif challenge_bit == 2 and len(ch2.robots) == 1:
             cv2.putText(show, "CH2", (1200, 50), font, 1, (200, 55, 55), 3)
             if ch2.SIDE == 1:
-                cv2.putText(show, "(->)", (66, 666), font, 1, (255, 255, 255), 3)
+                cv2.putText(show, "(->)", (621, 529), font, 1, (255, 255, 255), 3)
             else:
-                cv2.putText(show, "(<-)", (66, 666), font, 1, (255, 255, 255), 3)
+                cv2.putText(show, "(<-)", (621, 529), font, 1, (255, 255, 255), 3)
 
             for i, robo in enumerate(ch2.robots):
                 if our_data[i]:
@@ -920,9 +937,9 @@ def image_func():
         elif challenge_bit == 1 and len(ch1.robots) == 2:
             cv2.putText(show, "CH1", (1200, 50), font, 1, (200, 55, 55), 3)
             if ch1.SIDE == 1:
-                cv2.putText(show, "(->)", (66, 666), font, 1, (255, 255, 255), 3)
+                cv2.putText(show, "(->)", (621, 529), font, 1, (255, 255, 255), 3)
             else:
-                cv2.putText(show, "(<-)", (66, 666), font, 1, (255, 255, 255), 3)
+                cv2.putText(show, "(<-)", (621, 529), font, 1, (255, 255, 255), 3)
 
             for i, robo in enumerate(ch1.robots):
                 if our_data[i]:
@@ -971,7 +988,7 @@ def image_func():
             cv2.destroyAllWindows()
             break
 
-        if frame_counter >= 20:
+        if frame_counter >= 4:
             move_distance = get_distance(ball_pos_last, ball_pos_now)
             if move_distance == 0:
                 x = 0
@@ -985,7 +1002,7 @@ def image_func():
             tEnd = time.time()
             time_interval = tEnd - tStart
             try:
-                ball_speed = move_distance / time_interval
+                ball_speed = move_distance
             except ZeroDivisionError:
                 ball_speed = 0
                 print("speed error")
