@@ -12,7 +12,7 @@ from Strategy import challenge_1 as ch1
 from Strategy import challenge_pk as ch4
 
 camera_switch = 1  # 哪一個相機 1是有標籤的
-camera_num = 2
+camera_num = 1
 #  紀錄參數用
 if camera_switch == 0:
     fpath = os.path.join(os.path.dirname(__file__), 'param.json')
@@ -28,7 +28,7 @@ challenge_bit = 1
 robot_height = 45
 robot_crouch = 32
 field_height = 268
-color_upper_clipper = 600  # 調整面積的讀取區間
+color_upper_clipper = 500  # 調整面積的讀取區間
 color_lower_clipper = 100
 #  遮色片參數
 mask = False

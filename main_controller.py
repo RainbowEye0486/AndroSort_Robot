@@ -164,7 +164,7 @@ def Strategy_thread(que):
         if go_strategy:
 
             if challenge_num == 2:
-                time.sleep(1)
+                time.sleep(0.8)
             elif challenge_num == 1:
                 time.sleep(0.6)
                 #  修改 發送延遲時間
