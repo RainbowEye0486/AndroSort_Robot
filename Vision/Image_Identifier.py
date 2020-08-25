@@ -11,7 +11,7 @@ from Strategy import challenge_2 as ch2
 from Strategy import challenge_1 as ch1
 from Strategy import challenge_pk as ch4
 
-camera_switch = 0  # 哪一個相機 1是有標籤的
+camera_switch = 1  # 哪一個相機 1是有標籤的
 camera_num = 2
 #  紀錄參數用
 if camera_switch == 0:
@@ -27,10 +27,9 @@ cap = None
 challenge_bit = 1
 robot_height = 45
 robot_crouch = 32
-field_height = 335
-CM_TO_PIX = 2.33
-color_upper_clipper = 500  # 調整面積的讀取區間
-color_lower_clipper = 50
+field_height = 268
+color_upper_clipper = 600  # 調整面積的讀取區間
+color_lower_clipper = 100
 #  遮色片參數
 mask = False
 once_open_mask = False
@@ -428,9 +427,6 @@ def thread_our():
         box = np.int0(box)
         x = int(rect[0][0])
         y = int(rect[0][1])
-        if (x > field_pos[1][0] + 30 * CM_TO_PIX) | (x < field_pos[0][0] - 30 * CM_TO_PIX) | (
-                y > field_pos[7][1] + 25 * CM_TO_PIX) | (y < field_pos[0][1] - 25 * CM_TO_PIX):
-            continue
         our_pos.add((x, y))
         cv2.circle(show, (x, y), 1, (252, 255, 255), 1)
         cv2.circle(show, (x, y), 30, (252, 255, 255), 1)  # patten range
@@ -453,9 +449,6 @@ def thread_enemy():
         box = np.int0(box)
         x = int(rect[0][0])
         y = int(rect[0][1])
-        if (x > field_pos[1][0] + 30 * CM_TO_PIX) | (x < field_pos[0][0] - 30 * CM_TO_PIX) | (
-                y > field_pos[7][1] + 15 * CM_TO_PIX) | (y < field_pos[0][1] - 15 * CM_TO_PIX):
-            continue
         enemy_pos.add((x, y))
         cv2.circle(show, (x, y), 1, (252, 255, 255), 1)
         cv2.circle(show, (x, y), 30, (252, 255, 255), 1)  # patten range
@@ -479,9 +472,6 @@ def thread_color1():
         box = np.int0(box)
         x = int(rect[0][0])
         y = int(rect[0][1])
-        if (x > field_pos[1][0] + 30 * CM_TO_PIX) | (x < field_pos[0][0] - 30 * CM_TO_PIX) | (
-                y > field_pos[7][1] + 25 * CM_TO_PIX) | (y < field_pos[0][1] - 25 * CM_TO_PIX):
-            continue
         color1_pos.add((x, y))
         cv2.circle(show, (x, y), 1, (56, 51, 207), 1)
         cv2.drawContours(show, [box], -1, (56, 51, 207), 1)
@@ -504,9 +494,6 @@ def thread_color2():
         box = np.int0(box)
         x = int(rect[0][0])
         y = int(rect[0][1])
-        if (x > field_pos[1][0] + 30 * CM_TO_PIX) | (x < field_pos[0][0] - 30 * CM_TO_PIX) | (
-                y > field_pos[7][1] + 25 * CM_TO_PIX) | (y < field_pos[0][1] - 25 * CM_TO_PIX):
-            continue
         color2_pos.add((x, y))
         cv2.circle(show, (x, y), 1, (252, 255, 255), 1)
         cv2.drawContours(show, [box], -1, (150, 205, 0), 1)
@@ -529,9 +516,6 @@ def thread_color3():
         box = np.int0(box)
         x = int(rect[0][0])
         y = int(rect[0][1])
-        if (x > field_pos[1][0] + 30 * CM_TO_PIX) | (x < field_pos[0][0] - 30 * CM_TO_PIX) | (
-                y > field_pos[7][1] + 20 * CM_TO_PIX) | (y < field_pos[0][1] - CM_TO_PIX):
-            continue
         color3_pos.add((x, y))
         cv2.circle(show, (x, y), 1, (252, 255, 255), 1)
         cv2.drawContours(show, [box], -1, (220, 50, 200), 1)
@@ -554,8 +538,7 @@ def thread_ball():
         box = np.int0(box)
         x = int(rect[0][0])
         y = int(rect[0][1])
-        if (x > field_pos[1][0] + 30 * CM_TO_PIX) | (x < field_pos[0][0] - 30 * CM_TO_PIX) | (y > field_pos[7][1]) | (
-                y < field_pos[0][1]):
+        if (x > field_pos[1][0]) | (x < field_pos[0][0]):
             continue
         cv2.circle(show, (x, y), 1, (252, 255, 255), 1)
         #  speed of ball
@@ -582,7 +565,11 @@ class WebcamVideoStream:
         self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
         self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
         self.stream.set(cv2.CAP_PROP_BUFFERSIZE, 3)
+        self.stream.set(cv2.CAP_PROP_EXPOSURE, 77)
+        self.stream.set(cv2.CAP_PROP_BRIGHTNESS, 154)
+        self.stream.set(cv2.CAP_PROP_GAIN, 106)
         self.stream.set(cv2.CAP_PROP_FOCUS, 0)
+        self.stream.set(cv2.CAP_PROP_BUFFERSIZE, 1)
         self.stream.set(cv2.CAP_PROP_FPS, 30 / 1)
         print("fps", self.stream.get(cv2.CAP_PROP_FPS))
         print("fps", self.stream.get(cv2.CAP_PROP_BRIGHTNESS))
@@ -621,10 +608,6 @@ def image_func():
             tStart = time.time()
         frame_counter += 1
         ret, frame = (1, cap.read())
-        # black half
-        # roi = frame[0:720, 686:1270]
-        # roi[:] = 0  # 将roi区域内的全部像素设置为0，0表示黑色
-        # black half
         if not ret:
             break
         if len(frame) == 0:
@@ -865,6 +848,10 @@ def image_func():
                 cv2.putText(show, "FD", (1200, 50), font, 1, (200, 55, 55), 3)
             else:
                 cv2.putText(show, "CH3", (1200, 50), font, 1, (200, 55, 55), 3)
+            if Main.wait_flag:
+                duration = str(int(Main.time_E - Main.time_S))
+                cv2.putText(show, "Wait", (92, 57), font, 1, (255, 55, 255), 3)
+                cv2.putText(show, duration, (136, 57), font, 1, (255, 55, 255), 3)
 
             if ch3.SIDE == 1:
                 cv2.putText(show, "(->)", (621, 529), font, 1, (255, 255, 255), 3)

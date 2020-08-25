@@ -28,7 +28,7 @@ wait_flag = False
 # 需要調整參數
 # ===========adjust==========================
 side = -1  # -1 for <- , 1 for -> (left is our field)
-challenge_num = 3
+challenge_num = 2
 PK = False
 # ===========================================
 
@@ -172,7 +172,7 @@ def Strategy_thread(que):
                 if strategy3.robots[2].job == strategy3.Job.DIVE:
                     time.sleep(0.05)
                 else:
-                    time.sleep(0.4)
+                    time.sleep(0.6)
 
             strategy.Update_Robo_Info(image.our_dir, image.our_data, image.enemy_data, image.ball_pos_now,
                                       image.ball_speed, image.ball_dir)
