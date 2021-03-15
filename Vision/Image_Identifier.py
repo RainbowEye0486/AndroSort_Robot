@@ -28,7 +28,7 @@ challenge_bit = 1
 robot_height = 45
 robot_crouch = 32
 field_height = 268
-color_upper_clipper = 500  # 調整面積的讀取區間
+color_upper_clipper = 600  # 調整面積的讀取區間
 color_lower_clipper = 100
 #  遮色片參數
 mask = False
