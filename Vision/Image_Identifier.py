@@ -12,7 +12,7 @@ from Strategy import challenge_1 as ch1
 from Strategy import challenge_pk as ch4
 
 camera_switch = 1  # 哪一個相機 1是有標籤的
-camera_num = 1
+camera_num = 2
 #  紀錄參數用
 if camera_switch == 0:
     fpath = os.path.join(os.path.dirname(__file__), 'param.json')
